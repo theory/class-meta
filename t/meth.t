@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.3 2002/05/18 02:00:53 david Exp $
+# $Id: meth.t,v 1.4 2003/11/22 00:49:18 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 46;
+use Test::More tests => 42;
 
 ##############################################################################
 # Create a simple class.
@@ -33,7 +33,7 @@ BEGIN {
                                  desc    => 'The foo method',
                                  label   => 'Foo method',
                                  context => Class::Meta::CLASS,
-                                 vis     => Class::Meta::PUBLIC ),
+                                 view    => Class::Meta::PUBLIC ),
         "Create foo_meth" );
 
     isa_ok($meth, 'Class::Meta::Method');
@@ -42,7 +42,7 @@ BEGIN {
     is( $meth->my_name, "foo_meth", "Check foo_meth name" );
     is( $meth->my_desc, "The foo method", "Check foo_meth desc" );
     is( $meth->my_label, "Foo method", "Check foo_meth label" );
-    ok( $meth->my_vis == Class::Meta::PUBLIC, "Check foo_meth vis" );
+    ok( $meth->my_view == Class::Meta::PUBLIC, "Check foo_meth view" );
     ok( $meth->my_context == Class::Meta::CLASS, "Check foo_meth context" );
     is ($meth->call(__PACKAGE__), 'foo', 'Call the foo_meth method' );
 
@@ -65,24 +65,14 @@ BEGIN {
     like( $err, qr/Method 'foo_meth' already exists in class/,
         "Caught proper dupe name exception");
 
-    # Try a couple of bogus visibilities.
+    # Try a of bogus visibility.
     eval { $c->add_meth( name => 'new_meth',
-                         vis  => 'foo') };
-    ok( $err = $@, "Caught bogus vis exception");
-    like( $err, qr/Not a valid vis parameter: 'foo'/,
-        "Caught proper bogus vis exception");
-    eval { $c->add_meth( name => 'new_meth',
-                         vis  => 10) };
-    ok( $err = $@, "Caught another bogus vis exception");
-    like( $err, qr/Not a valid vis parameter: '10'/,
-        "Caught another proper bogus vis exception");
+                         view  => 10) };
+    ok( $err = $@, "Caught another bogus view exception");
+    like( $err, qr/Not a valid view parameter: '10'/,
+        "Caught another proper bogus view exception");
 
-    # Try a couple of bogus contexts.
-    eval { $c->add_meth( name => 'new_meth',
-                         context => 'foo' ) };
-    ok( $err = $@, "Caught bogus context exception");
-    like( $err, qr/Not a valid context parameter: 'foo'/,
-        "Caught proper bogus context exception");
+    # Try a of bogus context.
     eval { $c->add_meth( name => 'new_meth',
                          context  => 10) };
     ok( $err = $@, "Caught another bogus context exception");
@@ -105,7 +95,7 @@ BEGIN {
     is( $meth->my_name, "new_meth", "Check new_meth name" );
     ok( ! defined $meth->my_desc, "Check new_meth desc" );
     ok( ! defined $meth->my_label, "Check new_meth label" );
-    ok( $meth->my_vis == Class::Meta::PUBLIC, "Check new_meth vis" );
+    ok( $meth->my_view == Class::Meta::PUBLIC, "Check new_meth view" );
     ok( $meth->my_context == Class::Meta::OBJECT, "Check new_meth context" );
     is( $meth->call(__PACKAGE__), '22', 'Call the new_meth method' );
 }
@@ -140,7 +130,7 @@ BEGIN {
     is( $meth->my_name, "foo_meth", "Check new foo_meth name" );
     ok( ! defined $meth->my_desc, "Check new foo_meth desc" );
     ok( ! defined $meth->my_label, "Check new foo_meth label" );
-    ok( $meth->my_vis == Class::Meta::PUBLIC, "Check new foo_meth vis" );
+    ok( $meth->my_view == Class::Meta::PUBLIC, "Check new foo_meth view" );
     ok( $meth->my_context == Class::Meta::OBJECT, "Check new foo_meth context" );
     is( $meth->call(__PACKAGE__), '100', 'Call the new foo_meth method' );
 }
