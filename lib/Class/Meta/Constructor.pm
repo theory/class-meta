@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.3 2002/05/18 02:00:53 david Exp $
+# $Id: Constructor.pm,v 1.4 2003/11/19 03:57:46 david Exp $
 
 use strict;
 
@@ -33,13 +33,13 @@ C<Class::Meta::Class> object.
 # Dependencies                                                               #
 ##############################################################################
 use strict;
+use warnings;
 use Carp ();
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-use vars qw($VERSION);
-$VERSION = "0.01";
+our $VERSION = "0.01";
 
 ##############################################################################
 # Constructors                                                               #

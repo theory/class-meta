@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.6 2002/05/18 02:00:53 david Exp $
+# $Id: Method.pm,v 1.7 2003/11/19 03:57:46 david Exp $
 
 =head1 NAME
 
@@ -14,8 +14,8 @@ Class::Meta::Method - Method introspection objects
   print "Label:       ", $meth->my_label, "\n";
   print "Context:     ", $meth->my_context == Class::Meta::CLASS ?
     "Class\n" : "Object\n";
-  print "Visibility:  ", $meth->my_vis == Class::Meta::PUBLIC
-    ? "Public\n"  :      $meth->my_vis == Class::Meta::PRIVATE
+  print "Viewibility:  ", $meth->my_view == Class::Meta::PUBLIC
+    ? "Public\n"  :      $meth->my_view == Class::Meta::PRIVATE
     ? "Private\n" : "Protected\n";
 
 =head1 DESCRIPTION
@@ -50,7 +50,7 @@ $VERSION = "0.01";
 =head2 new
 
   my $meth = Class::Meta::Method->new($def, @params);
-
+xc
 Creates a new C<Class::Meta::Method> object. This is a protected method,
 callable only from C<Class::Meta> or its subclasses. Use the C<Class::Meta>
 C<add_meth()> object method to add a new method to a class. Supported keys
@@ -75,9 +75,9 @@ A label for the method.
 The context of the method. Can be one of the two C<Class::Meta> constants
 C<OBJECT> or C<CLASS>.
 
-=item vis
+=item view
 
-The visibility of the method. Can be one of the three C<Class::Meta>
+The visibility, or view, of the method. Can be one of the three C<Class::Meta>
 constants C<PUBLIC>, C<PROTECTED>, or C<PRIVATE>.
 
 =item caller
@@ -120,15 +120,15 @@ sub new {
       || exists $def->{ctors}{$params{name}};
 
     # Check the visibility.
-    if (exists $params{vis}) {
+    if (exists $params{view}) {
 
-        Carp::croak("Not a valid vis parameter: '$params{vis}'")
-          unless $params{vis} == Class::Meta::PUBLIC
-          ||     $params{vis} == Class::Meta::PROTECTED
-          ||     $params{vis} == Class::Meta::PRIVATE;
+        Carp::croak("Not a valid view parameter: '$params{view}'")
+          unless $params{view} == Class::Meta::PUBLIC
+          ||     $params{view} == Class::Meta::PROTECTED
+          ||     $params{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
-        $params{vis} = Class::Meta::PUBLIC;
+        $params{view} = Class::Meta::PUBLIC;
     }
 
     # Check the context.
@@ -191,9 +191,9 @@ Returns label for the method.
 
 sub my_label { $_[0]->{label} }
 
-=head2 my_vis
+=head2 my_view
 
-  my $vis = $meth->my_vis;
+  my $view = $meth->my_view;
 
 Returns the visibility level of this method. Possible values are defined by
 the constants C<PRIVATE>, C<PROTECTED>, and C<PUBLIC>, as defined in
@@ -201,7 +201,7 @@ C<Class::Meta>.
 
 =cut
 
-sub my_vis { $_[0]->{vis} }
+sub my_view { $_[0]->{view} }
 
 =head2 my_context
 

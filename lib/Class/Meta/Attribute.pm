@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.8 2002/06/07 21:53:05 david Exp $
+# $Id: Attribute.pm,v 1.9 2003/11/19 03:57:46 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ $VERSION = "0.01";
 
 sub new {
     my $pkg = shift;
-    my $def = shift;
+    my $spec = shift;
 
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Attribute object.
@@ -51,77 +51,91 @@ sub new {
     # Make sure we can get all the arguments.
     Carp::croak("Odd number of parameters in call to new() when named "
                 . "parameters were expected" ) if @_ % 2;
-    my %params = @_;
+    my %p = @_;
 
     # Validate the name.
     Carp::croak("Parameter 'name' is required in call to new()")
-      unless $params{name};
-    Carp::croak("Attribute '$params{name}' is not a valid attribute name "
+      unless $p{name};
+    # Is this too paranoid?
+    Carp::croak("Attribute '$p{name}' is not a valid attribute name "
                 . "-- only alphanumeric and '_' characters allowed")
-      if $params{name} =~ /\W/;
+      if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another attribute
-    Carp::croak("Attribute '$params{name}' already exists in class "
-                . "'$def->{class}'")
-      if exists $def->{attrs}{$params{name}};
+    Carp::croak("Attribute '$p{name}' already exists in class "
+                . "'$spec->{class}'")
+      if exists $spec->{attrs}{$p{name}};
 
-    # Check the visibility.
-    if (exists $params{vis}) {
-        Carp::croak("Not a valid vis parameter: '$params{vis}'")
-          unless $params{vis} == Class::Meta::PUBLIC
-          ||     $params{vis} == Class::Meta::PROTECTED
-          ||     $params{vis} == Class::Meta::PRIVATE;
+    # Check the view.
+    if (exists $p{view}) {
+        Carp::croak("Not a valid view parameter: '$p{view}'")
+          unless $p{view} == Class::Meta::PUBLIC
+          or     $p{view} == Class::Meta::PROTECTED
+          or     $p{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
-        $params{vis} = Class::Meta::PUBLIC;
+        $p{view} = Class::Meta::PUBLIC;
     }
 
     # Check the authorization level.
-    if (exists $params{auth}) {
-        Carp::croak("Not a valid auth parameter: '$params{auth}'")
-          unless $params{auth} == Class::Meta::NONE
-          ||     $params{auth} == Class::Meta::READ
-          ||     $params{auth} == Class::Meta::WRITE
-          ||     $params{auth} == Class::Meta::RDWR;
+    if (exists $p{authz}) {
+        Carp::croak("Not a valid authz parameter: '$p{authz}'")
+          unless $p{authz} == Class::Meta::NONE
+          or     $p{authz} == Class::Meta::READ
+          or     $p{authz} == Class::Meta::WRITE
+          or     $p{authz} == Class::Meta::RDWR;
     } else {
         # Make it read/write by default.
-        $paarms{auth} = Class::Meta::RDWR;
+        $p{authz} = Class::Meta::RDWR;
     }
 
     # Check the context.
-    if (exists $params{context}) {
-        Carp::croak("Not a valid context parameter: '$params{context}'")
-          unless $params{context} == Class::Meta::OBJECT
-          ||     $params{context} == Class::Meta::CLASS;
+    if (exists $p{context}) {
+        Carp::croak("Not a valid context parameter: '$p{context}'")
+          unless $p{context} == Class::Meta::OBJECT
+          or     $p{context} == Class::Meta::CLASS;
     } else {
         # Put it in object context by default.
-        $params{context} = Class::Meta::OBJECT;
+        $p{context} = Class::Meta::OBJECT;
+    }
+
+    # Check the default.
+    if (exists $p{default}) {
+        # A code ref should be executed when the default is called.
+        $p{_def_code} = delete $p{default}
+          if ref $p{default} eq 'CODE';
     }
 
     # Create and cache the object and return it.
-    $def->{attrs}{$params{name}} = bless \%params, ref $pkg || $pkg;
-    return $def->{attrs}{$params{name}};
+    $spec->{attrs}{$p{name}} = bless \%p, ref $pkg || $pkg;
+    return $spec->{attrs}{$p{name}};
 }
 
 ##############################################################################
 # Instance Methods                                                           #
 ##############################################################################
 
-sub my_name    { $_[0]->{name} }
-sub my_vis     { $_[0]->{vis} }
-sub my_context { $_[0]->{context} }
-sub my_auth    { $_[0]->{auth} }
-sub my_type    { $_[0]->{type} }
-sub my_length  { $_[0]->{length} }
-sub my_label   { $_[0]->{label} }
-sub my_field   { $_[0]->{field} }
-sub my_desc    { $_[0]->{desc} }
-sub is_req     { $_[0]->{req} }
-sub my_def     { $_[0]->{def} }
+sub my_name     { $_[0]->{name}     }
+sub my_view     { $_[0]->{view}     }
+sub my_context  { $_[0]->{context}  }
+sub my_authz    { $_[0]->{authz}    }
+sub my_type     { $_[0]->{type}     }
+sub my_length   { $_[0]->{length}   }
+sub my_label    { $_[0]->{label}    }
+sub my_field    { $_[0]->{field}    }
+sub my_desc     { $_[0]->{desc}     }
+sub is_required { $_[0]->{required} }
 
-sub my_vals   {
-    my $vals = $_[0]->{vals};
-    ref $vals eq 'CODE' ? $vals->() : $vals;
+sub my_default {
+    if (my $code = $_[0]->{_def_code}) {
+        return $code->();
+    }
+    return $_[0]->{default};
+}
+
+sub my_options   {
+    my $options = $_[0]->{options};
+    ref $options eq 'CODE' ? $options->() : $options;
 }
 
 sub call_get   {
@@ -149,10 +163,10 @@ L<Class::Meta|Class::Meta::Constructor>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002, David Wheeler. All Rights Reserved.
+Copyright (c) 2002-2003, David Wheeler. All Rights Reserved.
 
-This module is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself.
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =cut
 

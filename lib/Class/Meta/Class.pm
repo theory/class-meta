@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.7 2002/05/17 23:32:56 david Exp $
+# $Id: Class.pm,v 1.8 2003/11/19 03:57:46 david Exp $
 
 use strict;
 use Carp ();
@@ -9,84 +9,63 @@ use Class::Meta::Attribute;
 use Class::Meta::Method;
 
 {
-    # We'll keep the class definitions in here.
-    my %defs;
+    # We'll keep the class specifications in here.
+    my %specs;
 
+    ##########################################################################
     sub new {
-        my ($pkg, $def) = @_;
+        my ($pkg, $spec) = @_;
         # Check to make sure that only Class::Meta or a subclass is
         # constructing a Class::Meta::Class object.
         my $caller = caller;
-        Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+        Carp::croak("Package '$caller' cannot create ", __PACKAGE__,
+                    " objects")
           unless grep { $_ eq 'Class::Meta' }
           $caller, eval '@' . $caller . "::ISA";
 
         # Check to make sure we haven't created this class already.
-        Carp::croak("Class object for class '$def->{pkg}' already exists")
-          if $defs{$def->{pkg}};
+        Carp::croak("Class object for class '$spec->{class}' already exists")
+          if $specs{$spec->{class}};
 
-        # Save a reference to the def hash ref.
-        $defs{$def->{pkg}} = $def;
+        # Save a reference to the spec hash ref.
+        $specs{$spec->{class}} = $spec;
 
         # Okay, create the object.
-        return bless { pkg => $def->{pkg} }, ref $pkg || $pkg;
+        return bless { package => $spec->{class} }, ref $pkg || $pkg;
     }
 
+    ##########################################################################
     # Basic accessors.
-    sub my_key  { $defs{$_[0]->{pkg}}->{key}  }
-    sub my_pkg  { $_[0]->{pkg}  }
-    sub my_name { $defs{$_[0]->{pkg}}->{name} }
-    sub my_desc { $defs{$_[0]->{pkg}}->{desc} }
+    sub my_package { $_[0]->{package}                 }
+    sub my_key     { $specs{$_[0]->{package}}->{key}  }
+    sub my_name    { $specs{$_[0]->{package}}->{name} }
+    sub my_desc    { $specs{$_[0]->{package}}->{desc} }
 
+    ##########################################################################
     # Check inheritance.
-    sub isa { exists $defs{$_[0]->{pkg}}->{isa}{$_[1]} }
+    sub isa { exists $specs{$_[0]->{package}}->{isa}{$_[1]} }
 
-    # Constructor objects.
-    sub my_ctors {
-        my $self = shift;
-        my $ctors = $defs{$_[0]->{pkg}}->{ctors};
-        if ($_[0]) {
-            # Return the requested constructors.
-            return @{$ctors}{@_};
-        } elsif ($defs{$_[0]->{pkg}}->{isa}{caller()}) {
-            # Return the protected list of constructors.
-            return @{$ctors}{@{ $defs{$_[0]->{pkg}}->{prot_ctor_ord} } };
-        } else {
-            # Return the private list of constructors.
-            return @{$ctors}{@{ $defs{$_[0]->{pkg}}->{ctor_ord} } };
-        }
-    }
-
-    # Attribute objects.
-    sub my_attrs {
-        my $self = shift;
-        my $attrs = $defs{$_[0]->{pkg}}->{attrs};
-        if ($_[0]) {
-            # Return the requested attributes.
-            return @{$attrs}{@_};
-        } elsif ($defs{$_[0]->{pkg}}->{isa}{caller()}) {
-            # Return the protected list of attributes.
-            return @{$attrs}{@{ $defs{$_[0]->{pkg}}->{prot_attr_ord} } };
-        } else {
-            # Return the private list of attributes.
-            return @{$attrs}{@{ $defs{$_[0]->{pkg}}->{attr_ord} } };
-        }
-    }
-
-    # Method objects.
-    sub my_meths {
-        my $self = shift;
-        my $meths = $defs{$_[0]->{pkg}}->{meths};
-        if ($_[0]) {
-            # Return the requested methods.
-            return @{$meths}{@_};
-        } elsif ($defs{$_[0]->{pkg}}->{isa}{caller()}) {
-            # Return the protected list of methods.
-            return @{$meths}{@{ $defs{$_[0]->{pkg}}->{prot_meth_ord} } };
-        } else {
-            # Return the private list of methods.
-            return @{$meths}{@{ $defs{$_[0]->{pkg}}->{meth_ord} } };
-        }
+    ##########################################################################
+    # Create accessors to get at the constructor, attribute, and method
+    # objects.
+    for my $t (qw(ctor attr meth)) {
+        eval qq|
+            sub my_${t}s {
+                my \$self = shift;
+                my \$objs = \$specs{\$_[0]->{package}}->{${t}s};
+                my \$list = \@_
+                  # Explicit list requested.
+                  ? \\\@_
+                  : \$specs{\$_[0]->{package}}->{isa}{scalar caller}
+                  # List of protected interface objects.
+                  ? \$specs{\$_[0]->{package}}->{prot_$t\_ord}
+                  # List of public interface objects.
+                  : \$specs{\$_[0]->{package}}->{$t\_ord};
+                return \@\$list == 1
+                  ? \$objs->{\$list->[0]}
+                  : \@{\$objs}{\@\$list};
+            }
+        |;
     }
 }
 
