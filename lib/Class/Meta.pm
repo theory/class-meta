@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.80 2004/04/20 18:24:58 david Exp $
+# $Id: Meta.pm,v 1.81 2004/04/21 11:40:20 david Exp $
 
 =head1 NAME
 
@@ -638,7 +638,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.31";
+our $VERSION = "0.32";
 
 ##############################################################################
 # Private Package Globals
@@ -657,7 +657,8 @@ our $VERSION = "0.31";
                            Class::Meta::AccessorBuilder);
         # XXX Make sure Carp doesn't point to Class/Meta/Constructor.pm when
         # an exception is thrown by Class::Meta::AccessorBuilder. I have no
-        # idea why this is necessary for AccessorBuilder but no where else!
+        # idea why this is necessary for AccessorBuilder but nowhere else!
+        # Damn Carp.
         @Class::Meta::AccessorBuilder::CARP_NOT = @CARP_NOT
           if caller(1) eq 'Class::Meta::AccessorBuilder';
         Carp::croak(@_);
@@ -1048,7 +1049,7 @@ may not be easy.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.31 distribution.
+This file was packaged with the Class-Meta-0.32 distribution.
 
 =head1 BUGS
 

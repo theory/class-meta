@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.46 2004/04/20 12:59:12 david Exp $
+# $Id: Attribute.pm,v 1.47 2004/04/21 11:40:21 david Exp $
 
 =head1 NAME
 
@@ -45,7 +45,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.31";
+our $VERSION = "0.32";
 
 ##############################################################################
 # Constructors                                                               #
@@ -402,7 +402,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.31 distribution.
+This file was packaged with the Class-Meta-0.32 distribution.
 
 =head1 BUGS
 
