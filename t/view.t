@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: view.t,v 1.4 2004/04/20 08:33:35 david Exp $
+# $Id: view.t,v 1.5 2004/06/17 17:53:21 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -8,6 +8,8 @@
 
 use strict;
 use Test::More tests => 214;
+use File::Spec;
+my $fn = File::Spec->catfile('t', 'view.t');
 
 ##############################################################################
 # Create a simple class.
@@ -406,7 +408,7 @@ sub chk {
     # Check its message.
     like( $err, $qr, "Correct error" );
     # Make sure it refers to this file.
-    like( $err, qr|at t/view.t line|, 'Correct context' );
+    like( $err, qr/at $fn line/, 'Correct context' );
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }

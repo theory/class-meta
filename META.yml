@@ -51,4 +51,4 @@ provides:
   Class::Meta::Types::String:
     file: lib/Class/Meta/Types/String.pm
     version: 0.34
-generated_by: Module::Build version 0.25
+generated_by: Module::Build version 0.25_01

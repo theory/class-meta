@@ -1,12 +1,14 @@
 #!perl -w
 
-# $Id: errors.t,v 1.6 2004/04/19 23:29:35 david Exp $
+# $Id: errors.t,v 1.7 2004/06/17 17:53:21 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 use strict;
 use Test::More tests => 202;
+use File::Spec;
+my $fn = File::Spec->catfile('t', 'errors.t');
 
 BEGIN {
     main::use_ok('Class::Meta');
@@ -263,7 +265,7 @@ sub chk {
     # Check its message.
     like( $err, $qr, "Correct error" );
     # Make sure it refers to this file.
-    like( $err, qr|at t/errors.t line|, 'Correct context' );
+    like( $err, qr/at $fn line/, 'Correct context' );
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }
