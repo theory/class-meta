@@ -6,7 +6,9 @@ my $build = Module::Build->new(
     requires            => { Data::Types => '0.06',
                              DateTime    => '0.18',
                            },
-    build_requires     => { Test::Simple     => '0.17',
+    build_requires     => { Test::Simple => '0.17',
+                            IO::Socket   => 0,
+                            Socket       => 0,
                           },
     create_makefile_pl => 'passthrough',
 );
