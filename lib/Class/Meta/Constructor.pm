@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.9 2003/11/22 02:44:05 david Exp $
+# $Id: Constructor.pm,v 1.10 2003/11/22 02:55:14 david Exp $
 
 use strict;
 
@@ -244,7 +244,7 @@ sub build {
             return $new;
         };
     } else {
-        # Simple construself.
+        # Simple constructor.
         no strict 'refs';
         *{"$spec->{package}::" . $self->my_name } = sub {
             my $class = shift;

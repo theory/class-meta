@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.21 2003/11/22 02:38:11 david Exp $
+# $Id: Meta.pm,v 1.22 2003/11/22 02:55:14 david Exp $
 
 =head1 NAME
 
@@ -154,6 +154,9 @@ our $VERSION = "0.01";
         Carp::croak("Class '$p{class}' already created")
           if exists $classes{$p{class}};
 
+        # Record the class' inheritance.
+        $p{isa_ord} = [ Class::ISA::self_and_super_path($p{package}) ];
+
         # Instantiate a Class object.
         $p{class} = Class::Meta::Class->new(\%p);
 
@@ -215,7 +218,6 @@ our $VERSION = "0.01";
         no strict 'refs';
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
         *{"$spec->{package}::my_key"} = sub { $spec->{key} };
-
     }
 }
 
