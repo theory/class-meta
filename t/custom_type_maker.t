@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_type_maker.t,v 1.5 2003/11/21 21:21:07 david Exp $
+# $Id: custom_type_maker.t,v 1.6 2003/11/22 00:25:06 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -24,28 +24,28 @@ ok( my $type = Class::Meta::Type->add
 
 is( $type, Class::Meta::Type->new('IO_Socket'),
     'Check lc conversion on key' );
-is( $type->get_key, 'io_socket', "Check io_socket key" );
-is( $type->get_name, 'IO::Socket Object', "Check io_socket name" );
-is( $type->get_desc, 'IO::Socket object', "Check io_socket desc" );
-ok( ! defined $type->get_check, "Check io_socket checker" );
-ok( ! defined $type->get_converter, "Check io_socket conversion" );
+is( $type->key, 'io_socket', "Check io_socket key" );
+is( $type->name, 'IO::Socket Object', "Check io_socket name" );
+is( $type->desc, 'IO::Socket object', "Check io_socket desc" );
+ok( ! defined $type->check, "Check io_socket checker" );
+ok( ! defined $type->converter, "Check io_socket conversion" );
 
 # Now check with checks added.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check),
+ok( $set = $type->make_set($attr . ++$i, $type->check),
     "Make checking io_socket set" );
 is( ref $set, 'HASH', 'Io_socket set with checks is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE', "Io_socket check set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->make_set($attr . ++$i, undef, $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, undef, $type->converter),
     "Make converting io_socket set" );
 is( ref $set, 'HASH', 'Io_socket set with converter is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE',
     "io_socket converter set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check,
-                           $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, $type->check,
+                           $type->converter),
     "Make full io_socket set" );
 is( ref $set, 'HASH', 'Full io_socket set is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full io_socket set coderef" );
@@ -78,27 +78,27 @@ ok( $type = Class::Meta::Type->add( name           => 'Bart Object',
     "Create Bart data type" );
 
 is( $type, Class::Meta::Type->new('Bart'), 'Check lc conversion on key' );
-is( $type->get_key, 'bart', "Check bart key" );
-is( $type->get_name, 'Bart Object', "Check bart name" );
-ok( ! defined $type->get_desc, "Check bart desc" );
-ok( ! defined $type->get_check, "Check bart checker" );
-ok( ! defined $type->get_converter, "Check bart conversion" );
+is( $type->key, 'bart', "Check bart key" );
+is( $type->name, 'Bart Object', "Check bart name" );
+ok( ! defined $type->desc, "Check bart desc" );
+ok( ! defined $type->check, "Check bart checker" );
+ok( ! defined $type->converter, "Check bart conversion" );
 
 # Now check with checks added.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check),
+ok( $set = $type->make_set($attr . ++$i, $type->check),
     "Make checking bart set" );
 is( ref $set, 'HASH', 'Bart set with checks is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE', "Bart check set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->make_set($attr . ++$i, undef, $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, undef, $type->converter),
     "Make converting bart set" );
 is( ref $set, 'HASH', 'Bart set with converter is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE', "Bart converter set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check,
-                           $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, $type->check,
+                           $type->converter),
     "Make full bart set" );
 is( ref $set, 'HASH', 'Full bart set is hashref' );
 is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full bart set coderef" );
@@ -123,8 +123,8 @@ ok( $type = Class::Meta::Type->add
     check      => 'FooBar'
   ), "Create FooBar data type" );
 
-is( ref $type->get_check, 'ARRAY', "Check foobar check" );
-foreach my $check (@{ $type->get_check }) {
+is( ref $type->check, 'ARRAY', "Check foobar check" );
+foreach my $check (@{ $type->check }) {
     is( ref $check, 'CODE', 'Check foobar code');
 }
 
@@ -137,8 +137,8 @@ ok( $type = Class::Meta::Type->add
     check      => sub { 'bargoo' }
   ), "Create BarGoo data type" );
 
-is( ref $type->get_check, 'ARRAY', "Check bargoo check" );
-foreach my $check (@{ $type->get_check }) {
+is( ref $type->check, 'ARRAY', "Check bargoo check" );
+foreach my $check (@{ $type->check }) {
     is( ref $check, 'CODE', 'Check bargoo code');
 }
 
@@ -151,8 +151,8 @@ ok( $type = Class::Meta::Type->add
     check      => [sub { 'doh' }, sub { 'doh!' } ]
   ), "Create Doh data type" );
 
-is( ref $type->get_check, 'ARRAY', "Check doh check" );
-foreach my $check (@{ $type->get_check }) {
+is( ref $type->check, 'ARRAY', "Check doh check" );
+foreach my $check (@{ $type->check }) {
     is( ref $check, 'CODE', 'Check doh code');
 }
 
@@ -198,7 +198,7 @@ ok( $type = Class::Meta::Type->add
     converter     => sub {'homey'}
   ), "Create Homer data type" );
 
-is( ref $type->get_converter, 'CODE', "Check homer converter" );
+is( ref $type->converter, 'CODE', "Check homer converter" );
 
 ##############################################################################
 # And then a bogus conversion coderef.
@@ -239,26 +239,26 @@ ok( $type = Class::Meta::Type->add( name           => 'Marge Object',
                                 ),
     "Create Marge data type" );
 
-is( $type->get_key, 'marge', "Check marge key" );
-is( $type->get_name, 'Marge Object', "Check marge name" );
-is( $type->get_desc, 'Marge object', "Check marge desc" );
-ok( ! defined $type->get_check, "Check marge checker" );
-ok( ! defined $type->get_converter, "Check marge conversion" );
+is( $type->key, 'marge', "Check marge key" );
+is( $type->name, 'Marge Object', "Check marge name" );
+is( $type->desc, 'Marge object', "Check marge desc" );
+ok( ! defined $type->check, "Check marge checker" );
+ok( ! defined $type->converter, "Check marge conversion" );
 # Now check with checks added.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check),
+ok( $set = $type->make_set($attr . ++$i, $type->check),
     "Make checking Marge set" );
 is( ref $set, 'HASH', 'Marge set with checks is hashref' );
 is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Marge check set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->make_set($attr . ++$i, undef, $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, undef, $type->converter),
     "Make converting Marge set" );
 is( ref $set, 'HASH', 'Marge set with converter is hashref' );
 is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Marge converter set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->make_set($attr . ++$i, $type->get_check,
-                           $type->get_converter),
+ok( $set = $type->make_set($attr . ++$i, $type->check,
+                           $type->converter),
     "Make full Marge set" );
 is( ref $set, 'HASH', 'Full Marge set is hashref' );
 is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Full Marge set coderef" );
