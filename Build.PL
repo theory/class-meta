@@ -7,8 +7,6 @@ my $build = Module::Build->new(
                              Class::ISA  => '0.31',
                            },
     build_requires     => { Test::Simple => '0.17',
-                            IO::Handle   => 0,
-                            Socket       => 0,
                           },
     create_makefile_pl => 'passthrough',
 );
