@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.48 2004/01/08 21:56:43 david Exp $
+# $Id: Meta.pm,v 1.49 2004/01/08 22:00:19 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -523,19 +523,19 @@ the value of the C<package> parameter if not specified.
 The name of a class that inherits from Class::Meta::Class to be used to create
 all of the class objects for the class. Defaults to Class::Meta::Class.
 
-=item ctor_class
+=item constructor_class
 
 The name of a class that inherits from Class::Meta::Constructor to be used to
 create all of the constructor objects for the class. Defaults to
 Class::Meta::Constructor.
 
-=item attr_class
+=item attribute_class
 
 The name of a class that inherits from Class::Meta::Attribute to be used to
 create all of the attribute objects for the class. Defaults to
 Class::Meta::Attribute.
 
-=item meth_class
+=item method_class
 
 The name of a class that inherits from Class::Meta::Method to be used to
 create all of the method objects for the class. Defaults to
@@ -560,9 +560,9 @@ Class::Meta::Method.
         $p{key} ||= $p{package} ||= caller;
 
         $p{class_class} ||= 'Class::Meta::Class';
-        $p{ctor_class} ||= 'Class::Meta::Constructor';
-        $p{attr_class} ||= 'Class::Meta::Attribute';
-        $p{meth_class} ||= 'Class::Meta::Method';
+        $p{constructor_class} ||= 'Class::Meta::Constructor';
+        $p{attribute_class} ||= 'Class::Meta::Attribute';
+        $p{method_class} ||= 'Class::Meta::Method';
 
         # Instantiate a Class object.
         $p{class} = $p{class_class}->new(\%p);
@@ -632,7 +632,7 @@ being defined.
 
     sub add_constructor {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_ctor_ord}}, $spec->{ctor_class}->new($spec, @_);
+        push @{$spec->{build_ctor_ord}}, $spec->{constructor_class}->new($spec, @_);
         return $spec->{build_ctor_ord}[-1];
     }
 
@@ -765,7 +765,7 @@ value or a code reference that will be executed to generate a default value.
 
     sub add_attribute {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_attr_ord}}, $spec->{attr_class}->new($spec, @_);
+        push @{$spec->{build_attr_ord}}, $spec->{attribute_class}->new($spec, @_);
         return $spec->{build_attr_ord}[-1];
     }
 
@@ -819,7 +819,7 @@ being defined.
 
     sub add_method {
         my $spec = $classes{ shift->{package} };
-        $spec->{meth_class}->new($spec, @_);
+        $spec->{method_class}->new($spec, @_);
     }
 
 ##############################################################################

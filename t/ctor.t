@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.6 2004/01/08 21:56:43 david Exp $
+# $Id: ctor.t,v 1.7 2004/01/08 22:00:19 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -137,7 +137,7 @@ package Class::Meta::Constructor::Sub;
 use base 'Class::Meta::Constructor';
 
 package main;
-ok( my $cm = Class::Meta->new( ctor_class => 'Class::Meta::Constructor::Sub'),
+ok( my $cm = Class::Meta->new( constructor_class => 'Class::Meta::Constructor::Sub'),
     "Create Class" );
 ok( my $meth = $cm->add_constructor(name => 'foo'), "Add foo constructor" );
 isa_ok($meth, 'Class::Meta::Constructor::Sub');

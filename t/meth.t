@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.8 2004/01/08 21:56:43 david Exp $
+# $Id: meth.t,v 1.9 2004/01/08 22:00:19 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -147,7 +147,7 @@ package Class::Meta::Method::Sub;
 use base 'Class::Meta::Method';
 
 package main;
-ok( my $cm = Class::Meta->new( meth_class => 'Class::Meta::Method::Sub'),
+ok( my $cm = Class::Meta->new( method_class => 'Class::Meta::Method::Sub'),
     "Create Class" );
 ok( my $meth = $cm->add_method(name => 'foo'), "Add foo method" );
 isa_ok($meth, 'Class::Meta::Method::Sub');

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: attr.t,v 1.1 2004/01/08 21:56:43 david Exp $
+# $Id: attr.t,v 1.2 2004/01/08 22:00:19 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -139,7 +139,7 @@ package Class::Meta::Attribute::Sub;
 use base 'Class::Meta::Attribute';
 
 package main;
-ok( my $cm = Class::Meta->new( attr_class => 'Class::Meta::Attribute::Sub'),
+ok( my $cm = Class::Meta->new( attribute_class => 'Class::Meta::Attribute::Sub'),
     "Create Class" );
 ok( my $meth = $cm->add_attribute(name => 'foo'), "Add foo attribute" );
 isa_ok($meth, 'Class::Meta::Attribute::Sub');
