@@ -1,0 +1,30 @@
+--- #YAML:1.0
+name: Class-Meta
+version: 0.01
+license: perl
+distribution_type: module
+requires: {}
+recommends: {}
+build_requires: {}
+conflicts: {}
+provides:
+  Class::Meta:
+    file: lib/Class/Meta.pm
+    version: 0.01
+  Class::Meta::Attribute:
+    file: lib/Class/Meta/Attribute.pm
+    version: 0.01
+  Class::Meta::Class:
+    file: lib/Class/Meta/Class.pm
+  Class::Meta::Constructor:
+    file: lib/Class/Meta/Constructor.pm
+    version: 0.01
+  Class::Meta::Field:
+    file: lib/Class/Meta/Field.pm
+  Class::Meta::Method:
+    file: lib/Class/Meta/Method.pm
+    version: 0.01
+  Class::Meta::Type:
+    file: lib/Class/Meta/Type.pm
+    version: 0.01
+generated_by: Module::Build version 0.20_02
