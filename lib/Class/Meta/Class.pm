@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.12 2003/11/23 03:23:16 david Exp $
+# $Id: Class.pm,v 1.13 2003/11/23 03:24:11 david Exp $
 
 use strict;
 use Carp ();
@@ -94,6 +94,13 @@ use Class::Meta::Method;
 
     sub build {
         my $self = shift;
+
+        # Check to make sure that only Class::Meta or a subclass is building
+        # attribute accessors.
+        my $caller = caller;
+        Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+          unless UNIVERSAL::isa($caller, 'Class::Meta');
+
         my $spec = $specs{$self->{package}};
         # XXX Is there a way to make this any better, so it's not storing
         # XXX copies of what's in ever parent class?
