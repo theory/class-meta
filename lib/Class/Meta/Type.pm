@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.43 2004/08/27 02:39:56 david Exp $
+# $Id: Type.pm,v 1.44 2004/09/20 05:24:51 david Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.42";
+our $VERSION = "0.43";
 
 ##############################################################################
 # Private Package Globals                                                    #
@@ -356,7 +356,7 @@ accessor builders.
         $params{builder} ||= 'default';
         my $builder = $def_builders{$params{builder}} || $params{builder};
         # Make sure it's loaded.
-        eval "require $builder";
+        eval "require $builder" or die $@;
 
         $params{builder} = UNIVERSAL::can($builder, 'build')
           || Class::Meta->handle_error("No such function "

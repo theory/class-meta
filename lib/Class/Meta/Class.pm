@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.53 2004/09/19 23:54:09 david Exp $
+# $Id: Class.pm,v 1.54 2004/09/20 05:24:51 david Exp $
 
 =head1 NAME
 
@@ -56,7 +56,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.42";
+our $VERSION = "0.43";
 our @CARP_NOT = qw(Class::Meta);
 
 =head1 INTERFACE
