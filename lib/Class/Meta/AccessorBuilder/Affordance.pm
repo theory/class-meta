@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.19 2004/04/18 17:48:39 david Exp $
+# $Id: Affordance.pm,v 1.20 2004/04/18 18:37:09 david Exp $
 
 =head1 NAME
 
@@ -136,7 +136,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.21";
+our $VERSION = "0.30";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, 'get_' . $_[0]->name);
@@ -157,7 +157,8 @@ my $req_chk = sub {
 };
 
 my $once_chk = sub {
-    $croak->("Attribute can only be set once") if defined ${$_[1]};
+    $croak->("Attribute can only be set once")
+      if defined $_[1]->{$_[2]->{name}};
 };
 
 sub build {
@@ -195,7 +196,9 @@ sub _build {
             if (@checks) {
                 $set = sub {
                     # Check the value passed in.
-                    $_->($_[1], \$data) for @checks;
+                    $_->($_[1], { $name => $data,
+                                  __pkg => ref $_[0] || $_[0] },
+                         $attr) for @checks;
                     # Assign the value.
                     $data = $_[1];
                 };
@@ -218,7 +221,7 @@ sub _build {
             if (@checks) {
                 $set = sub {
                     # Check the value passed in.
-                    $_->($_[1], \$_[0]->{$name}) for @checks;
+                    $_->($_[1], $_[0], $attr) for @checks;
                     # Assign the value.
                     $_[0]->{$name} = $_[1];
                 };
@@ -269,7 +272,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.21 distribution.
+This file was packaged with the Class-Meta-0.30 distribution.
 
 =head1 BUGS
 

@@ -1,7 +1,13 @@
 Revision history for Perl extension Class::Meta.
 
-0.21
+0.30
       - Added semi-affordance accessor generation.
+      - Modified arguments passed to check code references. Now, in addition
+        to the new value to be assiged to the attribute, the object being
+        assigned to and the Class::Meta::Attribute object that describes the
+        attribute are passed. If the attribute is a class attribute, then the
+        second argument is a hash reference containing the existing value and
+        the name of the package.
 
 0.20  2004-01-28T22:03:09
       - Added more documentation to the Class::Meta synopsis that highlights

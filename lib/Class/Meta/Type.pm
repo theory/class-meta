@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.29 2004/04/18 17:48:38 david Exp $
+# $Id: Type.pm,v 1.30 2004/04/18 18:37:09 david Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.21";
+our $VERSION = "0.30";
 
 ##############################################################################
 # Private Package Globals                                                    #
@@ -193,11 +193,27 @@ The check parameter can be specified in any of the following ways:
 =item *
 
 As a code reference. When Class::Meta executes this code reference, it will
-pass in the value to check and a reference to the existing value. If the new
-value is not the proper value for your custom data type, the code reference
-should throw an exception. Here's an example; it's the code reference used by
-"string" data type, which you can add to Class::Meta::Type simply by using
-Class::Meta::Types::String:
+pass in the value to check, the object for which the attribute will be set,
+and the Class::Meta::Attribute object describing the attribute. If the attribute
+is a class attribute, then the second argument will not be an object, but a
+hash reference with two keys:
+
+=over 8
+
+=item $name
+
+The existing value for the attribute is stored under the attribute name.
+
+=item __pkg
+
+The name of the package to which the attribute is being assigned.
+
+=back
+
+If the new value is not the proper value for your custom data type, the code
+reference should throw an exception. Here's an example; it's the code
+reference used by "string" data type, which you can add to Class::Meta::Type
+simply by using Class::Meta::Types::String:
 
   check => sub {
       my $value = shift;
@@ -207,15 +223,16 @@ Class::Meta::Types::String:
       Carp::croak("Value '$value' is not a valid string");
   }
 
-Here's another example. This check code reference might be used to make sure
-that a new value is always greater than the existing value.
+Here's another example. This code reference might be used to make sure that a
+new value is always greater than the existing value.
 
   check => sub {
-      my ($new_val, $old_val_ref) = @_;
-      return if defined $new_val && $new_val > $$old_val_ref;
+      my ($new_val, $obj, $attr) = @_;
+      # Just return if the new value is greater than the old value.
+      return if defined $new_val && $new_val > $_[1]->{$_[2]->get_name};
       require Carp;
       our @CARP_NOT = qw(Class::Meta::Attribute);
-      Carp::croak("Value '$new_val' is not greater than '$$old_val_ref'");
+      Carp::croak("Value '$new_val' is not greater than '$old_val'");
   }
 
 =item *
@@ -564,7 +581,7 @@ before creating your own.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.21 distribution.
+This file was packaged with the Class-Meta-0.30 distribution.
 
 =head1 BUGS
 
