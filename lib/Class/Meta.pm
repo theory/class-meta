@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.20 2003/11/22 02:33:04 david Exp $
+# $Id: Meta.pm,v 1.21 2003/11/22 02:38:11 david Exp $
 
 =head1 NAME
 
@@ -204,19 +204,17 @@ our $VERSION = "0.01";
         my $self = shift;
         my $spec = $classes{ $self->{package} };
 
-        # Build the attribute accessors.
-        if (my $attrs = $spec->{build_attr_ord}) {
-            $_->build($spec) for @$attrs;
+        # Build the attribute accessors and constructors.
+        for my $key (qw(build_attr_ord build_ctor_ord)) {
+            if (my $objs = $spec->{$key}) {
+                $_->build($spec) for @$objs;
+            }
         }
 
-        # Build the constructors.
-        if (my $ctors = $spec->{build_ctor_ord}) {
-            $_->build($spec) for @$ctors;
-        }
-
-        # Build the Class::Meta::Class accessor.
+        # Build the Class::Meta::Class accessor and my_key shortcut.
         no strict 'refs';
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
+        *{"$spec->{package}::my_key"} = sub { $spec->{key} };
 
     }
 }
