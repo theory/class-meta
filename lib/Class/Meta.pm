@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.75 2004/04/19 23:30:16 david Exp $
+# $Id: Meta.pm,v 1.76 2004/04/19 23:35:33 david Exp $
 
 =head1 NAME
 
@@ -507,11 +507,16 @@ of their interfaces.
 =head3 default_error_handler
 
   Class::Meta->default_error_handler($code);
+  my $default_error_handler = Class::Meta->default_error_handler;
 
 Sets the default error handler for Class::Meta classes. If no C<error_handler>
 attribute is passed to new, then this error handler will be associated with
 the new class. The default default error handler uses C<Carp::croak()> to
 handle errors.
+
+Note that if other modules are using Class::Meta that they will use your
+default error handler unless you reset the default error handler to its
+original value before loading them.
 
 ##############################################################################
 # Class Methods
