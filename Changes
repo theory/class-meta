@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.41
+0.41  2004-08-27T02:32:17
       - Added "for_key()" class method to Class::Meta to return a
         Class::Meta::Class class for a class key.
       - Eliminated '"my" variable $objs masks earlier declaration in same

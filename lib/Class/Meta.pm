@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.93 2004/08/27 02:30:39 david Exp $
+# $Id: Meta.pm,v 1.94 2004/08/27 02:37:39 david Exp $
 
 =head1 NAME
 
@@ -527,6 +527,8 @@ error. Used internally Class::Meta classes when no Class::Meta::Class object
 is available. Probably not useful outside of Class::Meta unless you're
 creating your own accessor generation class. Use the C<handle_error()>
 instance method in Class::Meta::Class, instead.
+
+=head3 for_key
 
   my $class = Class::Meta->for_key($key);
 
