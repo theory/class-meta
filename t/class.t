@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.9 2004/01/16 18:47:59 david Exp $
+# $Id: class.t,v 1.10 2004/04/18 23:37:35 david Exp $
 
 use strict;
 use Test::More tests => 14;
@@ -22,6 +22,8 @@ Test::More->import;
 # Set up simple settings.
 my $spec = { desc  => 'Foo Class description',
              package => 'FooClass',
+             class => Class::Meta->new->class,
+             error_handler => Class::Meta->default_error_handler,
              key   => 'foo' };
 # This should be okay.
 ok( $class = Class::Meta::Class->new($spec),

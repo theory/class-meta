@@ -1,6 +1,6 @@
 package Class::Meta::Types::String;
 
-# $Id: String.pm,v 1.12 2004/04/18 18:37:09 david Exp $
+# $Id: String.pm,v 1.13 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -53,9 +53,7 @@ sub import {
         builder => $builder,
         check   => sub {
             return unless defined $_[0] && ref $_[0];
-            require Carp;
-            our @CARP_NOT = qw(Class::Meta::Attribute);
-            Carp::croak("Value '$_[0]' is not a valid string");
+            $_[2]->class->handle_error("Value '$_[0]' is not a valid string");
         }
     );
 }

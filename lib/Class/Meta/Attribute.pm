@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.43 2004/04/18 21:11:00 david Exp $
+# $Id: Attribute.pm,v 1.44 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -48,15 +48,6 @@ use strict;
 our $VERSION = "0.30";
 
 ##############################################################################
-# Private Package Globals
-##############################################################################
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta);
-    Carp::croak(@_);
-};
-
-##############################################################################
 # Constructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really. Its
@@ -69,20 +60,23 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Attribute object.
     my $caller = caller;
-    $croak->("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+    Class::Meta->default_error_handler->("Package '$caller' cannot create "
+                                         . __PACKAGE__ . " objects")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
-    $croak->("Odd number of parameters in call to new() when named "
-             . "parameters were expected" ) if @_ % 2;
+    $spec->{class}->handle_error("Odd number of parameters in call to "
+                                 . "new() when named parameters were "
+                                 . "expected") if @_ % 2;
     my %p = @_;
 
     # Validate the name.
-    $croak->("Parameter 'name' is required in call to new()")
-      unless $p{name};
+    $spec->{class}->handle_error("Parameter 'name' is required in call "
+                                 . "to new()") unless $p{name};
     # Is this too paranoid?
-    $croak->("Attribute '$p{name}' is not a valid attribute name "
-             . "-- only alphanumeric and '_' characters allowed")
+    $spec->{class}->handle_error("Attribute '$p{name}' is not a valid "
+                                 . "attribute name -- only alphanumeric "
+                                 . "and '_' characters allowed")
       if $p{name} =~ /\W/;
 
     # Grab the package name.
@@ -94,13 +88,15 @@ sub new {
     }
 
     # Make sure the name hasn't already been used for another attribute
-    $croak->("Attribute '$p{name}' already exists in class",
-             " '", $spec->{attrs}{$p{name}}{package}, "'")
+    $spec->{class}->handle_error("Attribute '$p{name}' already exists ",
+                                 "in class '",
+                                 $spec->{attrs}{$p{name}}{package}, "'")
       if exists $spec->{attrs}{$p{name}};
 
     # Check the view.
     if (exists $p{view}) {
-        $croak->("Not a valid view parameter: '$p{view}'")
+        $spec->{class}->handle_error("Not a valid view parameter: "
+                                     . "'$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           or     $p{view} == Class::Meta::PROTECTED
           or     $p{view} == Class::Meta::PRIVATE;
@@ -111,7 +107,8 @@ sub new {
 
     # Check the authorization level.
     if (exists $p{authz}) {
-        $croak->("Not a valid authz parameter: '$p{authz}'")
+        $spec->{class}->handle_error("Not a valid authz parameter: "
+                                     . "'$p{authz}'")
           unless $p{authz} == Class::Meta::NONE
           or     $p{authz} == Class::Meta::READ
           or     $p{authz} == Class::Meta::WRITE
@@ -123,7 +120,8 @@ sub new {
 
     # Check the creation constant.
     if (exists $p{create}) {
-        $croak->("Not a valid create parameter: '$p{create}'")
+        $spec->{class}->handle_error("Not a valid create parameter: "
+                                     . "'$p{create}'")
           unless $p{create} == Class::Meta::NONE
           or     $p{create} == Class::Meta::GET
           or     $p{create} == Class::Meta::SET
@@ -135,7 +133,8 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
-        $croak->("Not a valid context parameter: '$p{context}'")
+        $spec->{class}->handle_error("Not a valid context parameter: "
+                                     . "'$p{context}'")
           unless $p{context} == Class::Meta::OBJECT
           or     $p{context} == Class::Meta::CLASS;
     } else {
@@ -338,7 +337,8 @@ will not appear in a call stack trace.
 sub get {
     my $self = shift;
     my $code = $self->{_get}
-      or $croak->("Cannot get attribute '", $self->name, "'");
+      or $self->class->handle_error("Cannot get attribute '",
+                                    $self->name, "'");
     goto &$code;
 }
 
@@ -359,7 +359,8 @@ trace.
 sub set {
     my $self = shift;
     my $code = $self->{_set}
-      or $croak->("Cannot set attribute '", $self->name, "'");
+      or $self->class->handle_error("Cannot set attribute '",
+                                    $self->name, "'");
     goto &$code;
 }
 
@@ -373,7 +374,8 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+    $self->class->handle_error("Package '$caller' cannot call "
+                              . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Just return if this attribute doesn't need accessors created for it.

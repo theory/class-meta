@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.37 2004/04/18 18:37:08 david Exp $
+# $Id: Class.pm,v 1.38 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -60,11 +60,6 @@ our $VERSION = "0.30";
 our @CARP_NOT = qw(Class::Meta);
 
 ##############################################################################
-# Private Package Globals
-##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
-
-##############################################################################
 # Constructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really.
@@ -78,15 +73,16 @@ my $croak = sub { require Carp; Carp::croak(@_) };
         # Check to make sure that only Class::Meta or a subclass is
         # constructing a Class::Meta::Class object.
         my $caller = caller;
-        $croak->("Package '$caller' cannot create ", __PACKAGE__,
-                 " objects")
+        Class::Meta->default_error_handler->("Package '$caller' cannot create "
+                                             . __PACKAGE__ . " objects")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
 
         # Set the name to be the same as the key by default.
         $spec->{name} = $spec->{key} unless defined $spec->{name};
 
         # Check to make sure we haven't created this class already.
-        $croak->("Class object for class '$spec->{package}' already exists")
+        $spec->{error_handler}->("Class object for class '$spec->{package}' "
+                                 . "already exists")
           if $specs{$spec->{package}};
 
         # Save a reference to the spec hash ref.
@@ -253,6 +249,19 @@ returns all of the method objects with the specified names.
     }
 
 ##############################################################################
+
+=head3 handle_error
+
+
+
+=cut
+
+    sub handle_error {
+        my $code = $specs{shift->{package}}->{error_handler};
+        $code->(@_);
+    }
+
+##############################################################################
 # Private Methods.
 ##############################################################################
 
@@ -262,7 +271,8 @@ returns all of the method objects with the specified names.
         # Check to make sure that only Class::Meta or a subclass is building
         # attribute accessors.
         my $caller = caller;
-        $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+        $self->handle_error("Package '$caller' cannot call " . __PACKAGE__
+                            . "->build")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
         $self->_inherit(qw(ctor meth));
     }

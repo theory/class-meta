@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.30 2004/04/18 18:37:09 david Exp $
+# $Id: Type.pm,v 1.31 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -52,15 +52,6 @@ my %def_builders = (
     'semi-affordance' => 'Class::Meta::AccessorBuilder::SemiAffordance',
 );
 
-##############################################################################
-# Closure definition                                                         #
-##############################################################################
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta Class::Meta::Attribute);
-    Carp::croak(@_);
-};
-
 # This code ref builds object/reference value checkers.
 my $mk_isachk = sub {
     my ($pkg, $type) = @_;
@@ -68,7 +59,8 @@ my $mk_isachk = sub {
         sub {
             return unless defined $_[0];
             UNIVERSAL::isa($_[0], $pkg)
-              or $croak->("Value '$_[0]' is not a valid $type")
+              or $_[2]->class->handle_error("Value '$_[0]' is not a valid "
+                                           . "$type");
             }
     ];
 };
@@ -153,8 +145,10 @@ types.
 =cut
 
     sub new {
-        my $key = lc $_[1] || $croak->("Type argument required");
-        $croak->("Type '$_[1]' does not exist") unless $types{$key};
+        my $key = lc $_[1]
+          || Class::Meta->default_error_handler->("Type argument required");
+        Class::Meta->default_error_handler->("Type '$_[1]' does not exist")
+            unless $types{$key};
         return bless $types{$key}, ref $_[0] || $_[0];
     }
 
@@ -312,25 +306,31 @@ accessor builders.
     sub add {
         my $pkg = shift;
         # Make sure we can process the parameters.
-        $croak->("Odd number of parameters in call to add() when named ",
-                 "parameters were expected" ) if @_ % 2;
+        Class::Meta->default_error_handler->("Odd number of parameters in "
+                                            . "call to new() when named "
+                                            . "parameters were expected")
+            if @_ % 2;
+
         my %params = @_;
 
         # Check required paremeters.
         foreach (qw(key name)) {
-            $croak->("Parameter '$_' is required") unless $params{$_};
+            Class::Meta->default_error_handler->("Parameter '$_' is required")
+                unless $params{$_};
         }
 
         # Check the key parameter.
         $params{key} = lc $params{key};
-        $croak->("Type '$params{key}' already defined")
+        Class::Meta->default_error_handler->("Type '$params{key}' already defined")
           if exists $types{$params{key}};
 
         # Set up the check croak.
         my $chk_die = sub {
-            $croak->("Paremter 'check' in call to add() must be a code ",
-                     "reference, an array of code references, or a ",
-                     "scalar naming an object type");
+            Class::Meta->default_error_handler->(
+              "Paremter 'check' in call to add() must be a code reference, "
+               . "an array of code references, or a scalar naming an object "
+               . "type"
+           );
         };
 
         # Check the check parameter.
@@ -359,13 +359,16 @@ accessor builders.
         eval "require $builder";
 
         $params{builder} = UNIVERSAL::can($builder, 'build')
-          || $croak->("No such function '${builder}::build()'");
+          || Class::Meta->default_error_handler->("No such function "
+                                                 . "'${builder}::build()'");
 
         $params{attr_get} = UNIVERSAL::can($builder, 'build_attr_get')
-          || $croak->("No such function '${builder}::build_attr_get()'");
+          || Class::Meta->default_error_handler->("No such function "
+                                                 . "'${builder}::build_attr_get()'");
 
         $params{attr_set} = UNIVERSAL::can($builder, 'build_attr_set')
-          || $croak->("No such function '${builder}::build_attr_set()'");
+          || Class::Meta->default_error_handler->("No such function "
+                                                 . "'${builder}::build_attr_set()'");
 
         # Okay, add the new type to the cache and construct it.
         $types{$params{key}} = \%params;
@@ -427,7 +430,8 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+    Class::Meta->default_error_handler->("Package '$caller' cannot call "
+                                         . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta::Attribute');
 
     my $self = shift;

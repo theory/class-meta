@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.40 2004/04/18 21:11:00 david Exp $
+# $Id: Constructor.pm,v 1.41 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -42,15 +42,6 @@ use strict;
 our $VERSION = "0.30";
 
 ##############################################################################
-# Private Package Globals
-##############################################################################
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta);
-    Carp::croak(@_);
-};
-
-##############################################################################
 # Constructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really. Its
@@ -63,30 +54,34 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Constructor object.
     my $caller = caller;
-    $croak->("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+    Class::Meta->default_error_handler->("Package '$caller' cannot create "
+                                         . __PACKAGE__ . " objects")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
-    $croak->("Odd number of parameters in call to new() when named "
-             . "parameters were expected" ) if @_ % 2;
+    $spec->{class}->handle_error("Odd number of parameters in call to "
+                                 . "new() when named parameters were "
+                                 . "expected") if @_ % 2;
     my %p = @_;
 
     # Validate the name.
-    $croak->("Parameter 'name' is required in call to new()")
-      unless $p{name};
-    $croak->("Constructor '$p{name}' is not a valid constructor name "
-             . "-- only alphanumeric and '_' characters allowed")
+    $spec->{class}->handle_error("Parameter 'name' is required in call to "
+                                 . "new()") unless $p{name};
+    $spec->{class}->handle_error("Constructor '$p{name}' is not a valid "
+                                 . "constructor name -- only alphanumeric "
+                                 . "and '_' characters allowed")
       if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another constructor or
     # method.
-    $croak->("Method '$p{name}' already exists in class '$spec->{package}'")
+    $spec->{class}->handle_error("Method '$p{name}' already exists in class "
+                                 . "'$spec->{package}'")
       if exists $spec->{ctors}{$p{name}}
       or exists $spec->{meths}{$p{name}};
 
     # Check the visibility.
     if (exists $p{view}) {
-        $croak->("Not a valid view parameter: '$p{view}'")
+        $spec->{class}->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
           ||     $p{view} == Class::Meta::PRIVATE;
@@ -101,7 +96,8 @@ sub new {
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
-        $croak->("Parameter caller must be a code reference")
+        $spec->{class}->handle_error("Parameter caller must be a code "
+                                     . "reference")
           unless $ref && $ref eq 'CODE';
     } else {
         $p{caller} = UNIVERSAL::can($spec->{package}, $p{name})
@@ -206,7 +202,8 @@ itself will not appear in a call stack trace.
 sub call {
     my $self = shift;
     my $code = $self->{caller}
-      or $croak->("Cannot call constructor '", $self->name, "'");
+      or $self->class->handle_error("Cannot call constructor '",
+                                    $self->name, "'");
     goto &$code;
 }
 
@@ -220,7 +217,8 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # constructors.
     my $caller = caller;
-    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+    $self->class->handle_error("Package '$caller' cannot call " . __PACKAGE__
+                               . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Just bail if we're not creating the constructor.
@@ -260,7 +258,8 @@ sub build {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attributes > 0 ? 'attributes' : 'attribute';
             local $" = "', '";
-            $croak->("No such $c '@attributes' in $self->{package} objects");
+            $self->class->handle_error("No such $c '@attributes' in "
+                                       . "$self->{package} objects");
         }
         return $new;
     };
@@ -270,7 +269,8 @@ sub build {
         my $real_sub = $sub;
         my $pkg = $self->package;
          $sub = sub {
-             $croak->("$name is a protected constrctor of $pkg")
+             $self->class->handle_error->("$name is a protected constrctor "
+                                          . "of $pkg")
                unless caller->isa($pkg);
              goto &$real_sub;
         };
@@ -278,7 +278,7 @@ sub build {
         my $real_sub = $sub;
         my $pkg = $self->package;
         $sub = sub {
-             $croak->("$name is a private constructor of $pkg")
+            $self->class->handle_error("$name is a private constructor of $pkg")
                unless caller eq $pkg;
              goto &$real_sub;
          };

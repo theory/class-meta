@@ -11,6 +11,9 @@ Revision history for Perl extension Class::Meta.
       - Thanks the the presence of the attribute object as an argument to
         check code references, the name of the attribute is now included in
         exceptions thrown for "once" and "required" attributes.
+      - Added "class" accessors to Constructor, Attribute, and Method, to
+        return the Class object for the class in which the constructor,
+        attribute, or method was defined.
 
 0.20  2004-01-28T22:03:09
       - Added more documentation to the Class::Meta synopsis that highlights

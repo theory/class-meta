@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.21 2004/04/18 18:43:26 david Exp $
+# $Id: Affordance.pm,v 1.22 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -146,19 +146,14 @@ sub build_attr_set {
     UNIVERSAL::can($_[0]->package, 'set_' . $_[0]->name);
 }
 
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta::Attribute);
-    Carp::croak(@_);
-};
-
 my $req_chk = sub {
-    $croak->("Attribute ", $_[2]->name, " must be defined")
+    $_[2]->class->handle_error("Attribute ", $_[2]->name, " must be defined")
       unless defined $_[0];
 };
 
 my $once_chk = sub {
-    $croak->("Attribute ", $_[2]->name, " can only be set once")
+    $_[2]->class->handle_error("Attribute ", $_[2]->name,
+                               " can only be set once")
       if defined $_[1]->{$_[2]->name};
 };
 
@@ -245,7 +240,8 @@ sub _build {
                 for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                     $caller = caller($i);
                 }
-                $croak->("$name is a protected attribute of $pkg")
+                $attr->class->handle_error("$name is a protected attribute "
+                                             . "of $pkg")
                   unless UNIVERSAL::isa($caller, $pkg);
                 goto &$real_sub;
             };
@@ -259,8 +255,8 @@ sub _build {
                 for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                     $caller = caller($i);
                 }
-                $croak->("$name is a private attribute of $pkg")
-                  unless $caller eq $pkg;
+             $attr->class->handle_error("$name is a private attribute of $pkg")
+               unless $caller eq $pkg;
                 goto &$real_sub;
             };
         }

@@ -1,6 +1,6 @@
 package Class::Meta::Types::Numeric;
 
-# $Id: Numeric.pm,v 1.13 2004/04/18 18:37:09 david Exp $
+# $Id: Numeric.pm,v 1.14 2004/04/18 23:37:35 david Exp $
 
 =head1 NAME
 
@@ -76,12 +76,6 @@ use Class::Meta::Type;
 use Data::Types ();
 our $VERSION = "0.30";
 
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta::Attribute);
-    Carp::croak(@_);
-};
-
 # This code ref builds value checkers.
 my $mk_chk = sub {
     my ($code, $type) = @_;
@@ -89,7 +83,8 @@ my $mk_chk = sub {
         sub {
             return unless defined $_[0];
             $code->($_[0])
-              or $croak->("Value '$_[0]' is not a valid $type");
+              or $_[2]->class->handle_error("Value '$_[0]' is not a valid "
+                                              . "$type");
             }
     ];
 };

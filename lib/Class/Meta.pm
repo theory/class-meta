@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.72 2004/04/18 18:37:08 david Exp $
+# $Id: Meta.pm,v 1.73 2004/04/18 23:37:34 david Exp $
 
 =head1 NAME
 
@@ -603,7 +603,24 @@ our $VERSION = "0.30";
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+my $error_handler = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta
+                       Class::Meta::Attribute
+                       Class::Meta::Constructor
+                       Class::Meta::Method
+                       Class::Meta::Type
+                       Class::Meta::Types::Numeric
+                       Class::Meta::Types::String
+                       Class::Meta::AccessorBuilder);
+    Carp::croak(@_);
+};
+
+sub default_error_handler {
+    shift;
+    return $error_handler unless @_;
+    return $error_handler = shift;
+}
 
 {
     my %classes;
@@ -612,8 +629,8 @@ my $croak = sub { require Carp; Carp::croak(@_) };
         my $pkg = shift;
 
         # Make sure we can get all the arguments.
-        $croak->("Odd number of parameters in call to new() when named "
-                 . "parameters were expected" ) if @_ % 2;
+        $error_handler->("Odd number of parameters in call to new() when named "
+                         . "parameters were expected" ) if @_ % 2;
         my %p = @_;
 
         # Class defaults to caller. Key defaults to class.
@@ -624,6 +641,7 @@ my $croak = sub { require Carp; Carp::croak(@_) };
         $p{constructor_class} ||= 'Class::Meta::Constructor';
         $p{attribute_class}   ||= 'Class::Meta::Attribute';
         $p{method_class}      ||= 'Class::Meta::Method';
+        $p{error_handler}     ||= $pkg->default_error_handler;
 
         # Instantiate a Class object.
         $p{class} = $p{class_class}->new(\%p);
