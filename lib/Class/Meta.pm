@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.19 2003/11/21 23:03:16 david Exp $
+# $Id: Meta.pm,v 1.20 2003/11/22 02:33:04 david Exp $
 
 =head1 NAME
 
@@ -205,8 +205,8 @@ our $VERSION = "0.01";
         my $spec = $classes{ $self->{package} };
 
         # Build the attribute accessors.
-        if (my $ctors = $spec->{build_attr_ord}) {
-            $_->build($spec) for @$ctors;
+        if (my $attrs = $spec->{build_attr_ord}) {
+            $_->build($spec) for @$attrs;
         }
 
         # Build the constructors.
