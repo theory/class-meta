@@ -4,7 +4,6 @@ my $build = Module::Build->new(
     module_name        => 'Class::Meta',
     license            => 'perl',
     requires            => { Data::Types => '0.05',
-                             DateTime    => '0.18',
                              Class::ISA  => '0.31',
                            },
     build_requires     => { Test::Simple => '0.17',

@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.14 2003/11/25 01:21:31 david Exp $
+# $Id: base.t,v 1.15 2004/01/07 07:12:03 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -20,6 +20,8 @@ use Carp;
 
 BEGIN {
     main::use_ok( 'Class::Meta');
+    main::use_ok('Class::Meta::Types::Numeric');
+    main::use_ok('Class::Meta::Types::String');
 }
 
 BEGIN {
@@ -95,17 +97,14 @@ sub shame { shift }
 package main;
 # Instantiate a base class object and test its accessors.
 ok( my $t = Class::Meta::TestPerson->new, 'Class::Meta::TestPerson->new');
-is( $t->get_id, undef, 'get_id is undef');
-eval { $t->set_id(1) };
-ok( my $err = $@, 'set_id croaks' );
-like( $err, qr/^Can't locate object method/,
-      "Correct method not found exception for set_id()");
+is( $t->id, undef, 'id is undef');
+eval { $t->id(1) };
 
 # Test string.
-ok( $t->set_name('David'), 'set_name to "David"' );
-is( $t->get_name, 'David', 'get_name is "David"' );
-eval { $t->set_name([]) };
-ok( $err = $@, 'set_name to array ref croaks' );
+ok( $t->name('David'), 'name to "David"' );
+is( $t->name, 'David', 'name is "David"' );
+eval { $t->name([]) };
+ok( my $err = $@, 'name to array ref croaks' );
 like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Grab its metadata object.
@@ -122,14 +121,14 @@ is( $class->my_key, 'person', 'Key is correct');
 
 # Test the package methods.
 is($class->my_package, 'Class::Meta::TestPerson', 'my_package()');
-eval { $class->set_package('foo') };
+eval { $class->package('foo') };
 ok ($err = $@, "Try to change pacakge");
 like( $err, qr/^Can't locate object method/,
       "Correct method not found exception for package name");
 
 # Test the name methods.
 is( $class->my_name, 'Class::Meta::TestPerson Class', "Name is correct");
-eval { $class->set_name('foo') };
+eval { $class->name('foo') };
 ok ($err = $@, "Got an error trying to change name");
 like( $err, qr/^Can't locate object method/,
       "Correct method not found exception for class name");
@@ -137,7 +136,7 @@ like( $err, qr/^Can't locate object method/,
 # Test the description methods.
 is( $class->my_desc, 'Special person class just for testing Class::Meta.',
     "Description is correct");
-eval { $class->set_desc('foo') };
+eval { $class->desc('foo') };
 ok ($err = $@, "Got an error trying to change description");
 like( $err, qr/^Can't locate object method/,
       "Correct method not found exception for class description");
@@ -197,8 +196,8 @@ is( $p->my_default, '', "Name default" );
 is( $p->call_get($t), 'David', 'Name call_get' );
 ok( $p->call_set($t, 'Larry'), 'Name call_set' );
 is( $p->call_get($t), 'Larry', 'New Name call_get' );
-is( $t->get_name, 'Larry', 'Object get_name');
-ok( $t->set_name('Damian'), 'Object set_name' );
+is( $t->name, 'Larry', 'Object name');
+ok( $t->name('Damian'), 'Object name' );
 is( $p->call_get($t), 'Damian', 'Final Name call_get' );
 
 # Check the attributes of the "Age" attribute object.
@@ -218,8 +217,8 @@ is( $p->my_default, undef, "Age default" );
 ok( ! defined $p->call_get($t), 'Age call_get' );
 ok( $p->call_set($t, 10), 'Age call_set' );
 is( $p->call_get($t), 10, 'New Age call_get' );
-ok( $t->get_age == 10, 'Object get_age');
-ok( $t->set_age(22), 'Object set_age' );
+ok( $t->age == 10, 'Object age');
+ok( $t->age(22), 'Object age' );
 is( $p->call_get($t), 22, 'Final Age call_get' );
 
 # Test my_meths().

@@ -1,10 +1,10 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.12 2003/12/10 07:34:12 david Exp $
+# $Id: Type.pm,v 1.13 2004/01/07 07:12:03 david Exp $
 
 =head1 NAME
 
-Class::Meta::Type - Data type conversion, validation, and method building.
+Class::Meta::Type - Data type validation and accessor building.
 
 =head1 SYNOPSIS
 
@@ -21,16 +21,15 @@ Class::Meta::Type - Data type conversion, validation, and method building.
 =head1 DESCRIPTION
 
 This class stores the various data types used by C<Class::Meta>. It manages
-all aspects of data type validation, conversion, and method creation. New
-data types can be added to Class::Meta::Type by means of the add()
-constructor. This is useful for creating custom types for your
-Class::Meta-built classes.
+all aspects of data type validation and method creation. New data types can be
+added to Class::Meta::Type by means of the C<add()> constructor. This is
+useful for creating custom types for your Class::Meta-built classes.
 
 B<Note:>This class manages the most advanced features of C<Class::Meta>.
-Before deciding to create your own accessor closures as described in L<add>,
+Before deciding to create your own accessor closures as described in L<add()>,
 you should have a thorough working knowledge of how Class::Meta works, and
-have studied the L<add> method carefully. Simple data type definitions such
-as that shown in the <LSYNOPSIS>, on the other hand, are encouraged.
+have studied the L<add()> method carefully. Simple data type definitions such
+as that shown in the L<SYNOPSIS>, on the other hand, are encouraged.
 
 =cut
 
@@ -38,283 +37,46 @@ as that shown in the <LSYNOPSIS>, on the other hand, are encouraged.
 # Dependencies                                                               #
 ##############################################################################
 use strict;
-use Data::Types ();
-use DateTime;
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
 our $VERSION = "0.01";
-our @CARP_NOT = qw(Class::Meta::Attribute);
 
 ##############################################################################
-# Private Package Globals
+# Private Package Globals                                                    #
 ##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+my %def_builders = (
+    default => 'Class::Meta::AccessorBuilder',
+    affordance => 'Class::Meta::AccessorBuilder::Affordance',
+);
 
 ##############################################################################
 # Closure definition                                                         #
 ##############################################################################
-{
-    # This code ref will be used to create most get_* methods.
-    my $mk_getter = sub {
-        my ($attr) = @_;
-        return { "get_$attr" => sub { $_[0]->{$attr} } };
-    };
+my $croak = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta Class::Meta::Attribute);
+    Carp::croak(@_);
+};
 
-    # This code ref will create Class::Meta::Attribute get code refs.
-    my $mk_pgetter = sub { eval "sub { shift->get_$_[0](\@_) }" };
-
-    # This code ref will be used to create most set_* methods.
-    my $mk_setter = sub {
-        my ($attr, $chk, $conv) = @_;
-        if ($conv && $chk) {
-            return { "set_$attr" => sub {
-                # Convert the value.
-                my $val = $conv->(shift);
-                # Check the value passed in.
-                $_->($val) for @$chk;
-                # Assign the value.
-                $_[0]->{$attr} = $val;
-            }};
-        } elsif ($conv) {
-            return { "set_$attr" => sub {
-                # Convert and assign the value.
-                $_[0]->{$attr} = $conv->(shift);
-            }};
-        } elsif ($chk) {
-             return { "set_$attr" => sub {
-                # Check the value passed in.
-                $_->($_[1]) for @$chk;
-                # Assign the value.
-                $_[0]->{$attr} = $_[1];
-            }};
-         } else {
-             return { "set_$attr" => sub {
-                # Assign the value.
-                $_[0]->{$attr} = $_[1];
-            }};
-         }
-    };
-
-    # This code ref will create Class::Meta::Attribute set code refs.
-    my $mk_psetter = sub { eval "sub { shift->set_$_[0](\@_) }" };
-
-    # This code ref creates the boolean set methods. They never need
-    # to do checks or conversions.
-    my $bool_setter = sub {
-        my ($attr) = @_;
-        return { "set_${attr}_on" =>  sub { $_[0]->{$attr} = 1 },
-                 "set_${attr}_off" => sub { $_[0]->{$attr} = 0 } };
-    };
-
-    # This code ref creates the Class::Meta::Attribute set method for boolean
-    # data types.
-    my $bool_psetter = sub {
-        eval "sub { \$_[1] ? \$_[0]->set_$_[0]_on : \$_[0]->set_$_[0]_off }";
-    };
-
-    # This code ref creates the boolean get method.
-    my $bool_getter = sub {
-        my ($attr) = @_;
-        return { "is_$attr" => sub { $_[0]->{$attr} ? 1 : 0 } };
-    };
-
-    # This code ref creates the Class::Meta::Attribute get method for boolean
-    # data types.
-    my $bool_pgetter = sub { eval "sub { shift->is$_[0](\@_) }" };
-
-    # This code ref builds value checkers.
-    my $mk_chk = sub {
-        my ($code, $type) = @_;
-        return [
-            sub {
-                return unless defined $_[0];
-                $code->($_[0])
-                  or $croak->("Value '$_[0]' is not a valid $type");
-                }
-        ];
-    };
-
-    # This code ref builds object/reference value checkers.
-    my $mk_isachk = sub {
-        my ($pkg, $type) = @_;
-        return [
-            sub {
-                return unless defined $_[0];
-                UNIVERSAL::isa($_[0], $pkg)
-                  or $croak->("Value '$_[0]' is not a valid $type")
-              }
-        ];
-    };
+# This code ref builds object/reference value checkers.
+my $mk_isachk = sub {
+    my ($pkg, $type) = @_;
+    return [
+        sub {
+            return unless defined $_[0];
+            UNIVERSAL::isa($_[0], $pkg)
+              or $croak->("Value '$_[0]' is not a valid $type")
+            }
+    ];
+};
 
 ##############################################################################
 # Data type definition storage.
 ##############################################################################
-    my %types =
-      ( string   => { key            => "string",
-                      name           => "String",
-                      desc           => "String",
-                      check          => $mk_chk->(\&Data::Types::is_string,
-                                            'string'),
-                      converter      => sub { Data::Types::to_string(@_) },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        boolean  => { key            => "boolean",
-                      name           => "Boolean",
-                      desc           => "Boolean",
-                      check          => undef,
-                      converter      => undef,
-                      get_maker      => $bool_getter,
-                      set_maker      => $bool_setter,
-                      attr_set_maker => $bool_psetter,
-                      attr_get_maker => $bool_pgetter
-                    },
-
-        whole    => { key            => "whole",
-                      name           => "Whole Number",
-                      desc           => "Whole number",
-                      check          => $mk_chk->(\&Data::Types::is_whole,
-                                        'whole number'),
-                      converter      => sub { Data::Types::to_whole($_[0]) },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        integer  => { key            => "integer",
-                      name           => "Integer",
-                      desc           => "Integer",
-                      check          => $mk_chk->(\&Data::Types::is_int,
-                                                  'integer'),
-                      converter      => sub { Data::Types::to_int($_[0]) },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        decimal  => { key            => "decimal",
-                      name           => "Decimal Number",
-                      desc           => "Decimal number",
-                      check          => $mk_chk->(\&Data::Types::is_decimal,
-                                        'decimal number'),
-                      converter      => sub {Data::Types::to_decimal($_[0])},
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        real     => { key            => "real",
-                      name           => "Real Number",
-                      desc           => "Real number",
-                      check          => $mk_chk->(\&Data::Types::is_real,
-                                        'real number'),
-                      converter      => sub { Data::Types::to_real($_[0]) },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        float    => { key            => "float",
-                      name           => "Floating Point Number",
-                      desc           => "Floating point number",
-                      check          => $mk_chk->(\&Data::Types::is_float,
-                                        'floating point number'),
-                      converter      => sub { Data::Types::to_float($_[0]) },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        scalar   => { key            => "scalar",
-                      name           => "Scalar",
-                      desc           => "Scalar",
-                      check          => undef,
-                      converter      => undef,
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        scalarref => { key           => "scalarref",
-                      name           => "Scalar Reference",
-                      desc           => "Scalar reference",
-                      check          => $mk_isachk->('SCALAR',
-                                                     'scalar reference'),
-                      converter      => sub { \$_[0] },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        array    => { key            => "array",
-                      name           => "Array Reference",
-                      desc           => "Array reference",
-                      check          => $mk_isachk->('ARRAY',
-                                                     'array reference'),
-                      converter      => sub { \@_ },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        hash     => { key            => "hash",
-                      name           => "Hash Reference",
-                      desc           => "Hash reference",
-                      check          => $mk_isachk->('HASH',
-                                                     'hash reference'),
-                      converter      => sub { { @_ } },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        code     => { key            => "code",
-                      name           => "Code Reference",
-                      desc           => "Code reference",
-                      check          => $mk_isachk->('CODE',
-                                                     'code reference'),
-                      converter      => sub { sub { @_ } },
-                      set_maker      => $mk_setter,
-                      get_maker      => $mk_getter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-
-        datetime => { key            => "datetime",
-                      name           => "Date/Time",
-                      desc           => "Date/Time",
-                      check          => $mk_isachk->('DateTime',
-                                                     'DateTime object'),
-                      converter      => sub { DateTime->now },
-                      get_maker      => $mk_getter,
-                      set_maker      => $mk_setter,
-                      attr_set_maker => $mk_psetter,
-                      attr_get_maker => $mk_pgetter
-                    },
-  );
-
-    # Set up aliases.
-    $types{int} = $types{integer};
-    $types{bool} = $types{boolean};
-    $types{dec} = $types{decimal};
-    $types{arrayref} = $types{array};
-    $types{hashref} = $types{hash};
-    $types{coderef} = $types{code};
-    $types{closure} = $types{code};
+{
+    my %types = ();
 
 ##############################################################################
 # Constructors                                                               #
@@ -327,101 +89,68 @@ my $croak = sub { require Carp; Carp::croak(@_) };
   my $type = Class::Meta::Type->new($key);
 
 Returns the data type definition for an existing data type. The definition
-will be looked up by the $key argument. Existing keys are:
+will be looked up by the C<$key> argument. By default, Class::Meta::Type
+offers only a single data type: "scalar". Other data types can be added by
+means of the C<add()> constructor, or by simply C<use>ing one or more of the
+following modules:
+
+=over 4
+
+=item L<Class::Meta::Type::Perl|Class::Meta::Type::Perl>
+
+=over 4
+
+=item scalarref
+
+=item array
+
+=item hash
+
+=item code
+
+=back
+
+=item L<Class::Meta::Type::String|Class::Meta::Type::String>
 
 =over 4
 
 =item string
 
-A string.
+=back
+
+=item L<Class::Meta::Type::Boolean|Class::Meta::Type::Boolean>
+
+=over 4
 
 =item boolean
 
-A boolean data type.
+=back
 
-=item bool
+=item L<Class::Meta::Type::Numeric|Class::Meta::Type::Numeric>
 
-An alias for boolean.
+=over 4
 
 =item whole
 
-A whole number.
-
 =item integer
-
-An integer data type.
-
-=item int
-
-An alias for integer.
 
 =item decimal
 
-A decimal number.
-
-=item dec
-
-An alias for decimal.
-
 =item real
-
-A real number.
 
 =item float
 
-A floating point number.
-
-=item scalar
-
-A simple scalar variable.
-
-=item scalarref
-
-A reference to a scalar.
-
-=item arrayref
-
-A reference to an array.
-
-=item array
-
-An alias for arrayref.
-
-=item hashref
-
-A reference to a hash.
-
-=item hash
-
-An alias for hashref.
-
-=item coderef
-
-A code reference, also known as a closure.
-
-=item code
-
-An alias for coderef.
-
-=item closure
-
-An alias for coderef.
-
-=item datetime
-
-A date and time data type in the form of a Time::Piece::ISO object. Note
-that the conversion code for this data type will take any time string and a
-strptime format as arguments, and create the Time::Piece::ISO object from
-those values.
+=back
 
 =back
+
+Read the docs for the individual modules for details on their data types.
 
 =cut
 
     sub new {
         my $key = lc $_[1] || $croak->("Type argument required");
-        $croak->("Type '$_[1]' does not exist")
-          unless $types{$key};
+        $croak->("Type '$_[1]' does not exist") unless $types{$key};
         return bless $types{$key}, ref $_[0] || $_[0];
     }
 
@@ -433,31 +162,26 @@ those values.
                                      name => 'IO::Socket Object',
                                      desc => 'IO::Socket object' );
 
-Creates a new data type definition and stores it for future use. Use
-this method when the none existing data types won't for a particular
-requirement of your class. The named parameter arguments are:
+Creates a new data type definition and stores it for future use. Use this
+constructor to add new data types to meet the needs of your class. The named
+parameter arguments are:
 
 =over 4
 
 =item key
 
-Required. The key with which the datatype can be looked up in the future via
-a call to new(). Note that the key will be used case-insensitively, so
-"foo", "Foo", and "FOO" are equivalent, and the key must be unique. The keys
-listed in the L<new()> method above cannot be used.
+Required. The key with which the datatype can be looked up in the future via a
+call to C<new()>. Note that the key will be used case-insensitively, so "foo",
+"Foo", and "FOO" are equivalent, and the key must be unique.
 
 =item name
 
 Required. The name of the data type. This should be formatted for display
 purposes, and indeed, Class::Meta will often use it in its own exceptions.
 
-=item desc
-
-Optional. A description of the data type.
-
 =item check
 
-Optional. Specifies how to validate the value of a attribute of this type.
+Optional. Specifies how to validate the value of an attribute of this type.
 The check parameter can be specified in any of the following ways:
 
 =over 4
@@ -465,17 +189,18 @@ The check parameter can be specified in any of the following ways:
 =item *
 
 As a code reference. When Class::Meta executes this code reference, it will
-pass in the value to check and the maximum length of the value (as returned by
-C<< Class::Meta::Attribute->my_length >>). The code reference should check the
-value of the first argument, and if it's not the proper value for your custom
-data type, it should throw an exception. Here's an example; it's the code
-reference used by the datetime data type:
+pass in the value to check. If it's not the proper value for your custom data
+type, the code reference should throw an exception. Here's an example; it's
+the code reference used by "string" data type, which you can add to
+Class::Meta::Type simply by using Class::Meta::Types::String:
 
-  my $datetime_check = sub {
+  check => sub {
       my $value = shift;
-      UNIVERSAL::isa($value, 'DateTime')
-        or Carp::croak("Value '$value' is not a DateTime object")
-  };
+      return unless defined $value && ref $value;
+      require Carp;
+      our @CARP_NOT = qw(Class::Meta::Attribute);
+      Carp::croak("Value '$value' is not a valid string");
+  }
 
 =item *
 
@@ -484,153 +209,102 @@ references that perform checks on a value, as specified above.
 
 =item *
 
-As a string. In this case, Class::Meta::Type assumes that you want to
-specify that your data type identifies a particular object type. Thus it
-will use the string to construct a validation code ref for you. For example,
-if you wanted to create a data type for IO::Socket objects, pass the string
-'IO::Socket' to the check parameter and Class::Meta::Type will create this
-validation code reference:
+As a string. In this case, Class::Meta::Type assumes that your data type
+identifies a particular object type. Thus it will use the string to construct
+a validation code reference for you. For example, if you wanted to create a
+data type for IO::Socket objects, pass the string 'IO::Socket' to the check
+parameter and Class::Meta::Type will create this validation code reference:
 
-  my $datetime_check = sub {
+  sub {
       my $value = shift;
-      UNIVERSAL::isa($value, 'IO::Socket')
-        or Carp::croak("Value '$value' is not a IO::Socket object");
+      return if UNIVERSAL::isa($value, 'IO::Socket')
+      require Carp;
+      our @CARP_NOT = qw(Class::Meta::Attribute);
+      Carp::croak("Value '$value' is not a IO::Socket object");
   };
 
 =back
 
 Note that if the C<check> parameter is not specified, there will never be any
-validation of your custom data type, even if validation has been enabled in
-your Class::Meta object. And yes, there may be times when you want this -- The
-default "scalar" and "boolean" data types, for example, have no checks.
+validation of your custom data type. And yes, there may be times when you want
+this -- The default "scalar" and "boolean" data types, for example, have no
+checks.
 
-=item converter
+=item builder
 
-Optional. A code reference that converts an arbitrary value into a valid
-value for your custom data type. The converted value must must be returned
-as a single scalar value. Fo exmple, say that you want a data type of
-IO::File, but to allow users to pass in the name of a file as well as an
-IO::File object. In that case, pass in the following code reference to the
-converter parameter:
+Optional. This parameter specifies the accessor builder for attributes of this
+type. The C<builder> parameter can be any of the following values:
 
-  sub { return ref $_[0] ? $_[0] : IO::File->new($_[0]) }
+=over 4
 
-Note that if the converter paremeter is not specified, then no values will be
-converted for your data type, even if conversion has been enabled in your
-Class::Meta object. And yes, there may be times when you want this -- The
-default "scalar" and "boolean" data types, for example, perform no
-conversion.
+=item "default"
 
-=item set_maker
+The string 'default' uses Class::Meta::Type's default accessor building code,
+provided by Class::Meta::AccessorBuilder. This is the default value, of
+course.
 
-Optional. A code reference that creates set method code references. You can
-create as many setters as you like, and return them as a hash reference where
-the keys are the method names, and the values are code referernces that
-constitute the methods. The arguments to the C<set_maker> code reference are
-the name of the attribute for which the method is to be created, an optional
-array reference of validation code references, and an optional conversion code
-reference. Your closure must create the proper "set" accessor for the
-attribute, and execute each of the validation check and/or conversion code
-references, if any exist.
+=item "affordance"
 
-Note that if no validation or conversion code references are present (and none
-will be if validation and conversion have been disabled in your Class::Meta
-object), then, to conserve resources, create the method without any reference
-to the missing validation and conversion code references. If, on the other
-hand, both validation and conversion code references are present, you I<must>
-execute the conversion reference first, so that the validation references
-will validate the new value.
+The string 'default' uses Class::Meta::Type's affordance accessor building
+code, provided by Class::Meta::AccessorBuilder::Affordance. Affordance accessors
+provide two accessors for an attribute, a C<get_*> accessor and a C<set_*>
+mutator. See
+L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
+for more information.
 
-The reason you are allowed to create multiple set methods is that sometimes
-your attribute may require it. For example, the default "boolean" attribute
-creates two accessors, set_attr_on() and set_attr_off(), both to ensure that
-the interface accurately describes what the methods do, and to ensure the
-integrity of the boolean data.
+=item A Package Name
 
-The following example is the code reference used by Class::Meta::Type if the
-set_maker paremter is not specified. It will likely suffice for most uses, but if
-you need different functionality, then use it as a template for what you
-need:
+Pass in the name of a package that contains the functions C<build()>,
+C<build_attr_get()>, and C<build_attr_set()>. These functions will be used to
+create the necessary accessors for an attribute.
 
-  my $mk_setter = sub {
-      my ($attr, $checkers, $converter) = @_;
-      if ($converter && $checkers) {
-          return { "set_$attr" => sub {
-              my $self = shift;
-              # Converterert the value.
-              my $val = $converter->(shift());
-              # Check the value passed in.
-              $_->(@_) for @$checkers;
-              # Assign the value.
-              $self->{$attr} = $val;
-          }};
-      } elsif ($converter) {
-          return { "set_$attr" => sub {
-              my $self = shift;
-              # Converterert and assign the value.
-              $self->{$attr} = $converter->(shift());
-          }};
-      } elsif ($checkers) {
-          return { "set_$attr" => sub {
-              my $self = shift;
-              # Check the value passed in.
-              $_->(@_) for @$checkers;
-              # Assign the value.
-              $self->{$attr} = $_[1];
-          }};
-      } else {
-          return { "set_$attr" => sub {
-              # Assign the value.
-              $_[0]->{$attr} = $_[1];
-          }};
-      }
-  };
+The C<build()> function creates and installs the actual accessor methods in a
+class. It should expect the following arguments:
 
-=item get_maker
+  sub build {
+      my ($class, $attribute, $create, @checks) = @_;
+      # ...
+  }
 
-Optional. A code reference that creates get methods. The sole argument to
-the code reference is the name of the attribute for which the method is to be
-created. As with the set_maker parameter, the code reference should return a hash
-reference where the keys are the method names and the values are the
-closures that constitute the methods themselves.
+These are:
 
-The following example is the code reference used by Class::Meta::Type if the
-C<get_maker> parameter is not specified. It will likely suffice for most uses,
-but if you need different functionality, then use it as a template for what
-you need:
+=over 4
 
-  my $mk_getter = sub {
-      my ($attr) = @_;
-      return { "get_$attr" => sub { $_[0]->{$attr} } };
-  };
+=item C<$class>
 
-=item attr_set_maker
+The name of the class into which the accessors are to be installed.
 
-Optional. A code reference that generates code references. This code reference
-will be used to create the set accessor for the Class::Meta::Attribute
-object. The C<attr_set_maker> code reference should expect the name of the attribute
-as its sole argument, and return a code reference with that attribute name
-hard-coded (by C<eval>ing a string) in a method call on the first argument to
-the code reference. If you leave the set attribute above to its default value,
-then you are urged to leave this attribute to its default, as well. Here's
-what the defalt C<attr_set_maker> closure looks like, and you can use it as a
-template for your custom set attributes:
+=item C<$attribute>
 
-  my $mk_pgetter = sub { eval "sub { shift->get$_[0](\@_) }" };
+The name of the attribute for which accessors are to be created.
 
-=item attr_get_maker
+=item C<$create>
 
-Optional. A code reference that generates code references. This code reference
-will be used to create the get accessor for the Class::Meta::Attribute
-object. The C<attr_get_maker> code reference should expect the name of the attribute
-as its sole argument, and return a code reference with that attribute name
-hard-coded (by C<eval>ing a string) in a method call on the first argument to
-the code reference. If you leave the get attribute above to its default value,
-then you are urged to leave this attribute to its default, as well. Here's
-what the defalt C<attr_get_maker> closure looks like, and you can use it as a
-template for your custom get attributes:
+The value of the Class::Meta::Attribute object's C<create> attribute. Use this
+argument to determine what type of accessor(s) to create. See
+L<Class::Meta::Attribute|Class::Meta::Attribute> for the possible values for
+this argument.
 
-  my $mk_psetter = sub { eval "sub { shift->set$_[0](\@_) }" };
+=item <@checks>
+
+A list of one or more data type validation code references. Use these in any
+accessors that set attribute values to check that the new value has a valid
+value.
+
+=back
+
+See L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for example
+attribute creation functions.
+
+=back
+
+The C<build_attr_get()> and C<build_attr_set()> functions take a single
+argument, the name of an attribute, and return code references that call the
+appropriate accessor methods to get and set an attribute, respectively. The
+code references will be used by Class::Meta::Attribute's C<call_get()> and
+C<call_set()> methods to get and set attribute values. Again, see
+L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for examples
+before creating your own.
 
 =back
 
@@ -679,32 +353,25 @@ template for your custom get attributes:
             }
         }
 
-        # Check the converter parameter.
-        if ($params{converter}) {
-            $croak->("Paremter 'converter' in call to add() must be a ",
-                     "code reference")
-              unless ref $params{converter} eq 'CODE';
-        }
+        # Check the builder parameter.
+        $params{builder} ||= 'default';
+        my $builder = $def_builders{$params{builder}} || $params{builder};
+        # Make sure it's loaded.
+        eval "require $builder";
 
-        # Check the remaining parameters
-        my %acc_map = ( set_maker      => $mk_setter,
-                        get_maker      => $mk_getter,
-                        attr_set_maker => $mk_psetter,
-                        attr_get_maker => $mk_pgetter );
-        while (my ($p, $c) = each %acc_map) {
-            if ($params{$p}) {
-                $croak->("Parameter '$p' in call to add() must be a code "
-                         . "reference") unless ref $params{$p} eq 'CODE';
-            } else {
-                $params{$p} = $c;
-            }
-        }
+        $params{builder} = UNIVERSAL::can($builder, 'build')
+          || $croak->("No such function '${builder}::build()'");
+
+        $params{attr_get} = UNIVERSAL::can($builder, 'build_attr_get')
+          || $croak->("No such function '${builder}::build_attr_get()'");
+
+        $params{attr_set} = UNIVERSAL::can($builder, 'build_attr_set')
+          || $croak->("No such function '${builder}::build_attr_set()'");
 
         # Okay, add the new type to the cache and construct it.
         $types{$params{key}} = \%params;
         return $pkg->new($params{key});
     }
-
 }
 
 ##############################################################################
@@ -737,24 +404,12 @@ sub name { $_[0]->{name} }
 
 ##############################################################################
 
-=head2 desc
-
-  my $desc = $type->desc;
-
-Returns the type description.
-
-=cut
-
-sub desc { $_[0]->{desc} }
-
-##############################################################################
-
 =head2 check
 
   my $checks = $type->check;
   my @checks = $type->check;
 
-Returns an array reference or list of the data type validation code checks
+Returns an array reference or list of the data type validation code references
 for the data type.
 
 =cut
@@ -766,57 +421,24 @@ sub check  {
 
 ##############################################################################
 
-=head2 converter
+=head2 build
 
-  my $converter = $type->converter;
-
-Returns a the data type conversion code reference.
-
-=cut
-
-sub converter { $_[0]->{converter} }
-
-##############################################################################
-
-=head2 make_set
-
-  my $attr_name = 'foo';
-  my $setters = $type->make_set($attr_name);
-  $setters = $type->make_set($attr_name, $type->check);
-  $setters = $type->make_set($attr_name, undef, $type->converter);
-  $setters = $type->make_set($attr_name, $type->check, $type->converter);
-
-Returns a hash reference of set method code references. The hash keys are the
-names of the methods (e.g., "set_foo"), and the values are code references
-that will be made into actual methods under their names. See the description
-of the C<set_maker> parameter to the add() constructor above for more
-information.
+Builds the accessors for an attribute of the data type. This method can only
+be called by Class::Meta::Attribute or a subclass of Class::Meta::Attribute.
 
 =cut
 
-sub make_set {
-    my $code = shift->{set_maker};
-    $code->(@_);
-}
+sub build {
+    # Check to make sure that only Class::Meta or a subclass is building
+    # attribute accessors.
+    my $caller = caller;
+    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta::Attribute');
 
-##############################################################################
-
-=head2 make_get
-
-  my $attr_name = 'foo';
-  my $getters = $type->make_get($attr_name);
-
-Returns a hash reference of get method code references. The hash keys are
-the names of the methods (e.g., "get_foo"), and the values are code
-references that will be made into actual methods under their names. See the
-description of the C<get> parameter to the add() constructor above for more
-information.
-
-=cut
-
-sub make_get {
-    my $code = shift->{get_maker};
-    $code->(@_)
+    my $self = shift;
+    my $code = $self->{builder};
+    $code->(@_, $self->check);
+    return $self;
 }
 
 ##############################################################################
@@ -827,14 +449,14 @@ sub make_get {
   my $code = $type->make_attr_set($attr_name);
 
 Returns a code reference that will be used by the
-Class::Meta::Attribute::set() method to retreive the value of an object. See
-the description of the C<attr_set> parameter to the add() constructor above
-for more information.
+C<Class::Meta::Attribute::call_set()> method to set the value of an object.
+Called by Class::Meta::Attribute, and otherwise should not be used.
 
 =cut
 
 sub make_attr_set {
-    my $code = shift->{attr_set_maker};
+    my $self = shift;
+    my $code = $self->{attr_set};
     $code->(@_);
 }
 
@@ -843,19 +465,29 @@ sub make_attr_set {
 =head2 make_attr_get
 
   my $attr_name = 'foo';
-  my $code = $type->make_attr_get_maker($attr_name);
+  my $code = $type->make_attr_get_builder($attr_name);
 
 Returns a code reference that will be used by the
-Class::Meta::Attribute::get() method to retreive the value of an object. See
-the description of the C<attr_get_maker> parameter to the add() constructor above
-for more information.
+C<Class::Meta::Attribute::call_get()> method to retrieve the value of an
+object. Called by Class::Meta::Attribute, and otherwise should not be used.
 
 =cut
 
 sub make_attr_get {
-    my $code = shift->{attr_get_maker};
+    my $self = shift;
+    my $code = $self->{attr_get};
     $code->(@_);
 }
+
+##############################################################################
+# Add the default data types.
+
+__PACKAGE__->add(
+    key            => "scalar",
+    name           => "Scalar",
+    desc           => "Scalar",
+    check          => undef,
+);
 
 1;
 __END__
@@ -866,7 +498,8 @@ David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
-L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>
+L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>,
+L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder>.
 
 =head1 COPYRIGHT AND LICENSE
 

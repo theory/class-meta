@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types.t,v 1.7 2004/01/07 07:12:03 david Exp $
+# $Id: types_affordance.t,v 1.1 2004/01/07 07:12:03 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -21,10 +21,10 @@ BEGIN {
     $SIG{__DIE__} = \&Carp::confess;
     main::use_ok( 'Class::Meta');
     main::use_ok( 'Class::Meta::Type');
-    main::use_ok( 'Class::Meta::Types::Numeric');
-    main::use_ok( 'Class::Meta::Types::Perl');
-    main::use_ok( 'Class::Meta::Types::String');
-    main::use_ok( 'Class::Meta::Types::Boolean');
+    main::use_ok( 'Class::Meta::Types::Numeric', 'affordance');
+    main::use_ok( 'Class::Meta::Types::Perl', 'affordance');
+    main::use_ok( 'Class::Meta::Types::String', 'affordance');
+    main::use_ok( 'Class::Meta::Types::Boolean', 'affordance');
 }
 
 BEGIN {
@@ -33,6 +33,7 @@ BEGIN {
                             name      => 'IO Handle',
                             desc      => 'An IO::Handle object.',
                             check     => 'IO::Handle',
+                            builder   => 'affordance',
                             converter => sub { IO::Handle->new }
                         );
 
@@ -182,93 +183,93 @@ is( $class->my_desc, 'Just for testing Class::Meta.',
     "Description is correct");
 
 # Test string.
-ok( $t->name('David'), 'name to "David"' );
-is( $t->name, 'David', 'name is "David"' );
-eval { $t->name([]) };
-ok( my $err = $@, 'name to array ref croaks' );
+ok( $t->set_name('David'), 'set_name to "David"' );
+is( $t->get_name, 'David', 'get_name is "David"' );
+eval { $t->set_name([]) };
+ok( my $err = $@, 'set_name to array ref croaks' );
 like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Test boolean.
-ok( $t->alive, 'alive true');
-is( $t->alive(0), 0, 'alive off');
-ok( !$t->alive, 'alive false');
-ok( $t->alive(1), 'alive on' );
-ok( $t->alive, 'alive true again');
+ok( $t->is_alive, 'is_alive true');
+is( $t->set_alive_off, 0, 'set_alive_off');
+ok( !$t->is_alive, 'is_alive false');
+ok( $t->set_alive_on, 'set_alive_on' );
+ok( $t->is_alive, 'is_alive true again');
 
 # Test whole number.
-eval { $t->whole(0) };
-ok( $err = $@, 'whole to 0 croaks' );
+eval { $t->set_whole(0) };
+ok( $err = $@, 'set_whole to 0 croaks' );
 like( $err, qr/^Value '0' is not a valid whole number/,
      'correct whole number exception' );
-ok( $t->whole(1), 'whole to 1.');
+ok( $t->set_whole(1), 'set_whole to 1.');
 
 # Test integer.
-eval { $t->age(0.5) };
-ok( $err = $@, 'age to 0.5 croaks');
+eval { $t->set_age(0.5) };
+ok( $err = $@, 'set_age to 0.5 croaks');
 like( $err, qr/^Value '0\.5' is not a valid integer/,
      'correct integer exception' );
-ok( $t->age(10), 'age to 10.');
+ok( $t->set_age(10), 'set_age to 10.');
 
 # Test decimal.
-eval { $t->dec('+') };
-ok( $err = $@, 'dec to "+" croaks');
+eval { $t->set_dec('+') };
+ok( $err = $@, 'set_dec to "+" croaks');
 like( $err, qr/^Value '\+' is not a valid decimal number/,
      'correct decimal exception' );
-ok( $t->dec(3.14), 'dec to 3.14.');
+ok( $t->set_dec(3.14), 'set_dec to 3.14.');
 
 # Test real.
-eval { $t->real('+') };
-ok( $err = $@, 'real to "+" croaks');
+eval { $t->set_real('+') };
+ok( $err = $@, 'set_real to "+" croaks');
 like( $err, qr/^Value '\+' is not a valid real number/,
      'correct real exception' );
-ok( $t->real(123.4567), 'real to 123.4567.');
-ok( $t->real(-123.4567), 'real to -123.4567.');
+ok( $t->set_real(123.4567), 'set_real to 123.4567.');
+ok( $t->set_real(-123.4567), 'set_real to -123.4567.');
 
 # Test float.
-eval { $t->float('+') };
-ok( $err = $@, 'float to "+" croaks');
+eval { $t->set_float('+') };
+ok( $err = $@, 'set_float to "+" croaks');
 like( $err, qr/^Value '\+' is not a valid floating point number/,
      'correct float exception' );
-ok( $t->float(1.23e99), 'float to 1.23e99.');
+ok( $t->set_float(1.23e99), 'set_float to 1.23e99.');
 
 # Test OBJECT with default specifying object type.
-ok( my $io = $t->io_handle, 'io_handle' );
+ok( my $io = $t->get_io_handle, 'get_io_handle' );
 isa_ok($io, 'IO::Handle');
-eval { $t->io_handle('foo') };
-ok( $err = $@, 'io_handle to "foo" croaks' );
+eval { $t->set_io_handle('foo') };
+ok( $err = $@, 'set_io_handle to "foo" croaks' );
 like( $err, qr/^Value 'foo' is not a valid IO Handle/,
      'correct object exception' );
 
 # Try a wrong object.
-eval { $t->io_handle($t) };
-ok( $err = $@, 'io_handle to \$fh croaks' );
+eval { $t->set_io_handle($t) };
+ok( $err = $@, 'set_io_handle to \$fh croaks' );
 like( $err, qr/^Value '.*' is not a valid IO Handle/,
      'correct object exception' );
-ok( $t->io_handle($io), 'io_handle to \$io.');
+ok( $t->set_io_handle($io), 'set_io_handle to \$io.');
 
 # Try a subclass.
 my $sock = IO::Socket->new;
-ok( $t->io_handle($sock), "Set io_handle to a subclass." );
-isa_ok($t->io_handle, 'IO::Socket', "Check subclass" );
-ok( $t->io_handle($io), 'io_handle to \$io.');
+ok( $t->set_io_handle($sock), "Set io_handle to a subclass." );
+isa_ok($t->get_io_handle, 'IO::Socket', "Check subclass" );
+ok( $t->set_io_handle($io), 'set_io_handle to \$io.');
 
 # Test SCALAR.
-eval { $t->scalar('foo') };
-ok( $err = $@, 'scalar to "foo" croaks' );
+eval { $t->set_scalar('foo') };
+ok( $err = $@, 'set_scalar to "foo" croaks' );
 like( $err, qr/^Value 'foo' is not a valid Scalar Reference/,
      'correct scalar exception' );
-ok( $t->scalar(\"foo"), 'scalar to \\"foo".');
+ok( $t->set_scalar(\"foo"), 'set_scalar to \\"foo".');
 
 # Test ARRAY.
-eval { $t->array('foo') };
-ok( $err = $@, 'array to "foo" croaks' );
+eval { $t->set_array('foo') };
+ok( $err = $@, 'set_array to "foo" croaks' );
 like( $err, qr/^Value 'foo' is not a valid Array Reference/,
      'correct array exception' );
-ok( $t->array(["foo"]), 'array to ["foo"].');
+ok( $t->set_array(["foo"]), 'set_array to ["foo"].');
 
 # Test HASH.
-eval { $t->hash('foo') };
-ok( $err = $@, 'hash to "foo" croaks' );
+eval { $t->set_hash('foo') };
+ok( $err = $@, 'set_hash to "foo" croaks' );
 like( $err, qr/^Value 'foo' is not a valid Hash Reference/,
      'correct hash exception' );
-ok( $t->hash({ foo => 1 }), 'hash to { foo => 1 }.');
+ok( $t->set_hash({ foo => 1 }), 'set_hash to { foo => 1 }.');

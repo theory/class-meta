@@ -1,14 +1,25 @@
 #!/usr/bin/perl -w
 
-# $Id: chk_types.t,v 1.4 2003/11/21 23:53:24 david Exp $
+# $Id: chk_types.t,v 1.5 2004/01/07 07:12:03 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
+package Class::Meta::Testing;
+
 use strict;
 use Test::More tests => 322;
-BEGIN { use_ok( 'Class::Meta::Type' ) }
+BEGIN {
+    $SIG{__DIE__} = \&Carp::confess;
+    use_ok( 'Class::Meta');
+    use_ok( 'Class::Meta::Type');
+    use_ok( 'Class::Meta::Types::Numeric');
+    use_ok( 'Class::Meta::Types::Perl');
+    use_ok( 'Class::Meta::Types::String');
+    use_ok( 'Class::Meta::Types::Boolean');
+    our @ISA = qw(Class::Meta::Attribute);
+}
 
 my $attr = 'foo';
 my $i = 0;
@@ -21,45 +32,27 @@ is( $type->key, 'string', "Check string key" );
 is( $type->name, 'String', "Check string name" );
 is( $type->desc, 'String', "Check string desc" );
 is( ref $type->check, 'ARRAY', "Check string check" );
+
 foreach my $chk (@{ $type->check }) {
     is( ref $chk, 'CODE', 'Check string code');
 }
-is( ref $type->converter, 'CODE', "Check string conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( my $set = $type->make_set($attr . ++$i), "Make simple string set" );
-is( ref $set, 'HASH', 'Simple string set is hashref' );
-is( ref $set->{'set_' . $attr . $i}, 'CODE', "String set coderef" );
+ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+    "Make simple string set" );
 
 # Now check with checks added.
-ok( $set = $type->make_set($attr . ++$i, $type->check),
+ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET, $type->check),
     "Make checking string set" );
-is( ref $set, 'HASH', 'String set with checks is hashref' );
-is( ref $set->{'set_' . $attr . $i}, 'CODE', "String chk set coderef" );
 
-# Now check with a conversion.
-ok( $set = $type->make_set($attr . ++$i, undef, $type->converter),
-    "Make converting string set" );
-is( ref $set, 'HASH', 'String set with conv is hashref' );
-is( ref $set->{'set_' . $attr . $i}, 'CODE', "String conv set coderef" );
-
-# And finally, with both a check and a conversion.
-ok( $set = $type->make_set($attr . ++$i, $type->check, $type->converter),
-    "Make full string set" );
-is( ref $set, 'HASH', 'Full string set is hashref' );
-is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full string set coderef" );
-
-# Now check to make sure that the get_ method coderefs are created properly,
-# and keyed off the proper method name.
-ok( my $get = $type->make_get($attr . $i), "Make string get" );
-is( ref $get, 'HASH', 'String get is hashref' );
-is( ref $get->{'get_' . $attr . $i}, 'CODE', "String get coderef" );
-
-# And finally, check to make sure that the Attribute class accessor coderefs
-# are getting created.
+# Check to make sure that the Attribute class accessor coderefs are getting
+# created.
 is( ref $type->make_attr_set($attr . $i), 'CODE', "Check string attr_set" );
 is( ref $type->make_attr_get($attr . $i), 'CODE', "Check string attr_get" );
+
+exit;
+
 ##############################################################################
 # Check boolean data type.
 ok( $type = Class::Meta::Type->new('boolean'), 'Get boolean' );
@@ -67,13 +60,12 @@ is( $type, Class::Meta::Type->new('bool'), 'Check bool alias' );
 is( $type->key, 'boolean', "Check boolean key" );
 is( $type->name, 'Boolean', "Check boolean name" );
 is( $type->desc, 'Boolean', "Check boolean desc" );
-# Boolean is special -- it has no converter or checkers.
+# Boolean is special -- it has no checkers.
 ok( ! defined $type->check, "Check boolean check" );
-ok( ! defined $type->converter, "Check boolean conversion" );
 
 # Check to make sure that the set_ method codrefs area created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->make_set($attr . ++$i), "Make simple boolean set" );
+ok( my  $set = $type->make_set($attr . ++$i), "Make simple boolean set" );
 is( ref $set, 'HASH', 'Simple boolean set is hashref' );
 is( ref $set->{'set_' . $attr . $i . '_on'}, 'CODE',
     "Boolean set_on coderef" );
@@ -109,7 +101,7 @@ is( ref $set->{'set_' . $attr . $i . '_off'}, 'CODE',
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->make_get($attr . $i), "Make boolean get" );
+ok( my $get = $type->make_get($attr . $i), "Make boolean get" );
 is( ref $get, 'HASH', 'Boolean get is hashref' );
 is( ref $get->{'is_' . $attr . $i}, 'CODE', "Boolean get coderef" );
 

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.32 2003/12/10 07:34:11 david Exp $
+# $Id: Meta.pm,v 1.33 2004/01/07 07:12:03 david Exp $
 
 =head1 NAME
 
@@ -101,7 +101,7 @@ use constant PUBLIC    => 0x03;
 use constant NONE      => 0x01;
 use constant READ      => 0x02;
 use constant WRITE     => 0x03;
-use constant RDWR      => READ | WRITE;
+use constant RDWR      => 0x04;
 
 # Method generation. These tell Class::Meta which accessors to create. Use
 # NONE above for NONE. These will use the values in the authz argument by
@@ -248,6 +248,10 @@ Add tests for all errors.
 =item *
 
 Add tests for subclasses of the C::M classes.
+
+=item *
+
+Add full support for data type conversion.
 
 =back
 

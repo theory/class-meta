@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.13 2003/12/10 07:34:12 david Exp $
+# $Id: Attribute.pm,v 1.14 2004/01/07 07:12:03 david Exp $
 
 =head1 NAME
 
@@ -195,43 +195,17 @@ sub build {
     # Just return if this attribute doesn't need accessors created for it.
     return $self if $self->{create} == Class::Meta::NONE;
 
+    # Get the data type object and assemble the validation checks.
+    my $type = Class::Meta::Type->new($self->{type});
+    $type->build($spec->{package}, $self->{name}, $self->{create},
+                 ($self->is_required ? $req_chk : ()));
+
     # XXX Do I need to add code to check the caller and throw an exception for
     # private and protected methods?
-
-    # Get the data type object.
-    my $type = Class::Meta::Type->new($self->{type});
-
-    # Create accessors get accessor(s).
-    if ($self->{create} >= Class::Meta::GET) {
-
-        if (my $getters = $type->make_get($self->{name})) {
-            # Create the get method(s).
-            while (my ($meth, $code) = each %$getters) {
-                no strict 'refs';
-                *{"$spec->{package}::$meth"} = $code;
-            }
-        }
-    }
 
     # Create the attribute object get code reference.
     if ($self->{authz} >= Class::Meta::READ) {
         $self->{_get} = $type->make_attr_get($self->{name});
-    }
-
-    # Create accessors set accessor(s).
-    if ($self->{create} >= Class::Meta::SET) {
-        my @checks = $type->check;
-
-        # Add the required check, if necessary.
-        unshift @checks, $req_chk if $self->is_required;
-
-        if (my $setters = $type->make_set($self->{name}, \@checks)) {
-            # Create the set method(s).
-            while (my ($meth, $code) = each %$setters) {
-                no strict 'refs';
-                *{"$spec->{package}::$meth"} = $code;
-            }
-        }
     }
 
     # Create the attribute object set code reference.
