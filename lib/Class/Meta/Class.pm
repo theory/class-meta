@@ -356,6 +356,7 @@ sub _inherit {
     my @trusted;
     for my $super (@classes) {
         push @trusted, @{$classes->{$super}{trusted}}
+          if $classes->{$super}{trusted};
     }
     $self->{trusted} = \@trusted if @trusted;
 
