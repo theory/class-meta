@@ -4,6 +4,9 @@ Revision history for Perl extension Class::Meta.
       - Moved extra code to prevent AccessorBuilder from pointing to
         Constructor in the default (croak) error handler from AccessorBuilder
         to the default error handler. Carp is a PITA.
+      - Added "handle_error()" class method to Class::Meta. This method is
+        used by Class::Meta classes when no Class::Meta::Class object is
+        available
 
 0.30  2004-04-19T23:44:26
       - Added semi-affordance accessor generation.
