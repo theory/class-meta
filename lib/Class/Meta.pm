@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.40 2004/01/08 17:56:31 david Exp $
+# $Id: Meta.pm,v 1.41 2004/01/08 17:57:23 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -895,10 +895,6 @@ __END__
 =item *
 
 Add ability to create object attribute accessors.
-
-=item *
-
-Actually use options in Attribute?
 
 =item *
 

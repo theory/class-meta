@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.18 2004/01/08 17:56:31 david Exp $
+# $Id: Attribute.pm,v 1.19 2004/01/08 17:57:23 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -285,32 +285,6 @@ sub default {
         return $code->();
     }
     return $_[0]->{default};
-}
-
-##############################################################################
-
-=begin comment
-
-Is this something I want to include here?
-
-=head2 options
-
-Returns an array reference of array references of the values that are
-available for attribute. For example, an attribute called "one_to_three"
-might return an array reference such as this:
-
-  [ [ 1 => 'One' ],
-    [ 2 => 'Two' ],
-    [ 3 => 'Three' ],
-  ];
-
-=end comment
-
-=cut
-
-sub options   {
-    my $options = $_[0]->{options};
-    ref $options eq 'CODE' ? $options->() : $options;
 }
 
 ##############################################################################
