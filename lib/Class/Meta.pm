@@ -1,68 +1,87 @@
 package Class::Meta;
 
-use 5.006;
-use strict;
-use warnings;
-
-require Exporter;
-require DynaLoader;
-
-our @ISA = qw(Exporter DynaLoader);
-
-# Items to export into callers namespace by default. Note: do not export
-# names by default without a very good reason. Use EXPORT_OK instead.
-# Do not simply export all your public functions/methods/constants.
-
-# This allows declaration	use Class::Meta ':all';
-# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
-# will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
-	
-) ] );
-
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-
-our @EXPORT = qw(
-	
-);
-our $VERSION = '0.01';
-
-bootstrap Class::Meta $VERSION;
-
-# Preloaded methods go here.
-
-1;
-__END__
-# Below is stub documentation for your module. You better edit it!
-
 =head1 NAME
 
-Class::Meta - Perl extension for blah blah blah
+Class::Meta - Class Automation and Introspection
 
 =head1 SYNOPSIS
 
   use Class::Meta;
-  blah blah blah
+
 
 =head1 DESCRIPTION
 
-Stub documentation for Class::Meta, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
 
-Blah blah blah.
 
-=head2 EXPORT
+=cut
 
-None by default.
+use strict;
+use Carp;
+use Class::Meta::Class;
+use Class::Meta::Property;
+use Class::Meta::Method;
 
+our $VERSION = '0.01';
+
+##############################################################################
+# Constants                                                                  #
+##############################################################################
+# Visibility.
+use constant PRIVATE   => 0x00;
+use constant PROTECTED => 0x01;
+use constant PUBLIC    => 0x02;
+
+# Authorization
+use constant NONE      => 0x00;
+use constant READ      => 0x01;
+use constant WRITE     => 0x02;
+use constant RDWR      => READ | WRITE;
+
+# Method generation.
+use constant GET       => 0x01;
+use constant SET       => 0x02;
+use constant GETSET    => GET | SET;
+
+{
+    my %classes;
+
+    sub new {
+	my ($pkg, $key, $class) = @_;
+	$class ||= caller;
+	$key ||= $class;
+	croak "Class '$class' already created" if exists $classes{$class};
+	$classes{$class} = { key => $key,
+			     class => $class,
+			     obj => Class::Meta::Class->new,
+			   };
+	return bless \$class, ref $pkg || $pkg;
+    }
+
+    sub add_prop {
+	my ($self, $spec) = @_;
+    }
+
+    sub add_meth {
+	my ($self, $spec) = @_;
+    }
+}
+
+1;
+__END__
 
 =head1 AUTHOR
 
-A. U. Thor, E<lt>a.u.thor@a.galaxy.far.far.awayE<gt>
+David Wheeler <david@wheeler.net>
 
 =head1 SEE ALSO
 
-L<perl>.
+L<Class::Contract|Class::Contract>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2002, David Wheeler. All Rights Reserved.
+
+This module is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
 
 =cut
