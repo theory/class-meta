@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.28 2004/01/10 01:58:11 david Exp $
+# $Id: Constructor.pm,v 1.29 2004/01/16 18:51:00 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.11";
+our $VERSION = "0.12";
 
 ##############################################################################
 # Private Package Globals
@@ -221,6 +221,8 @@ sub build {
         # Assign all of the attribute values.
         if ($spec->{attrs}) {
             foreach my $attr (values %{ $spec->{attrs} }) {
+                # Skip class attributes.
+                next if $attr->context == Class::Meta::CLASS;
                 my $key = $attr->name;
                 if ($attr->authz >= Class::Meta::SET) {
                     # Let them set the value.
