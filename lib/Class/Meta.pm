@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.74 2004/04/19 23:29:35 david Exp $
+# $Id: Meta.pm,v 1.75 2004/04/19 23:30:16 david Exp $
 
 =head1 NAME
 
@@ -582,12 +582,6 @@ Class::Meta::Attribute.
 The name of a class that inherits from Class::Meta::Method to be used to
 create all of the method objects for the class. Defaults to
 Class::Meta::Method.
-
-=item error_handler
-
-A code reference that will be used to handle errors thrown by the methods
-created for the new class. Defaults to the value returned by
-C<< Class::Meta->default_error_handler >>.
 
 =item error_handler
 
