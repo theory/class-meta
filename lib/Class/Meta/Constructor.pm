@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.7 2003/11/21 23:04:02 david Exp $
+# $Id: Constructor.pm,v 1.8 2003/11/22 00:23:38 david Exp $
 
 use strict;
 
@@ -111,7 +111,7 @@ sub new {
     Carp::croak("Method '$p{name}' already exists in class "
                 . "'$spec->{class}'")
       if exists $spec->{ctors}{$p{name}}
-      || exists $spec->{meths}{$p{name}};
+      or exists $spec->{meths}{$p{name}};
 
     # Check the visibility.
     if (exists $p{view}) {
