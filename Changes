@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
+0.36
+
 0.35  2004-06-28T23:16:16
       - Fixed the names of the included types classes in the documentation
         of Class::Meta::Type. Spotted by Dan Kubb.
