@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.28 2003/11/25 01:21:31 david Exp $
+# $Id: Meta.pm,v 1.29 2003/11/25 01:35:21 david Exp $
 
 =head1 NAME
 
@@ -235,24 +235,17 @@ Class::Meta::Class, of course.
 
 =item *
 
-Add localization using Locale::Maketext.
+Add control over exceptions (borrow from Params::CallbackRequest).
 
 =item *
 
-Create unified method for handling exceptions using exception objects. Allow
-exceptions to somehow chain, so that all the exceptions for a given
-transaction can be recorded. This will allow B<all> of the errors of data
-validation for a given object to be recorded at once and show to the user at
-once, so that they don't have to fix their problems piecemeal. No, this is not
-a simple task. The problem is better described by Perrin here:
-
-  http://mathforum.org/epigone/modperl/pahphucree/3D00F55C.5010103@elem.com
+Add localization using Locale::Maketext.
 
 =back
 
 =head1 AUTHOR
 
-David Wheeler <david@wheeler.net>
+David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
