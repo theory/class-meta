@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.17 2004/01/08 18:41:55 david Exp $
+# $Id: Type.pm,v 1.18 2004/01/08 18:45:46 david Exp $
 
 =head1 NAME
 
@@ -504,7 +504,7 @@ L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002-2003, David Wheeler. All Rights Reserved.
+Copyright (c) 2002-2004, David Wheeler. All Rights Reserved.
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.

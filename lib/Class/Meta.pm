@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.44 2004/01/08 18:41:55 david Exp $
+# $Id: Meta.pm,v 1.45 2004/01/08 18:45:46 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -956,7 +956,7 @@ Accessor automation and data validation for Tangram applications.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002-2003, David Wheeler. All Rights Reserved.
+Copyright (c) 2002-2004, David Wheeler. All Rights Reserved.
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
