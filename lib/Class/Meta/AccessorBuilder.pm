@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.7 2004/01/09 03:50:21 david Exp $
+# $Id: AccessorBuilder.pm,v 1.8 2004/01/09 04:14:46 david Exp $
 
 =head1 NAME
 
@@ -64,7 +64,7 @@ so in a future release.
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -143,6 +143,11 @@ __END__
 =head1 AUTHOR
 
 David Wheeler <david@kineticode.com>
+
+=head1 BUGS
+
+Please report all bugs via the CPAN Request Tracker at
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
 
 =head1 SEE ALSO
 

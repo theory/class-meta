@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.21 2004/01/09 03:50:21 david Exp $
+# $Id: Method.pm,v 1.22 2004/01/09 04:14:46 david Exp $
 
 =head1 NAME
 
@@ -40,7 +40,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 ##############################################################################
 # Private Package Globals
@@ -226,6 +226,11 @@ __END__
 =head1 AUTHOR
 
 David Wheeler <david@kineticode.com>
+
+=head1 BUGS
+
+Please report all bugs via the CPAN Request Tracker at
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
 
 =head1 SEE ALSO
 

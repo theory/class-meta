@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.53 2004/01/09 03:50:21 david Exp $
+# $Id: Meta.pm,v 1.54 2004/01/09 04:14:46 david Exp $
 
 =head1 NAME
 
@@ -537,7 +537,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 ##############################################################################
 # Private Package Globals
@@ -902,6 +902,11 @@ Add errors for calling protected and private methods where one shouldn't.
 =head1 AUTHOR
 
 David Wheeler <david@kineticode.com>
+
+=head1 BUGS
+
+Please report all bugs via the CPAN Request Tracker at
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
 
 =head1 SEE ALSO
 

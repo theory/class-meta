@@ -1,6 +1,6 @@
 package Class::Meta::Types::Boolean;
 
-# $Id: Boolean.pm,v 1.7 2004/01/09 03:50:22 david Exp $
+# $Id: Boolean.pm,v 1.8 2004/01/09 04:14:46 david Exp $
 
 =head1 NAME
 
@@ -68,7 +68,7 @@ without the overhead of validation checks.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 sub import {
     my ($pkg, $builder) = @_;
@@ -150,6 +150,11 @@ __END__
 =head1 AUTHOR
 
 David Wheeler <david@kineticode.com>
+
+=head1 BUGS
+
+Please report all bugs via the CPAN Request Tracker at
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
 
 =head1 SEE ALSO
 
