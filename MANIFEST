@@ -29,3 +29,5 @@ t/meth.t
 t/pod.t
 t/types.t
 t/types_affordance.t
+t/view.t
+t/view_affordance.t
