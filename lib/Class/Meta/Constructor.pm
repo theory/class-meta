@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.11 2003/11/24 01:47:40 david Exp $
+# $Id: Constructor.pm,v 1.12 2003/11/24 01:48:57 david Exp $
 
 use strict;
 
@@ -235,7 +235,7 @@ sub build {
                 if ($attr->my_authz >= Class::Meta::SET) {
                     # Let them set the value.
                     $attr->call_set($new, exists $p{$key}
-                                    ? $p{$key}
+                                    ? delete $p{$key}
                                     : $attr->my_default);
                 } else {
                     # Use the default value.
