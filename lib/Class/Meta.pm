@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.14 2002/06/04 20:52:23 david Exp $
+# $Id: Meta.pm,v 1.15 2002/06/07 18:28:00 david Exp $
 
 =head1 NAME
 
@@ -278,6 +278,15 @@ Class::Meta::Class, of course.
 =item *
 
 Add localization using Locale::Maketext.
+
+=item *
+
+Create unified method for handling exceptions using exception objects. Allow
+exceptions to somehow chain, so that all the exceptions for a given
+transaction can be recorded. This will allow B<all> of the errors of data
+validation for a given object to be recorded at once and show to the user at
+once, so that they don't have to fix their problems piecemeal. No, this is not
+a simple task.
 
 =back
 
