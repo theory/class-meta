@@ -1,10 +1,16 @@
 Revision history for Perl extension Class::Meta.
 
-0.37
+0.40
       - Remembered to actually apply the patch taht fixes the tests under
         Windows. Sheesh!
       - Subclasses of Class, Constructor, Attribute, and Method can now call
         "SUPER::new()" and "SUPER::build()" without getting errors.
+      - Changed implementation of Class::Meta::Class so that its attributes
+        are stored in the object hash itself. This brings it in line with
+        the implementation of Constructor, Attribute, and Method, thus
+        making subclassing consistent with those classes. However it also
+        required that references to its contents be changed in all the other
+        classes, as well. Hence the bump to 0.40.
 
 0.36  2004-07-30T00:59:31
       - Finally, truly got the tests fixed for Windows. Without question.

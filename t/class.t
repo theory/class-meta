@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.11 2004/08/26 23:50:15 david Exp $
+# $Id: class.t,v 1.12 2004/08/27 01:53:22 david Exp $
 
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 13;
 BEGIN { use_ok( 'Class::Meta') }
 
 # Make sure we can't instantiate a class object from here.
@@ -25,6 +25,7 @@ my $spec = { desc  => 'Foo Class description',
              class => Class::Meta->new->class,
              error_handler => Class::Meta->default_error_handler,
              key   => 'foo' };
+
 # This should be okay.
 ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
@@ -33,12 +34,6 @@ ok( $class = Class::Meta::Class->new($spec),
 is( $class->name, $spec->{key}, 'name' );
 is( $class->desc, $spec->{desc}, 'desc' );
 is( $class->key, $spec->{key}, 'key' );
-
-# This should throw an exception because we can only create a class once.
-eval { $class = Class::Meta::Class->new($spec) };
-ok($err = $@, 'Error creating duplicate class' );
-like($err, qr/^Class object for class 'FooClass' already exists/,
-     'Check duplicate class error message' );
 
 # Now try inheritance for Class.
 package Class::Meta::Class::Sub;

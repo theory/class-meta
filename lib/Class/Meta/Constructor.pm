@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.52 2004/08/26 23:50:15 david Exp $
+# $Id: Constructor.pm,v 1.53 2004/08/27 01:53:21 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.37";
+our $VERSION = "0.40";
 
 ##############################################################################
 # Constructors                                                               #
@@ -60,7 +60,7 @@ object, instead.
 
 sub new {
     my $pkg = shift;
-    my $spec = shift;
+    my $class = shift;
 
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Constructor object.
@@ -71,29 +71,29 @@ sub new {
         || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Make sure we can get all the arguments.
-    $spec->{class}->handle_error("Odd number of parameters in call to "
-                                 . "new() when named parameters were "
-                                 . "expected") if @_ % 2;
+    $class->handle_error("Odd number of parameters in call to new() when "
+                         . "named parameters were expected")
+      if @_ % 2;
     my %p = @_;
 
     # Validate the name.
-    $spec->{class}->handle_error("Parameter 'name' is required in call to "
-                                 . "new()") unless $p{name};
-    $spec->{class}->handle_error("Constructor '$p{name}' is not a valid "
-                                 . "constructor name -- only alphanumeric "
-                                 . "and '_' characters allowed")
+    $class->handle_error("Parameter 'name' is required in call to new()")
+      unless $p{name};
+    $class->handle_error("Constructor '$p{name}' is not a valid constructor "
+                         . "name -- only alphanumeric and '_' characters "
+                         . "allowed")
       if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another constructor or
     # method.
-    $spec->{class}->handle_error("Method '$p{name}' already exists in class "
-                                 . "'$spec->{package}'")
-      if exists $spec->{ctors}{$p{name}}
-      or exists $spec->{meths}{$p{name}};
+    $class->handle_error("Method '$p{name}' already exists in class "
+                         . "'$class->{package}'")
+      if exists $class->{ctors}{$p{name}}
+      or exists $class->{meths}{$p{name}};
 
     # Check the visibility.
     if (exists $p{view}) {
-        $spec->{class}->handle_error("Not a valid view parameter: '$p{view}'")
+        $class->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
           ||     $p{view} == Class::Meta::PRIVATE;
@@ -108,30 +108,29 @@ sub new {
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
-        $spec->{class}->handle_error("Parameter caller must be a code "
-                                     . "reference")
+        $class->handle_error("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE';
     } else {
-        $p{caller} = UNIVERSAL::can($spec->{package}, $p{name})
+        $p{caller} = UNIVERSAL::can($class->{package}, $p{name})
           unless $p{create};
     }
 
     # Create and cache the constructor object.
-    $p{package} = $spec->{package};
-    $spec->{ctors}{$p{name}} = bless \%p, ref $pkg || $pkg;
+    $p{package} = $class->{package};
+    $class->{ctors}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
-        push @{$spec->{prot_ctor_ord}}, $p{name};
-        push @{$spec->{ctor_ord}}, $p{name}
+        push @{$class->{prot_ctor_ord}}, $p{name};
+        push @{$class->{ctor_ord}}, $p{name}
           if $p{view} == Class::Meta::PUBLIC;
     }
 
     # Store a reference to the class object.
-    $p{class} = $spec->{class};
+    $p{class} = $class;
 
     # Let 'em have it.
-    return $spec->{ctors}{$p{name}};
+    return $class->{ctors}{$p{name}};
 }
 
 
@@ -221,10 +220,12 @@ sub call {
 
 =head3 build
 
+  $ctor->build($class);
+
 This is a protected method, designed to be called only by the Class::Meta
-class or a subclass of Class::Meta. It takes a single argument, a hash of the
-class specification maintained internally by Class::Meta, and generates
-constructor methods for the Class::Meta::Constructor object.
+class or a subclass of Class::Meta. It takes a single argument, the
+Class::Meta::Class object for the class in which the attribute was defined,
+and generates constructor methods for the Class::Meta::Constructor object.
 
 Although you should never call this method directly, subclasses of
 Class::Meta::Attribute may need to override its behavior.

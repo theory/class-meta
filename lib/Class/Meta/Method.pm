@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.43 2004/08/26 23:50:15 david Exp $
+# $Id: Method.pm,v 1.44 2004/08/27 01:53:21 david Exp $
 
 =head1 NAME
 
@@ -40,7 +40,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.37";
+our $VERSION = "0.40";
 
 =head1 INTERFACE
 
@@ -56,7 +56,7 @@ method on a Class::Meta object, instead.
 
 sub new {
     my $pkg = shift;
-    my $spec = shift;
+    my $class = shift;
 
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Method object.
@@ -67,29 +67,29 @@ sub new {
         || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Make sure we can get all the arguments.
-    $spec->{class}->handle_error("Odd number of parameters in call to new() "
+    $class->handle_error("Odd number of parameters in call to new() "
                                  . "when named parameters were expected")
       if @_ % 2;
 
     my %p = @_;
 
     # Validate the name.
-    $spec->{class}->handle_error("Parameter 'name' is required in call to "
+    $class->handle_error("Parameter 'name' is required in call to "
                                  . "new()") unless $p{name};
-    $spec->{class}->handle_error("Method '$p{name}' is not a valid method "
+    $class->handle_error("Method '$p{name}' is not a valid method "
              . "name -- only alphanumeric and '_' characters allowed")
       if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another method
     # or constructor.
-    $spec->{class}->handle_error("Method '$p{name}' already exists in class "
-             . "'$spec->{package}'")
-      if exists $spec->{meths}{$p{name}}
-      || exists $spec->{ctors}{$p{name}};
+    $class->handle_error("Method '$p{name}' already exists in class "
+             . "'$class->{package}'")
+      if exists $class->{meths}{$p{name}}
+      || exists $class->{ctors}{$p{name}};
 
     # Check the visibility.
     if (exists $p{view}) {
-        $spec->{class}->handle_error("Not a valid view parameter: '$p{view}'")
+        $class->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
           ||     $p{view} == Class::Meta::PRIVATE;
@@ -100,7 +100,7 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
-        $spec->{class}->handle_error("Not a valid context parameter: "
+        $class->handle_error("Not a valid context parameter: "
                                      . "'$p{context}'")
           unless $p{context} == Class::Meta::OBJECT
           ||     $p{context} == Class::Meta::CLASS;
@@ -112,7 +112,7 @@ sub new {
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
-        $spec->{class}->handle_error("Parameter caller must be a code "
+        $class->handle_error("Parameter caller must be a code "
                                      . "reference")
           unless $ref && $ref eq 'CODE'
       } else {
@@ -121,21 +121,21 @@ sub new {
       }
 
     # Create and cache the method object.
-    $p{package} = $spec->{package};
-    $spec->{meths}{$p{name}} = bless \%p, ref $pkg || $pkg;
+    $p{package} = $class->{package};
+    $class->{meths}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
-        push @{$spec->{prot_meth_ord}}, $p{name};
-        push @{$spec->{meth_ord}}, $p{name}
+        push @{$class->{prot_meth_ord}}, $p{name};
+        push @{$class->{meth_ord}}, $p{name}
           if $p{view} == Class::Meta::PUBLIC;
     }
 
     # Store a reference to the class object.
-    $p{class} = $spec->{class};
+    $p{class} = $class;
 
     # Let 'em have it.
-    return $spec->{meths}{$p{name}};
+    return $class->{meths}{$p{name}};
 }
 
 ##############################################################################
@@ -239,18 +239,21 @@ sub call {
 
 =head3 build
 
+  $meth->build($class);
+
 This is a protected method, designed to be called only by the Class::Meta
-class or a subclass of Class::Meta. It takes a single argument, a hash of the
-class specification maintained internally by Class::Meta. Currently,
-C<Class::Meta::Method::build()> is a no-op, although it does check to make
-sure that it is only called by Class::Meta or a subclass of Class::Meta.
-Although you should never call this method directly, subclasses of
-Class::Meta::Method may need to override it in order to add behavior.
+class or a subclass of Class::Meta. It takes a single argument, the
+Class::Meta::Class object for the class in which the attribute was defined.
+Currently, C<Class::Meta::Method::build()> is a no-op, although it does check
+to make sure that it is only called by Class::Meta or a subclass of
+Class::Meta or of Class::Meta::Method. Although you should never call this
+method directly, subclasses of Class::Meta::Method may need to override it in
+order to add behavior.
 
 =cut
 
 sub build {
-    my ($self, $spec) = @_;
+    my ($self, $class) = @_;
 
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.

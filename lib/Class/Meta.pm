@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.90 2004/08/26 23:50:14 david Exp $
+# $Id: Meta.pm,v 1.91 2004/08/27 01:53:21 david Exp $
 
 =head1 NAME
 
@@ -636,7 +636,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.37";
+our $VERSION = "0.40";
 
 ##############################################################################
 # Private Package Globals
@@ -687,24 +687,29 @@ our $VERSION = "0.37";
         $p{package} ||= caller;
         $p{key} ||= $p{package};
 
-        $p{class_class}       ||= 'Class::Meta::Class';
-        $p{constructor_class} ||= 'Class::Meta::Constructor';
-        $p{attribute_class}   ||= 'Class::Meta::Attribute';
-        $p{method_class}      ||= 'Class::Meta::Method';
-
+        # Configure the error handler.
         if (exists $p{error_handler}) {
             $error_handler->("Error handler must be a code reference")
               unless ref $p{error_handler} eq 'CODE';
         } else {
             $p{error_handler} = $pkg->default_error_handler;
-
         }
 
-        # Instantiate a Class object.
-        $p{class} = $p{class_class}->new(\%p);
+        # Check to make sure we haven't created this class already.
+        $p{error_handler}->("Class object for class '$p{package}' "
+                            . "already exists")
+          if $classes{$p{package}};
 
-        # Cache the definition.
-        $classes{$p{package}} = \%p;
+        $p{class_class}       ||= 'Class::Meta::Class';
+        $p{constructor_class} ||= 'Class::Meta::Constructor';
+        $p{attribute_class}   ||= 'Class::Meta::Attribute';
+        $p{method_class}      ||= 'Class::Meta::Method';
+
+        # Instantiate a and cache Class object.
+        $classes{$p{package}} = $p{class_class}->new(\%p);
+
+        # Copy its parents' attributes and return.
+        $classes{$p{package}}->_inherit( \%classes, 'attr');
 
         # Return!
         return bless { package => $p{package} }, ref $pkg || $pkg;
@@ -767,10 +772,10 @@ being defined.
 =cut
 
     sub add_constructor {
-        my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_ctor_ord}},
-          $spec->{constructor_class}->new($spec, @_);
-        return $spec->{build_ctor_ord}[-1];
+        my $class = $classes{ shift->{package} };
+        push @{$class->{build_ctor_ord}},
+          $class->{constructor_class}->new($class, @_);
+        return $class->{build_ctor_ord}[-1];
     }
 
 ##############################################################################
@@ -919,10 +924,10 @@ override the attribute and avoid the exception.
 =cut
 
     sub add_attribute {
-        my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_attr_ord}},
-          $spec->{attribute_class}->new($spec, @_);
-        return $spec->{build_attr_ord}[-1];
+        my $class = $classes{ shift->{package} };
+        push @{$class->{build_attr_ord}},
+          $class->{attribute_class}->new($class, @_);
+        return $class->{build_attr_ord}[-1];
     }
 
 ##############################################################################
@@ -974,8 +979,8 @@ being defined.
 =cut
 
     sub add_method {
-        my $spec = $classes{ shift->{package} };
-        $spec->{method_class}->new($spec, @_);
+        my $class = $classes{ shift->{package} };
+        $class->{method_class}->new($class, @_);
     }
 
 ##############################################################################
@@ -994,7 +999,7 @@ provide the introspection API for the class being generated.
 =cut
 
     # Simple accessor.
-    sub class { $classes{ $_[0]->{package} }->{class} }
+    sub class { $classes{ $_[0]->{package} } }
 
 ##############################################################################
 # build()
@@ -1010,28 +1015,31 @@ C<my_class()> class method, and all requisite constructors and accessors.
 
     sub build {
         my $self = shift;
-        my $spec = $classes{ $self->{package} };
+        my $class = $classes{ $self->{package} };
 
         # Build the attribute accessors.
-        if (my $objs = $spec->{build_attr_ord}) {
-            $_->build($spec) for @$objs;
+        if (my $objs = $class->{build_attr_ord}) {
+            $_->build($class) for @$objs;
         }
 
         # Build the constructors.
-        if (my $objs = $spec->{build_ctor_ord}) {
+        if (my $objs = $class->{build_ctor_ord}) {
             $_->build(\%classes) for @$objs;
         }
 
         # Build the methods.
-        if (my $objs = $spec->{build_meth_ord}) {
+        if (my $objs = $class->{build_meth_ord}) {
             $_->build(\%classes) for @$objs;
         }
 
+        # Build the class; it needs to get at the data added by the above
+        # calls to build() methods.
+        $class->build(\%classes);
+
         # Build the Class::Meta::Class accessor and key shortcut.
         no strict 'refs';
-        *{"$spec->{package}::my_class"} = sub { $spec->{class} };
+        *{"$class->{package}::my_class"} = sub { $class };
 
-        $spec->{class}->build;
         return $self;
     }
 }

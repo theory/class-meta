@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.49 2004/08/26 23:50:15 david Exp $
+# $Id: Class.pm,v 1.50 2004/08/27 01:53:21 david Exp $
 
 =head1 NAME
 
@@ -56,7 +56,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.37";
+our $VERSION = "0.40";
 our @CARP_NOT = qw(Class::Meta);
 
 =head1 INTERFACE
@@ -75,36 +75,21 @@ class for which it was constructed.
 
 ##############################################################################
 
-{
-    my %specs;
+sub new {
+    my ($pkg, $spec) = @_;
+    # Check to make sure that only Class::Meta or a subclass is
+    # constructing a Class::Meta::Class object.
+    my $caller = caller;
+    Class::Meta->handle_error("Package '$caller' cannot create $pkg objects")
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+      || UNIVERSAL::isa($caller, __PACKAGE__);
 
-    sub new {
-        my ($pkg, $spec) = @_;
-        # Check to make sure that only Class::Meta or a subclass is
-        # constructing a Class::Meta::Class object.
-        my $caller = caller;
-        Class::Meta->handle_error("Package '$caller' cannot create $pkg "
-                                  . "objects")
-          unless UNIVERSAL::isa($caller, 'Class::Meta')
-          || UNIVERSAL::isa($caller, __PACKAGE__);
+    # Set the name to be the same as the key by default.
+    $spec->{name} = $spec->{key} unless defined $spec->{name};
 
-        # Set the name to be the same as the key by default.
-        $spec->{name} = $spec->{key} unless defined $spec->{name};
-
-        # Check to make sure we haven't created this class already.
-        $spec->{error_handler}->("Class object for class '$spec->{package}' "
-                                 . "already exists")
-          if $specs{$spec->{package}};
-
-        # Save a reference to the spec hash ref.
-        $specs{$spec->{package}} = $spec;
-
-        # Okay, create the class object.
-        my $self = bless { package => $spec->{package} }, ref $pkg || $pkg;
-
-        # Copy its parents' attributes and return.
-        return $self->_inherit('attr');
-    }
+    # Okay, create the class object.
+    my $self = bless $spec, ref $pkg || $pkg;
+}
 
 ##############################################################################
 # Instance Methods
@@ -140,10 +125,10 @@ Returns a description of the class.
 
 =cut
 
-    sub package { $_[0]->{package}                 }
-    sub key     { $specs{$_[0]->{package}}->{key}  }
-    sub name    { $specs{$_[0]->{package}}->{name} }
-    sub desc    { $specs{$_[0]->{package}}->{desc} }
+sub package { $_[0]->{package} }
+sub key     { $_[0]->{key}     }
+sub name    { $_[0]->{name}    }
+sub desc    { $_[0]->{desc}    }
 
 ##############################################################################
 
@@ -160,8 +145,7 @@ C<< $class->package->isa($pkg) >>, but more efficient.
 
 =cut
 
-    # Check inheritance.
-    sub is_a { UNIVERSAL::isa($_[0]->{package}, $_[1]) }
+sub is_a { UNIVERSAL::isa($_[0]->{package}, $_[1]) }
 
 ##############################################################################
 # Accessors to get at the constructor, attribute, and method objects.
@@ -182,19 +166,20 @@ specified names.
 
 =cut
 
-    sub constructors {
-        my $self = shift;
-        my $spec = $specs{$self->{package}};
-        my $objs = $spec->{ctors};
-        # Explicit list requested.
-        my $list = @_ ? \@_
-          # List of protected interface objects.
-          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_ctor_ord}
-          # List of public interface objects.
-          : $spec->{ctor_ord};
-        return unless $list;
-        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
-    }
+sub constructors {
+    my $self = shift;
+    my $objs = $self->{ctors};
+    my $list = @_
+      # Explicit list requested.
+      ? \@_
+      : UNIVERSAL::isa(scalar caller, $self->{package})
+        # List of protected interface objects.
+        ? $self->{prot_ctor_ord}
+        # List of public interface objects.
+        : $self->{ctor_ord};
+    return unless $list;
+    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+}
 
 ##############################################################################
 
@@ -213,19 +198,20 @@ names.
 
 =cut
 
-    sub attributes {
-        my $self = shift;
-        my $spec = $specs{$self->{package}};
-        my $objs = $spec->{attrs};
-        # Explicit list requested.
-        my $list = @_ ? \@_
-          # List of protected interface objects.
-          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_attr_ord}
-          # List of public interface objects.
-          : $spec->{attr_ord};
-        return unless $list;
-        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
-    }
+sub attributes {
+    my $self = shift;
+    my $objs = $self->{attrs};
+    my $list = @_
+      # Explicit list requested.
+      ? \@_
+        : UNIVERSAL::isa(scalar caller, $self->{package})
+        # List of protected interface objects.
+        ? $self->{prot_attr_ord}
+        # List of public interface objects.
+        : $self->{attr_ord};
+    return unless $list;
+    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+}
 
 ##############################################################################
 
@@ -243,95 +229,103 @@ returns all of the method objects with the specified names.
 
 =cut
 
-    sub methods {
-        my $self = shift;
-        my $spec = $specs{$self->{package}};
-        my $objs = $spec->{meths};
-        # Explicit list requested.
-        my $list = @_ ? \@_
-          # List of protected interface objects.
-          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_meth_ord}
-          # List of public interface objects.
-          : $spec->{meth_ord};
-        return unless $list;
-        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
-    }
+sub methods {
+    my $self = shift;
+    my $objs = $self->{meths};
+    my $list = @_
+      # Explicit list requested.
+      ? \@_
+      : UNIVERSAL::isa(scalar caller, $self->{package})
+        # List of protected interface objects.
+        ? $self->{prot_meth_ord}
+        # List of public interface objects.
+        : $self->{meth_ord};
+    return unless $list;
+    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+}
 
 ##############################################################################
 
 =head3 handle_error
 
+  $class->handle_error($error)
 
+Handles Class::Meta-related errors using either the error handler specified
+when the Class::Meta::Class object was created or the default error handler at
+the time the Class::Meta::Class object was created.
 
 =cut
 
-    sub handle_error {
-        my $code = $specs{shift->{package}}->{error_handler};
-        $code->(@_);
-    }
+sub handle_error {
+    my $code = shift->{error_handler};
+    $code->(@_)
+}
 
 ##############################################################################
 
 =head3 build
 
+  $class->build($classes);
+
 This is a protected method, designed to be called only by the Class::Meta
 class or a subclass of Class::Meta. It copies the attribute, constructor, and
 method objects from all of the parent classes of the class object so that they
 will be readily available from the C<attributes()>, C<constructors()>, and
-C<methods()> methods.
-
+C<methods()> methods. Its sole argument is a reference to the hash of all
+Class::Meta::Class objects (keyed off their package names) stored by
+Class::Meta.
 
 Although you should never call this method directly, subclasses of
 Class::Meta::Class may need to override its behavior.
 
 =cut
 
-    sub build {
-        my $self = shift;
+sub build {
+    my ($self, $classes) = @_;
 
-        # Check to make sure that only Class::Meta or a subclass is building
-        # attribute accessors.
-        my $caller = caller;
-        $self->handle_error("Package '$caller' cannot call " . ref($self)
-                            . "->build")
-          unless UNIVERSAL::isa($caller, 'Class::Meta')
-            || UNIVERSAL::isa($caller, __PACKAGE__);
-        # Copy attributes again to make sure that overridden attributes
-        # truly override.
-        $self->_inherit(qw(ctor meth attr));
-    }
+    # Check to make sure that only Class::Meta or a subclass is building
+    # attribute accessors.
+    my $caller = caller;
+    $self->handle_error("Package '$caller' cannot call " . ref($self)
+                        . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+      || UNIVERSAL::isa($caller, __PACKAGE__);
+
+    # Copy attributes again to make sure that overridden attributes
+    # truly override.
+    $self->_inherit($classes, qw(ctor meth attr));
+}
 
 ##############################################################################
 # Private Methods.
 ##############################################################################
 
-    sub _inherit {
-        my $self = shift;
-        my $spec = $specs{$self->{package}};
+sub _inherit {
+    my $self = shift;
+    my $classes = shift;
 
-        # Get a list of all of the parent classes.
-        my @classes = reverse Class::ISA::self_and_super_path($spec->{package});
+    # Get a list of all of the parent classes.
+    my @classes = reverse Class::ISA::self_and_super_path($self->{package});
 
-        # For each metadata class, copy the parents' objects.
-        for my $key (@_) {
-            my (@things, @ord, @prot, %sord, %sprot);
-            for my $super (@classes) {
-                push @things, %{ $specs{$super}{"${key}s"} }
-                  if $specs{$super}{$key . 's'};
-                push @ord, grep { not $sord{$_}++ }
-                  @{ $specs{$super}{"$key\_ord"} }
-                  if $specs{$super}{"$key\_ord"};
-                push @prot, grep { not $sprot{$_}++ }
-                  @{ $specs{$super}{"prot_$key\_ord"} }
-                  if $specs{$super}{"prot_$key\_ord"};
-            }
-
-            $spec->{"${key}s"}        = { @things } if @things;
-            $spec->{"$key\_ord"}      = \@ord       if @ord;
-            $spec->{"prot_$key\_ord"} = \@prot      if @prot;
+    # For each metadata class, copy the parents' objects.
+    for my $key (@_) {
+        my (@things, @ord, @prot, %sord, %sprot);
+        for my $super (@classes) {
+            push @things, %{ $classes->{$super}{"${key}s"} }
+              if $classes->{$super}{$key . 's'};
+            push @ord, grep { not $sord{$_}++ }
+              @{ $classes->{$super}{"$key\_ord"} }
+                if $classes->{$super}{"$key\_ord"};
+            push @prot, grep { not $sprot{$_}++ }
+              @{ $classes->{$super}{"prot_$key\_ord"} }
+                if $classes->{$super}{"prot_$key\_ord"};
         }
-        return $self;
+
+        $self->{"${key}s"}        = { @things } if @things;
+        $self->{"$key\_ord"}      = \@ord       if @ord;
+        $self->{"prot_$key\_ord"} = \@prot      if @prot;
     }
+    return $self;
 }
 
 1;
