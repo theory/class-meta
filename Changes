@@ -1,6 +1,8 @@
 Revision history for Perl extension Class::Meta.
 
 0.46
+      - Fixed documentation to reflect that the "class()" method in the
+        Constructor class requires the package name as its first argument.
 
 0.45  2005-01-07T19:41:41
       - Added "parents()" method to Class::Meta::Class to return the class

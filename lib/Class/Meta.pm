@@ -67,7 +67,7 @@ Or make use of the introspection API:
   print "\nConstructors:\n";
   for my $ctor ($class->constructors) {
       print "  o ", $ctor->name, $/;
-      $thingy = $ctor->call;
+      $thingy = $ctor->call($class->package);
   }
 
   print "\nAttributes:\n";
