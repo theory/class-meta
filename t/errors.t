@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: errors.t,v 1.10 2004/07/31 23:47:59 david Exp $
+# $Id: errors.t,v 1.11 2004/08/26 23:50:15 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -84,7 +84,7 @@ chk('Attribute->build protected',
 
 ##############################################################################
 # Test Class::Meta::Class errors.
-eval { $cm->class->new };
+eval { Class::Meta::Class->new };
 chk('Class->new protected',
     qr/ cannot create Class::Meta::Class objects/);
 
@@ -265,7 +265,7 @@ sub chk {
     # Check its message.
     like( $err, $qr, "Correct error" );
     # Make sure it refers to this file.
-    like( $err, qr/(?:at\s+\Q$fn\E|\Q$fn\E\s+at)\s+line/, 'Correct context' ;)
+    like( $err, qr/(?:at\s+\Q$fn\E|\Q$fn\E\s+at)\s+line/, 'Correct context' );
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }

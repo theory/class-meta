@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.9 2004/01/21 00:59:37 david Exp $
+# $Id: ctor.t,v 1.10 2004/08/26 23:50:15 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 44;
+use Test::More tests => 45;
 
 ##############################################################################
 # Create a simple class.
@@ -140,11 +140,20 @@ BEGIN {
 package Class::Meta::Constructor::Sub;
 use base 'Class::Meta::Constructor';
 
+# Make sure we can override new and build.
+sub new { shift->SUPER::new(@_) }
+sub build { shift->SUPER::build(@_) }
+
+sub foo { shift->{foo} }
+
 package main;
-ok( my $cm = Class::Meta->new( constructor_class => 'Class::Meta::Constructor::Sub'),
-    "Create Class" );
-ok( my $meth = $cm->add_constructor(name => 'foo'), "Add foo constructor" );
-isa_ok($meth, 'Class::Meta::Constructor::Sub');
-isa_ok($meth, 'Class::Meta::Constructor');
-is( $meth->name, 'foo', "Check an attibute");
+ok( my $cm = Class::Meta->new(
+    constructor_class => 'Class::Meta::Constructor::Sub'
+), "Create Class" );
+ok( my $ctor = $cm->add_constructor(name => 'foo', foo => 'bar'),
+    "Add foo constructor" );
+isa_ok($ctor, 'Class::Meta::Constructor::Sub');
+isa_ok($ctor, 'Class::Meta::Constructor');
+is( $ctor->name, 'foo', "Check an attibute");
+is( $ctor->foo, 'bar', "Check added attibute");
 

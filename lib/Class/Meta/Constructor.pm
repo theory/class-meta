@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.51 2004/07/30 01:12:25 david Exp $
+# $Id: Constructor.pm,v 1.52 2004/08/26 23:50:15 david Exp $
 
 =head1 NAME
 
@@ -65,9 +65,10 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Constructor object.
     my $caller = caller;
-    Class::Meta->handle_error("Package '$caller' cannot create ". __PACKAGE__
-                              . " objects")
-      unless UNIVERSAL::isa($caller, 'Class::Meta');
+    Class::Meta->handle_error("Package '$caller' cannot create $pkg "
+                              . "objects")
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+        || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Make sure we can get all the arguments.
     $spec->{class}->handle_error("Odd number of parameters in call to "
@@ -236,9 +237,10 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # constructors.
     my $caller = caller;
-    $self->class->handle_error("Package '$caller' cannot call " . __PACKAGE__
+    $self->class->handle_error("Package '$caller' cannot call " . ref($self)
                                . "->build")
-      unless UNIVERSAL::isa($caller, 'Class::Meta');
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+        || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Just bail if we're not creating the constructor.
     return $self unless delete $self->{create};

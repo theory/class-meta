@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.9 2004/01/08 22:00:19 david Exp $
+# $Id: meth.t,v 1.10 2004/08/26 23:50:15 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 47;
+use Test::More tests => 48;
 
 ##############################################################################
 # Create a simple class.
@@ -146,11 +146,19 @@ BEGIN {
 package Class::Meta::Method::Sub;
 use base 'Class::Meta::Method';
 
+# Make sure we can override new and build.
+sub new { shift->SUPER::new(@_) }
+sub build { shift->SUPER::build(@_) }
+
+sub foo { shift->{foo} }
+
 package main;
 ok( my $cm = Class::Meta->new( method_class => 'Class::Meta::Method::Sub'),
     "Create Class" );
-ok( my $meth = $cm->add_method(name => 'foo'), "Add foo method" );
+ok( my $meth = $cm->add_method(name => 'foo', foo => 'bar'),
+    "Add foo method" );
 isa_ok($meth, 'Class::Meta::Method::Sub');
 isa_ok($meth, 'Class::Meta::Method');
 is( $meth->name, 'foo', "Check an attibute");
+is( $meth->foo, 'bar', "Check added attibute");
 

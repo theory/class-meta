@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.48 2004/07/30 01:12:25 david Exp $
+# $Id: Class.pm,v 1.49 2004/08/26 23:50:15 david Exp $
 
 =head1 NAME
 
@@ -73,19 +73,20 @@ class for which it was constructed.
 
 =cut
 
+##############################################################################
+
 {
-    # We'll keep the class specifications in here.
     my %specs;
 
-##############################################################################
     sub new {
         my ($pkg, $spec) = @_;
         # Check to make sure that only Class::Meta or a subclass is
         # constructing a Class::Meta::Class object.
         my $caller = caller;
-        Class::Meta->handle_error("Package '$caller' cannot create "
-                                  . __PACKAGE__ . " objects")
-          unless UNIVERSAL::isa($caller, 'Class::Meta');
+        Class::Meta->handle_error("Package '$caller' cannot create $pkg "
+                                  . "objects")
+          unless UNIVERSAL::isa($caller, 'Class::Meta')
+          || UNIVERSAL::isa($caller, __PACKAGE__);
 
         # Set the name to be the same as the key by default.
         $spec->{name} = $spec->{key} unless defined $spec->{name};
@@ -291,9 +292,10 @@ Class::Meta::Class may need to override its behavior.
         # Check to make sure that only Class::Meta or a subclass is building
         # attribute accessors.
         my $caller = caller;
-        $self->handle_error("Package '$caller' cannot call " . __PACKAGE__
+        $self->handle_error("Package '$caller' cannot call " . ref($self)
                             . "->build")
-          unless UNIVERSAL::isa($caller, 'Class::Meta');
+          unless UNIVERSAL::isa($caller, 'Class::Meta')
+            || UNIVERSAL::isa($caller, __PACKAGE__);
         # Copy attributes again to make sure that overridden attributes
         # truly override.
         $self->_inherit(qw(ctor meth attr));

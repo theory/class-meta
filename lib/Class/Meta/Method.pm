@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.42 2004/07/30 01:12:25 david Exp $
+# $Id: Method.pm,v 1.43 2004/08/26 23:50:15 david Exp $
 
 =head1 NAME
 
@@ -61,9 +61,10 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Method object.
     my $caller = caller;
-    Class::Meta->handle_error("Package '$caller' cannot create " . __PACKAGE__
-                              . " objects")
-        unless UNIVERSAL::isa($caller, 'Class::Meta');
+    Class::Meta->handle_error("Package '$caller' cannot create $pkg "
+                              . "objects")
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+        || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Make sure we can get all the arguments.
     $spec->{class}->handle_error("Odd number of parameters in call to new() "
@@ -254,9 +255,10 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    $self->class->handle_error("Package '$caller' cannot call "
-                              . __PACKAGE__ . "->build")
-      unless UNIVERSAL::isa($caller, 'Class::Meta');
+    $self->class->handle_error("Package '$caller' cannot call " . ref($self)
+                               . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta')
+        || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # No-op.
     return $self;

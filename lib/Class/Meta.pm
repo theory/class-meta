@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.89 2004/07/30 01:12:24 david Exp $
+# $Id: Meta.pm,v 1.90 2004/08/26 23:50:14 david Exp $
 
 =head1 NAME
 
@@ -699,7 +699,6 @@ our $VERSION = "0.37";
             $p{error_handler} = $pkg->default_error_handler;
 
         }
-
 
         # Instantiate a Class object.
         $p{class} = $p{class_class}->new(\%p);

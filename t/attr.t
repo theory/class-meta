@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: attr.t,v 1.3 2004/01/15 02:48:43 david Exp $
+# $Id: attr.t,v 1.4 2004/08/26 23:50:15 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 43;
+use Test::More tests => 44;
 
 ##############################################################################
 # Create a simple class.
@@ -137,11 +137,20 @@ BEGIN {
 package Class::Meta::Attribute::Sub;
 use base 'Class::Meta::Attribute';
 
+# Make sure we can override new and build.
+sub new { shift->SUPER::new(@_) }
+sub build { shift->SUPER::build(@_) }
+
+sub foo { shift->{foo} }
+
 package main;
-ok( my $cm = Class::Meta->new( attribute_class => 'Class::Meta::Attribute::Sub'),
-    "Create Class" );
-ok( my $meth = $cm->add_attribute(name => 'foo'), "Add foo attribute" );
-isa_ok($meth, 'Class::Meta::Attribute::Sub');
-isa_ok($meth, 'Class::Meta::Attribute');
-is( $meth->name, 'foo', "Check an attibute");
+ok( my $cm = Class::Meta->new(
+    attribute_class => 'Class::Meta::Attribute::Sub',
+), "Create Class" );
+ok( my $attr = $cm->add_attribute(name => 'foo', foo => 'bar'),
+    "Add foo attribute" );
+isa_ok($attr, 'Class::Meta::Attribute::Sub');
+isa_ok($attr, 'Class::Meta::Attribute');
+is( $attr->name, 'foo', "Check an attibute");
+is( $attr->foo, 'bar', "Check added attribute" );
 
