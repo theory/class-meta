@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.43 2004/04/20 08:33:34 david Exp $
+# $Id: Constructor.pm,v 1.44 2004/04/20 12:59:12 david Exp $
 
 =head1 NAME
 
@@ -54,8 +54,8 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Constructor object.
     my $caller = caller;
-    Class::Meta->default_error_handler->("Package '$caller' cannot create "
-                                         . __PACKAGE__ . " objects")
+    Class::Meta->handle_error("Package '$caller' cannot create ". __PACKAGE__
+                              . " objects")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.

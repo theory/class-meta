@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.32 2004/04/20 08:33:34 david Exp $
+# $Id: Type.pm,v 1.33 2004/04/20 12:59:12 david Exp $
 
 =head1 NAME
 
@@ -146,8 +146,8 @@ types.
 
     sub new {
         my $key = lc $_[1]
-          || Class::Meta->default_error_handler->("Type argument required");
-        Class::Meta->default_error_handler->("Type '$_[1]' does not exist")
+          || Class::Meta->handle_error("Type argument required");
+        Class::Meta->handle_error("Type '$_[1]' does not exist")
             unless $types{$key};
         return bless $types{$key}, ref $_[0] || $_[0];
     }
@@ -306,7 +306,7 @@ accessor builders.
     sub add {
         my $pkg = shift;
         # Make sure we can process the parameters.
-        Class::Meta->default_error_handler->("Odd number of parameters in "
+        Class::Meta->handle_error("Odd number of parameters in "
                                             . "call to new() when named "
                                             . "parameters were expected")
             if @_ % 2;
@@ -315,18 +315,18 @@ accessor builders.
 
         # Check required paremeters.
         foreach (qw(key name)) {
-            Class::Meta->default_error_handler->("Parameter '$_' is required")
+            Class::Meta->handle_error("Parameter '$_' is required")
                 unless $params{$_};
         }
 
         # Check the key parameter.
         $params{key} = lc $params{key};
-        Class::Meta->default_error_handler->("Type '$params{key}' already defined")
+        Class::Meta->handle_error("Type '$params{key}' already defined")
           if exists $types{$params{key}};
 
         # Set up the check croak.
         my $chk_die = sub {
-            Class::Meta->default_error_handler->(
+            Class::Meta->handle_error(
               "Paremter 'check' in call to add() must be a code reference, "
                . "an array of code references, or a scalar naming an object "
                . "type"
@@ -359,15 +359,15 @@ accessor builders.
         eval "require $builder";
 
         $params{builder} = UNIVERSAL::can($builder, 'build')
-          || Class::Meta->default_error_handler->("No such function "
+          || Class::Meta->handle_error("No such function "
                                                  . "'${builder}::build()'");
 
         $params{attr_get} = UNIVERSAL::can($builder, 'build_attr_get')
-          || Class::Meta->default_error_handler->("No such function "
+          || Class::Meta->handle_error("No such function "
                                                  . "'${builder}::build_attr_get()'");
 
         $params{attr_set} = UNIVERSAL::can($builder, 'build_attr_set')
-          || Class::Meta->default_error_handler->("No such function "
+          || Class::Meta->handle_error("No such function "
                                                  . "'${builder}::build_attr_set()'");
 
         # Okay, add the new type to the cache and construct it.
@@ -430,7 +430,7 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    Class::Meta->default_error_handler->("Package '$caller' cannot call "
+    Class::Meta->handle_error("Package '$caller' cannot call "
                                          . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta::Attribute');
 
