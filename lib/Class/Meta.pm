@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.69 2004/01/28 22:12:40 david Exp $
+# $Id: Meta.pm,v 1.70 2004/01/30 17:04:30 david Exp $
 
 =head1 NAME
 
@@ -1020,6 +1020,12 @@ Design by contract.
 =item L<Class::Tangram|Class::Tangram>
 
 Accessor automation and data validation for Tangram applications.
+
+=item L<Class::Maker|Class::Maker>
+
+An ambitious yet underdocumented module that also manages accessor and
+constructor generation, data validation, and provides a reflection API. It
+also supports serialization.
 
 =back
 
