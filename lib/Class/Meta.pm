@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.79 2004/04/20 12:59:11 david Exp $
+# $Id: Meta.pm,v 1.80 2004/04/20 18:24:58 david Exp $
 
 =head1 NAME
 
@@ -525,7 +525,8 @@ original value before loading them.
 Uses the code reference returned by C<default_error_handler()> to handle an
 error. Used internally Class::Meta classes when no Class::Meta::Class object
 is available. Probably not useful outside of Class::Meta unless you're
-creating your own accessor generation class.
+creating your own accessor generation class. Use the C<handle_error()>
+instance method in Class::Meta::Class, instead.
 
 =cut
 
@@ -661,7 +662,6 @@ our $VERSION = "0.31";
           if caller(1) eq 'Class::Meta::AccessorBuilder';
         Carp::croak(@_);
     };
-
 
     sub default_error_handler {
         shift;
