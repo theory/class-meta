@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.22 2004/01/08 21:32:19 david Exp $
+# $Id: base.t,v 1.23 2004/01/15 03:11:21 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 81;
+use Test::More tests => 88;
 
 ##############################################################################
 # Create a simple class.
@@ -221,5 +221,20 @@ ok( my $m = $class->methods('chk_pass'), "Get chk_pass method object" );
 is( $m->name, 'chk_pass', 'chk_pass name' );
 ok( $m->call($t, 'larry', 'yrral') == 1, 'Call chk_pass returns true' );
 ok( $m->call($t, 'larry', 'foo') == 0, 'Call chk_pass returns false' );
+
+# Test constructors().
+ok( my @constructors = $class->constructors, "Get constructor objects" );
+is( scalar @constructors, 1, 'Number of constructors from constructors()' );
+isa_ok($constructors[0], 'Class::Meta::Constructor',
+       "First object is a constructor object" );
+
+# Check the order in which they're returned.
+is( $constructors[0]->name, 'new', 'Check new constructor name' );
+
+# Get a few specific constructors.
+ok( @constructors = $class->constructors(qw(new)),
+    'Grab specific constructor.');
+is( scalar @constructors, 1, 'Two constructors from constructors()' );
+is( $constructors[0]->name, 'new', 'Check specific constructor' );
 
 __END__

@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.27 2004/01/10 01:58:11 david Exp $
+# $Id: Class.pm,v 1.28 2004/01/15 03:11:21 david Exp $
 
 =head1 NAME
 
@@ -177,7 +177,7 @@ specified names.
     sub constructors {
         my $self = shift;
         my $spec = $specs{$self->{package}};
-        my $objs = $spec->{constructors};
+        my $objs = $spec->{ctors};
         # Explicit list requested.
         my $list = @_ ? \@_
           # List of protected interface objects.

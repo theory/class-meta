@@ -5,6 +5,7 @@ Revision history for Perl extension Class::Meta.
       - Added distribution information to all modules.
       - The package attribute now properly defaults to the package
         calling Class::Meta->new.
+      - Class::Meta::Class->construtors now works.
 
 0.10  2004-01-09T03:56:11
       - Initial public release.
