@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id
+# $Id $
 
 =head1 NAME
 
