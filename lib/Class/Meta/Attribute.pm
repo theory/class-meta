@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.24 2004/01/08 21:32:19 david Exp $
+# $Id: Attribute.pm,v 1.25 2004/01/09 00:04:42 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -333,10 +333,6 @@ sub call_set   {
 # Private Methods
 ##############################################################################
 
-my $req_chk = sub {
-    $croak->("Attribute must be defined") unless defined $_[0];
-};
-
 sub build {
     my ($self, $spec) = @_;
 
@@ -351,11 +347,7 @@ sub build {
 
     # Get the data type object and assemble the validation checks.
     my $type = Class::Meta::Type->new($self->{type});
-    $type->build($spec->{package}, $self->{name}, $self->{create},
-                 ($self->required ? $req_chk : ()));
-
-    # XXX Do I need to add code to check the caller and throw an exception for
-    # private and protected methods?
+    $type->build($spec->{package}, $self, delete $self->{create});
 
     # Create the attribute object get code reference.
     if ($self->{authz} >= Class::Meta::READ) {

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.49 2004/01/08 22:00:19 david Exp $
+# $Id: Meta.pm,v 1.50 2004/01/09 00:04:41 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -88,7 +88,6 @@ Class::Meta - Class automation, introspection, and data validation
                           default  => undef );
       $cm->add_attribute( name     => 'age',
                           type     => 'inteter',
-                          required => 0,
                           default  => undef );
 
       # Add a custom method.
@@ -559,10 +558,10 @@ Class::Meta::Method.
         # Class defaults to caller. Key defaults to class.
         $p{key} ||= $p{package} ||= caller;
 
-        $p{class_class} ||= 'Class::Meta::Class';
+        $p{class_class}       ||= 'Class::Meta::Class';
         $p{constructor_class} ||= 'Class::Meta::Constructor';
-        $p{attribute_class} ||= 'Class::Meta::Attribute';
-        $p{method_class} ||= 'Class::Meta::Method';
+        $p{attribute_class}   ||= 'Class::Meta::Attribute';
+        $p{method_class}      ||= 'Class::Meta::Method';
 
         # Instantiate a Class object.
         $p{class} = $p{class_class}->new(\%p);
@@ -632,7 +631,8 @@ being defined.
 
     sub add_constructor {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_ctor_ord}}, $spec->{constructor_class}->new($spec, @_);
+        push @{$spec->{build_ctor_ord}},
+          $spec->{constructor_class}->new($spec, @_);
         return $spec->{build_ctor_ord}[-1];
     }
 
@@ -765,7 +765,8 @@ value or a code reference that will be executed to generate a default value.
 
     sub add_attribute {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_attr_ord}}, $spec->{attribute_class}->new($spec, @_);
+        push @{$spec->{build_attr_ord}},
+          $spec->{attribute_class}->new($spec, @_);
         return $spec->{build_attr_ord}[-1];
     }
 
@@ -837,7 +838,7 @@ provide the introspection API for the class being generated.
 
 =cut
 
-# Simple accessors.
+    # Simple accessor.
     sub class { $classes{ $_[0]->{package} }->{class} }
 
 ##############################################################################
@@ -883,7 +884,8 @@ __END__
 
 =item *
 
-Add ability to create object attribute accessors.
+Add ability to create object attribute accessors, perhaps borrowing from
+Class::Data::Inheritable.
 
 =item *
 

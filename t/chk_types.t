@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: chk_types.t,v 1.6 2004/01/07 23:42:50 david Exp $
+# $Id: chk_types.t,v 1.7 2004/01/09 00:04:42 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -9,7 +9,7 @@
 package Class::Meta::Testing;
 
 use strict;
-use Test::More tests => 183;
+use Test::More tests => 195;
 BEGIN {
     $SIG{__DIE__} = \&Carp::confess;
     use_ok( 'Class::Meta');
@@ -22,8 +22,14 @@ BEGIN {
 }
 
 my $obj = bless {};
-my $attr = 'foo';
+my $aname = 'foo';
 my $i = 0;
+my $attr;
+
+##############################################################################
+# Create a Class::Meta object. We'll use it to create attributes for testing
+# the creation of accessors.
+ok( my $cm = Class::Meta->new, "Create Class::Meta object" );
 
 ##############################################################################
 # Check string data type.
@@ -39,9 +45,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple string set" );
-ok( my $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( my $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "String accessor exists");
 
 # Test it.
@@ -55,8 +63,8 @@ like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( my $set = $type->make_attr_set($attr . $i), "Check string attr_set" );
-ok( my $get = $type->make_attr_get($attr . $i), "Check string attr_get" );
+ok( my $set = $type->make_attr_set($aname . $i), "Check string attr_set" );
+ok( my $get = $type->make_attr_get($aname . $i), "Check string attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 'test', "Check string getter" );
@@ -74,9 +82,11 @@ ok( ! defined $type->check, "Check boolean check" );
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple boolean set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Boolean accessor exists");
 
 # Test it.
@@ -85,8 +95,8 @@ is( $obj->$acc, 1, "Check boolean value" );
 
 # And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-ok( $set = $type->make_attr_set($attr . $i), "Check boolean attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check boolean attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check boolean attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check boolean attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 1, "Check boolean getter" );
@@ -105,9 +115,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple whole set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i), "Whole accessor exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i), "Whole accessor exists");
 
 # Test it.
 ok( $obj->$acc(12), "Set whole value" );
@@ -121,8 +133,8 @@ like( $err, qr/^Value .* is not a valid whole number/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check whole attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check whole attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check whole attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check whole attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12, "Check whole getter" );
@@ -142,9 +154,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple integer set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Integer accessor exists");
 
 # Test it.
@@ -159,8 +173,8 @@ like( $err, qr/^Value .* is not a valid integer/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check integer attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check integer attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check integer attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check integer attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12, "Check integer getter" );
@@ -180,9 +194,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple decimal set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Decimal accessor exists");
 
 # Test it.
@@ -197,8 +213,8 @@ like( $err, qr/^Value .* is not a valid decimal/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check decimal attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check decimal attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check decimal attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check decimal attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12.2, "Check decimal getter" );
@@ -217,9 +233,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple float set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Float accessor exists");
 
 # Test it.
@@ -234,8 +252,8 @@ like( $err, qr/^Value .* is not a valid float/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check float attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check float attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check float attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check float attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 1.23e99, "Check float getter" );
@@ -252,9 +270,11 @@ ok( ! defined $type->check, "Check scalar check" );
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple scalar set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Scalar accessor exists");
 
 # Test it.
@@ -263,8 +283,8 @@ is( $obj->$acc, 'foo', "Check scalar value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check scalar attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check scalar attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check scalar attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check scalar attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 'foo', "Check scalar getter" );
@@ -283,9 +303,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple scalarref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Scalarref accessor exists");
 
 # Test it.
@@ -301,8 +323,8 @@ like( $err, qr/^Value .* is not a valid Scalar Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check scalarref attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check scalarref attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check scalarref attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check scalarref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $sref, "Check scalarref getter" );
@@ -323,9 +345,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple arrayref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Arrayref accessor exists");
 
 # Test it.
@@ -341,8 +365,8 @@ like( $err, qr/^Value .* is not a valid Array Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check arrayref attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check arrayref attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check arrayref attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check arrayref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $aref, "Check arrayref getter" );
@@ -363,9 +387,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple hashref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Hashref accessor exists");
 
 # Test it.
@@ -381,8 +407,8 @@ like( $err, qr/^Value .* is not a valid Hash Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check hashref attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check hashref attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check hashref attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check hashref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $href, "Check hashref getter" );
@@ -404,9 +430,11 @@ foreach my $chk (@{ $type->check }) {
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
-ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+ok( $attr = $cm->add_attribute( name => $aname . ++$i, type => 'string'),
+    "Create $aname$i attribute" );
+ok( $type->build(__PACKAGE__, $attr, Class::Meta::GETSET),
     "Make simple coderef set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $aname . $i),
     "Coderef accessor exists");
 
 # Test it.
@@ -422,8 +450,8 @@ like( $err, qr/^Value .* is not a valid Code Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check coderef attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check coderef attr_get" );
+ok( $set = $type->make_attr_set($aname . $i), "Check coderef attr_set" );
+ok( $get = $type->make_attr_get($aname . $i), "Check coderef attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $cref, "Check coderef getter" );

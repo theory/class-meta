@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.18 2004/01/08 18:45:46 david Exp $
+# $Id: Type.pm,v 1.19 2004/01/09 00:04:42 david Exp $
 
 =head1 NAME
 
@@ -278,14 +278,15 @@ The name of the class into which the accessors are to be installed.
 
 =item C<$attribute>
 
-The name of the attribute for which accessors are to be created.
+A Class::Meta::Attribute object representing the attribute for which accessors
+are to be created.
 
 =item C<$create>
 
-The value of the Class::Meta::Attribute object's C<create> attribute. Use this
-argument to determine what type of accessor(s) to create. See
-L<Class::Meta::Attribute|Class::Meta::Attribute> for the possible values for
-this argument.
+The value of the C<create> paramter passed to Class::Meta::Attribute when the
+attribute object was created.. Use this argument to determine what type of
+accessor(s) to create. See L<Class::Meta::Attribute|Class::Meta::Attribute>
+for the possible values for this argument.
 
 =item <@checks>
 

@@ -1,6 +1,6 @@
 package Class::Meta::Types::Boolean;
 
-# $Id: Boolean.pm,v 1.3 2004/01/08 05:14:42 david Exp $
+# $Id: Boolean.pm,v 1.4 2004/01/09 00:04:42 david Exp $
 
 use strict;
 use Class::Meta::Type;
@@ -17,6 +17,7 @@ sub build_attr_set { eval "sub { shift->$_[0](\@_) }" }
 
 sub build {
     my ($pkg, $attr, $create) = @_;
+    $attr = $attr->name;
 
     no strict 'refs';
     if ($create == Class::Meta::GET) {
@@ -47,6 +48,7 @@ sub build_attr_set {
 
 sub build {
     my ($pkg, $attr, $create) = @_;
+    $attr = $attr->name;
 
     no strict 'refs';
     if ($create >= Class::Meta::GET) {
