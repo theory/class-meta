@@ -3,19 +3,27 @@ name: Class-Meta
 version: 0.01
 license: perl
 distribution_type: module
-requires: {}
+requires:
+  Class::ISA: 0.31
+  Data::Types: 0.05
 recommends: {}
-build_requires: {}
+build_requires:
+  Test::Simple: 0.17
 conflicts: {}
 provides:
   Class::Meta:
     file: lib/Class/Meta.pm
     version: 0.01
+  Class::Meta::AccessorBuilder:
+    file: lib/Class/Meta/AccessorBuilder.pm
+  Class::Meta::AccessorBuilder::Affordance:
+    file: lib/Class/Meta/AccessorBuilder/Affordance.pm
   Class::Meta::Attribute:
     file: lib/Class/Meta/Attribute.pm
     version: 0.01
   Class::Meta::Class:
     file: lib/Class/Meta/Class.pm
+    version: 0.01
   Class::Meta::Constructor:
     file: lib/Class/Meta/Constructor.pm
     version: 0.01
@@ -25,4 +33,12 @@ provides:
   Class::Meta::Type:
     file: lib/Class/Meta/Type.pm
     version: 0.01
-generated_by: Module::Build version 0.20_02
+  Class::Meta::Types::Boolean:
+    file: lib/Class/Meta/Types/Boolean.pm
+  Class::Meta::Types::Numeric:
+    file: lib/Class/Meta/Types/Numeric.pm
+  Class::Meta::Types::Perl:
+    file: lib/Class/Meta/Types/Perl.pm
+  Class::Meta::Types::String:
+    file: lib/Class/Meta/Types/String.pm
+generated_by: Module::Build version 0.21

@@ -1,20 +1,42 @@
 Class/Meta version 0.01
 =======================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Class::Meta provides an interface for automating the creation of Perl classes
+with attribute data type validation. It differs from other such modules in
+that it includes an introspection API that can be used as a unified interface
+for all Class::Meta-generated classes. In this sense, it is an implementation
+of the "Facade" design pattern.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+JUSTIFICATION
+
+One might argue that there are already too many class automation and parameter
+validation modules on CPAN. And one would be right. They range from simple
+accessor generators, such as L<Class::Accessor|Class::Accessor>, to simple
+parameter validators, such as L<Params::Validate|Params::Validate>, to more
+comprehensive systems, such as L<Class::Contract|Class::Contract> and
+L<Class::Tangram|Class::Tangram>. But, naturally, none of them could do
+exactly what I needed.
+
+What I needed was an implementation of the "Facade" design pattern. Okay, this
+isn't a facade like the GOF meant it, but it is in the respect that it
+creates classes with a common API so that objects of these classes can all be
+used identically, calling the same methods on each. This is done via the
+implementation of an introspection API. So the process of creating classes
+with Class::Meta not only creates attributes and accessors, but also creates
+objects that describe those classes. Using these descriptive objects, client
+applications can determine what to do with objects of Class::Meta-generated
+classes. This is particularly useful for user interface code.
 
 INSTALLATION
 
-To install this module type the following:
+To install this module, type the following:
+
+   perl Build.PL
+   ./Build
+   ./Build test
+   ./Build install
+
+Or, if you don't have Module::Build installed, type the following:
 
    perl Makefile.PL
    make
@@ -25,11 +47,16 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+  Data::Types 0.05 or later
+  Class::ISA 0.31 or later
+
+The test suite requires:
+
+  Test::Simple 0.17 or later
 
 COPYRIGHT AND LICENCE
 
-Put the correct copyright and licence information here.
+Copyright (c) 2002-2004, David Wheeler. All Rights Reserved.
 
-Copyright (C) 2002 A. U. Thor blah blah blah
-
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
