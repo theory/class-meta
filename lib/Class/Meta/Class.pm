@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.22 2004/01/08 18:45:46 david Exp $
+# $Id: Class.pm,v 1.23 2004/01/09 01:14:46 david Exp $
 
 use strict;
 use Class::ISA ();
@@ -21,7 +21,7 @@ my $croak = sub { require Carp; Carp::croak(@_) };
 
 =head1 NAME
 
-Class::Meta::Class - Objects describing Class::Meta-generated classes.
+Class::Meta::Class - Class::Meta class introspection
 
 =head1 SYNOPSIS
 

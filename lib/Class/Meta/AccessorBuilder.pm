@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.4 2004/01/09 00:46:59 david Exp $
+# $Id: AccessorBuilder.pm,v 1.5 2004/01/09 01:14:46 david Exp $
 
 use strict;
 use Class::Meta;
@@ -13,7 +13,7 @@ sub build_attr_get {
 
 my $croak = sub {
     require Carp;
-#    our @CARP_NOT = qw(Class::Meta);
+    our @CARP_NOT = qw(Class::Meta::Attribute);
     Carp::croak(@_);
 };
 

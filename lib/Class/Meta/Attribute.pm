@@ -1,34 +1,12 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.26 2004/01/09 00:46:59 david Exp $
+# $Id: Attribute.pm,v 1.27 2004/01/09 01:14:46 david Exp $
 
-##############################################################################
-# Dependencies                                                               #
-##############################################################################
 use strict;
-
-##############################################################################
-# Constants                                                                  #
-##############################################################################
-use constant DEBUG => 0;
-
-##############################################################################
-# Package Globals                                                            #
-##############################################################################
-our $VERSION = "0.01";
-
-##############################################################################
-# Private Package Globals
-##############################################################################
-my $croak = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta);
-    Carp::croak(@_);
-};
 
 =head1 NAME
 
-Kinet::Meta::Attribute - Objects describing Class::Meta-generated class attributes
+Class::Meta::Attribute - Class::Meta class attribute introspection
 
 =head1 SYNOPSIS
 
@@ -38,7 +16,7 @@ Kinet::Meta::Attribute - Objects describing Class::Meta-generated class attribut
 
   print "\nAttributes:\n";
   for my $attr ($class->attributes) {
-      print "  o ", $attr->name, " => ", $attr->call_get($thingy) $/;
+      print "  o ", $attr->name, " => ", $attr->call_get($thingy), $/;
       if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
           $attr->call_get($thingy, 'hey there!');
           print "    Changed to: ", $attr->call_get($thingy) $/;
@@ -59,9 +37,26 @@ Class::Meta-generated class, simply call its C<class> method to retreive
 its Class::Meta::Class object, and then call the C<attributes()> method on
 the Class::Meta::Class object.
 
-=head1 INTERFACE
-
 =cut
+
+##############################################################################
+# Constants                                                                  #
+##############################################################################
+use constant DEBUG => 0;
+
+##############################################################################
+# Package Globals                                                            #
+##############################################################################
+our $VERSION = "0.01";
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta);
+    Carp::croak(@_);
+};
 
 ##############################################################################
 # Constructors                                                               #
@@ -170,6 +165,8 @@ sub new {
 # Instance Methods                                                           #
 ##############################################################################
 
+=head1 INTERFACE
+
 =head2 Instance Methods
 
 =head3 name
@@ -204,8 +201,7 @@ methods for the attribute.
 
   my $package = $attr->package;
 
-Returns the package name of the class that attribute the attribute is
-associated with.
+Returns the package name of the class that attribute is associated with.
 
 =head3 view
 
@@ -366,7 +362,7 @@ __END__
 
 =head1 AUTHOR
 
-David Wheeler <david@wheeler.net>
+David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
@@ -377,6 +373,10 @@ Other classes of interest within the Class::Meta distribution include:
 =item L<Class::Meta|Class::Meta>
 
 =item L<Class::Meta::Class|Class::Meta::Class>
+
+=item L<Class::Meta::Method|Class::Meta::Method>
+
+=item L<Class::Meta::Constructor|Class::Meta::Constructor>
 
 =item L<Class::Meta::Type|Class::Meta::Type>
 
