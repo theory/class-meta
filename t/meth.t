@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.7 2004/01/08 18:37:52 david Exp $
+# $Id: meth.t,v 1.8 2004/01/08 21:56:43 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 42;
+use Test::More tests => 47;
 
 ##############################################################################
 # Create a simple class.
@@ -106,7 +106,7 @@ BEGIN {
 # Now try subclassing Class::Meta.
 
 package Class::Meta::SubClass;
-BEGIN { @Class::Meta::SubClass::ISA = qw(Class::Meta) }
+use base 'Class::Meta';
 sub add_method {
     Class::Meta::Method->new( shift->SUPER::class, @_);
 }
@@ -140,3 +140,17 @@ BEGIN {
     ok( $meth->context == Class::Meta::OBJECT, "Check new foo_meth context" );
     is( $meth->call(__PACKAGE__), '100', 'Call the new foo_meth method' );
 }
+
+##############################################################################
+# Now try subclassing Class::Meta::Method.
+package Class::Meta::Method::Sub;
+use base 'Class::Meta::Method';
+
+package main;
+ok( my $cm = Class::Meta->new( meth_class => 'Class::Meta::Method::Sub'),
+    "Create Class" );
+ok( my $meth = $cm->add_method(name => 'foo'), "Add foo method" );
+isa_ok($meth, 'Class::Meta::Method::Sub');
+isa_ok($meth, 'Class::Meta::Method');
+is( $meth->name, 'foo', "Check an attibute");
+

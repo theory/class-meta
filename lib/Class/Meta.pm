@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.47 2004/01/08 21:32:19 david Exp $
+# $Id: Meta.pm,v 1.48 2004/01/08 21:56:43 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -888,10 +888,6 @@ Add ability to create object attribute accessors.
 =item *
 
 Allow attributes to get a new value once and only once.
-
-=item *
-
-Add tests for subclasses of the C::M classes.
 
 =back
 

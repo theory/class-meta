@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.7 2004/01/08 17:56:32 david Exp $
+# $Id: class.t,v 1.8 2004/01/08 21:56:43 david Exp $
 
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 14;
 BEGIN { use_ok( 'Class::Meta') }
 
 # Make sure we can't instantiate a class object from here.
@@ -15,10 +15,9 @@ like($err, qr/^Package 'main' cannot create.*objects/,
 
 # Now try inheritance.
 package Class::Meta::FooSub;
-
-@Class::Meta::FooSub::ISA = qw(Class::Meta);
-use Carp;
-$SIG{__WARN__} = \&Carp::cluck;
+use strict;
+use base 'Class::Meta';
+Test::More->import;
 
 # Set up simple settings.
 my $spec = { name  => 'Foo Class',
@@ -26,16 +25,29 @@ my $spec = { name  => 'Foo Class',
              package => 'FooClass',
              key   => 'foo' };
 # This should be okay.
-main::ok( $class = Class::Meta::Class->new($spec),
+ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
 
 # Test the simple accessors.
-main::is( $class->name, $spec->{name}, 'name' );
-main::is( $class->desc, $spec->{desc}, 'name' );
-main::is( $class->key, $spec->{key}, 'name' );
+is( $class->name, $spec->{name}, 'name' );
+is( $class->desc, $spec->{desc}, 'name' );
+is( $class->key, $spec->{key}, 'name' );
 
 # This should throw an exception because we can only create a class once.
 eval { $class = Class::Meta::Class->new($spec) };
-main::ok($err = $@, 'Error creating duplicate class' );
-main::like($err, qr/^Class object for class 'FooClass' already exists/,
+ok($err = $@, 'Error creating duplicate class' );
+like($err, qr/^Class object for class 'FooClass' already exists/,
      'Check duplicate class error message' );
+
+# Now try inheritance for Class.
+package Class::Meta::Class::Sub;
+use base 'Class::Meta::Class';
+
+package main;
+ok( my $cm = Class::Meta->new( class_class => 'Class::Meta::Class::Sub'),
+    "Create Class" );
+ok( $class = $cm->class, "Retrieve class" );
+isa_ok($class, 'Class::Meta::Class::Sub');
+isa_ok($class, 'Class::Meta::Class');
+is( $class->package, __PACKAGE__, "Check an attibute");
+

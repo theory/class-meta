@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.6 2004/01/08 21:56:43 david Exp $
+# $Id: attr.t,v 1.1 2004/01/08 21:56:43 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 44;
+use Test::More tests => 43;
 
 ##############################################################################
 # Create a simple class.
@@ -17,7 +17,10 @@ package Class::Meta::TestPerson;
 use strict;
 
 # Make sure we can load Class::Meta.
-BEGIN { main::use_ok( 'Class::Meta' ) }
+BEGIN {
+    main::use_ok( 'Class::Meta' );
+    main::use_ok( 'Class::Meta::Types::String' );
+}
 
 BEGIN {
     # Import Test::More functions into this package.
@@ -29,48 +32,49 @@ BEGIN {
         "Create CM object" );
     isa_ok($c, 'Class::Meta');
 
-    # Create a constructor.
+    # Create an attribute.
     sub inst { bless {} }
-    ok( my $ctor = $c->add_constructor( name    => 'inst',
-                                 desc    => 'The inst constructor',
-                                 label   => 'inst Constructor',
-                                 view     => Class::Meta::PUBLIC ),
-        "Create 'inst' ctor");
-    isa_ok($ctor, 'Class::Meta::Constructor');
+    ok( my $attr = $c->add_attribute( name => 'inst',
+                                      type => 'string',
+                                      desc    => 'The inst attribute',
+                                      label   => 'inst Attribute',
+                                      view     => Class::Meta::PUBLIC ),
+        "Create 'inst' attr");
+    isa_ok($attr, 'Class::Meta::Attribute');
 
     # Test its accessors.
-    is( $ctor->name, "inst", "Check inst name" );
-    is( $ctor->desc, "The inst constructor", "Check inst desc" );
-    is( $ctor->label, "inst Constructor", "Check inst label" );
-    ok( $ctor->view == Class::Meta::PUBLIC, "Check inst view" );
-    isa_ok( $ctor->call, __PACKAGE__);
+    is( $attr->name, "inst", "Check inst name" );
+    is( $attr->desc, "The inst attribute", "Check inst desc" );
+    is( $attr->label, "inst Attribute", "Check inst label" );
+    is( $attr->type, "string", "Check inst type" );
+    ok( $attr->view == Class::Meta::PUBLIC, "Check inst view" );
 
-    # Okay, now test to make sure that an attempt to create a constructor
+    # Okay, now test to make sure that an attempt to create a attribute
     # directly fails.
-    eval { my $ctor = Class::Meta::Constructor->new };
-    ok( my $err = $@, "Get constructor construction exception");
+    eval { my $attr = Class::Meta::Attribute->new };
+    ok( my $err = $@, "Get attribute construction exception");
     like( $err, qr/Package 'Class::Meta::TestPerson' cannot create/,
         "Caught proper exception");
 
     # Now try it without a name.
-    eval{ $c->add_constructor() };
+    eval{ $c->add_attribute() };
     ok( $err = $@, "Caught no name exception");
     like( $err, qr/Parameter 'name' is required in call to new/,
         "Caught proper no name exception");
 
-    # Try a duplicately-named constructor.
-    eval{ $c->add_constructor(name => 'inst') };
+    # Try a duplicately-named attribute.
+    eval{ $c->add_attribute(name => 'inst') };
     ok( $err = $@, "Caught dupe name exception");
-    like( $err, qr/Method 'inst' already exists in class/,
+    like( $err, qr/Attribute 'inst' already exists in class/,
         "Caught proper dupe name exception");
 
     # Try a couple of bogus visibilities.
-    eval { $c->add_constructor( name => 'new_ctor',
+    eval { $c->add_attribute( name => 'new_attr',
                          view  => 25) };
     ok( $err = $@, "Caught bogus view exception");
     like( $err, qr/Not a valid view parameter: '25'/,
         "Caught proper bogus view exception");
-    eval { $c->add_constructor( name => 'new_ctor',
+    eval { $c->add_attribute( name => 'new_attr',
                          view  => 10) };
     ok( $err = $@, "Caught another bogus view exception");
     like( $err, qr/Not a valid view parameter: '10'/,
@@ -84,24 +88,23 @@ BEGIN {
         "Caught proper bogus caller exception");
 
     # Now test all of the defaults.
-    sub new_ctor { 22 }
-    ok( $ctor = $c->add_constructor( name => 'new_ctor' ), "Create 'new_ctor'" );
-    isa_ok($ctor, 'Class::Meta::Constructor');
+    sub new_attr { 22 }
+    ok( $attr = $c->add_attribute( name => 'new_attr' ), "Create 'new_attr'" );
+    isa_ok($attr, 'Class::Meta::Attribute');
 
     # Test its accessors.
-    is( $ctor->name, "new_ctor", "Check new_ctor name" );
-    ok( ! defined $ctor->desc, "Check new_ctor desc" );
-    ok( ! defined $ctor->label, "Check new_ctor label" );
-    ok( $ctor->view == Class::Meta::PUBLIC, "Check new_ctor view" );
-    is ($ctor->call, '22', 'Call the new_ctor constructor' );
+    is( $attr->name, "new_attr", "Check new_attr name" );
+    ok( ! defined $attr->desc, "Check new_attr desc" );
+    ok( ! defined $attr->label, "Check new_attr label" );
+    ok( $attr->view == Class::Meta::PUBLIC, "Check new_attr view" );
 }
 
 # Now try subclassing Class::Meta.
 
 package Class::Meta::SubClass;
 use base 'Class::Meta';
-sub add_constructor {
-    Class::Meta::Constructor->new( shift->SUPER::class, @_);
+sub add_attribute {
+    Class::Meta::Attribute->new( shift->SUPER::class, @_);
 }
 
 package Class::Meta::AnotherTest;
@@ -117,30 +120,29 @@ BEGIN {
     isa_ok($c, 'Class::Meta');
     isa_ok($c, 'Class::Meta::SubClass');
 
-    sub foo_ctor { bless {} }
-    ok( my $ctor = $c->add_constructor( name => 'foo_ctor'),
-        'Create subclassed foo_ctor' );
+    sub foo_attr { bless {} }
+    ok( my $attr = $c->add_attribute( name => 'foo_attr'),
+        'Create subclassed foo_attr' );
 
-    isa_ok($ctor, 'Class::Meta::Constructor');
+    isa_ok($attr, 'Class::Meta::Attribute');
 
     # Test its accessors.
-    is( $ctor->name, "foo_ctor", "Check new foo_ctor name" );
-    ok( ! defined $ctor->desc, "Check new foo_ctor desc" );
-    ok( ! defined $ctor->label, "Check new foo_ctor label" );
-    ok( $ctor->view == Class::Meta::PUBLIC, "Check new foo_ctor view" );
-    isa_ok($ctor->call, __PACKAGE__);
+    is( $attr->name, "foo_attr", "Check new foo_attr name" );
+    ok( ! defined $attr->desc, "Check new foo_attr desc" );
+    ok( ! defined $attr->label, "Check new foo_attr label" );
+    ok( $attr->view == Class::Meta::PUBLIC, "Check new foo_attr view" );
 }
 
 ##############################################################################
-# Now try subclassing Class::Meta::Constructor.
-package Class::Meta::Constructor::Sub;
-use base 'Class::Meta::Constructor';
+# Now try subclassing Class::Meta::Attribute.
+package Class::Meta::Attribute::Sub;
+use base 'Class::Meta::Attribute';
 
 package main;
-ok( my $cm = Class::Meta->new( ctor_class => 'Class::Meta::Constructor::Sub'),
+ok( my $cm = Class::Meta->new( attr_class => 'Class::Meta::Attribute::Sub'),
     "Create Class" );
-ok( my $meth = $cm->add_constructor(name => 'foo'), "Add foo constructor" );
-isa_ok($meth, 'Class::Meta::Constructor::Sub');
-isa_ok($meth, 'Class::Meta::Constructor');
+ok( my $meth = $cm->add_attribute(name => 'foo'), "Add foo attribute" );
+isa_ok($meth, 'Class::Meta::Attribute::Sub');
+isa_ok($meth, 'Class::Meta::Attribute');
 is( $meth->name, 'foo', "Check an attibute");
 
