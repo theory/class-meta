@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.1 2002/05/18 02:00:53 david Exp $
+# $Id: ctor.t,v 1.2 2003/11/22 00:23:29 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -32,7 +32,7 @@ BEGIN {
     ok( my $ctor = $c->add_ctor( name    => 'inst',
                                  desc    => 'The inst constructor',
                                  label   => 'inst Constructor',
-                                 vis     => Class::Meta::PUBLIC ),
+                                 view     => Class::Meta::PUBLIC ),
         "Create 'inst' ctor");
     isa_ok($ctor, 'Class::Meta::Constructor');
 
@@ -40,7 +40,7 @@ BEGIN {
     is( $ctor->my_name, "inst", "Check inst name" );
     is( $ctor->my_desc, "The inst constructor", "Check inst desc" );
     is( $ctor->my_label, "inst Constructor", "Check inst label" );
-    ok( $ctor->my_vis == Class::Meta::PUBLIC, "Check inst vis" );
+    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check inst view" );
     isa_ok( $ctor->call(__PACKAGE__), __PACKAGE__);
 
     # Okay, now test to make sure that an attempt to create a constructor
@@ -64,15 +64,15 @@ BEGIN {
 
     # Try a couple of bogus visibilities.
     eval { $c->add_ctor( name => 'new_ctor',
-                         vis  => 'foo') };
-    ok( $err = $@, "Caught bogus vis exception");
-    like( $err, qr/Not a valid vis parameter: 'foo'/,
-        "Caught proper bogus vis exception");
+                         view  => 25) };
+    ok( $err = $@, "Caught bogus view exception");
+    like( $err, qr/Not a valid view parameter: '25'/,
+        "Caught proper bogus view exception");
     eval { $c->add_ctor( name => 'new_ctor',
-                         vis  => 10) };
-    ok( $err = $@, "Caught another bogus vis exception");
-    like( $err, qr/Not a valid vis parameter: '10'/,
-        "Caught another proper bogus vis exception");
+                         view  => 10) };
+    ok( $err = $@, "Caught another bogus view exception");
+    like( $err, qr/Not a valid view parameter: '10'/,
+        "Caught another proper bogus view exception");
 
     # Try a bogus caller.
     eval { $c->add_meth( name => 'new_inst',
@@ -90,7 +90,7 @@ BEGIN {
     is( $ctor->my_name, "new_ctor", "Check new_ctor name" );
     ok( ! defined $ctor->my_desc, "Check new_ctor desc" );
     ok( ! defined $ctor->my_label, "Check new_ctor label" );
-    ok( $ctor->my_vis == Class::Meta::PUBLIC, "Check new_ctor vis" );
+    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check new_ctor view" );
     is ($ctor->call(__PACKAGE__), '22', 'Call the new_ctor constructor' );
 }
 
@@ -125,6 +125,6 @@ BEGIN {
     is( $ctor->my_name, "foo_ctor", "Check new foo_ctor name" );
     ok( ! defined $ctor->my_desc, "Check new foo_ctor desc" );
     ok( ! defined $ctor->my_label, "Check new foo_ctor label" );
-    ok( $ctor->my_vis == Class::Meta::PUBLIC, "Check new foo_ctor vis" );
+    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check new foo_ctor view" );
     isa_ok($ctor->call(__PACKAGE__), __PACKAGE__);
 }
