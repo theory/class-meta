@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.15 2002/06/07 18:28:00 david Exp $
+# $Id: Meta.pm,v 1.16 2002/06/07 18:29:06 david Exp $
 
 =head1 NAME
 
@@ -286,7 +286,9 @@ exceptions to somehow chain, so that all the exceptions for a given
 transaction can be recorded. This will allow B<all> of the errors of data
 validation for a given object to be recorded at once and show to the user at
 once, so that they don't have to fix their problems piecemeal. No, this is not
-a simple task.
+a simple task. The problem is better described by Perrin here:
+
+  http://mathforum.org/epigone/modperl/pahphucree/3D00F55C.5010103@elem.com
 
 =back
 
