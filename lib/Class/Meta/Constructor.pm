@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.18 2004/01/08 03:16:15 david Exp $
+# $Id: Constructor.pm,v 1.19 2004/01/08 03:27:36 david Exp $
 
 use strict;
 
@@ -168,6 +168,26 @@ Returns the constructor name.
 =cut
 
 sub my_name { $_[0]->{name} }
+
+=head2 my_desc
+
+  my $desc = $ctor->my_desc;
+
+Returns the description of the constructor.
+
+=cut
+
+sub my_desc { $_[0]->{desc} }
+
+=head2 my_label
+
+  my $desc = $ctor->my_label;
+
+Returns label for the constructor.
+
+=cut
+
+sub my_label { $_[0]->{label} }
 
 =head2 my_view
 

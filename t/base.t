@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.17 2004/01/08 03:16:16 david Exp $
+# $Id: base.t,v 1.18 2004/01/08 03:27:36 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 94;
+use Test::More tests => 87;
 
 ##############################################################################
 # Create a simple class.
@@ -28,6 +28,7 @@ BEGIN {
         key     => 'person',
         package => __PACKAGE__,
         name    => 'Class::Meta::TestPerson Class',
+        desc    => 'Special person class just for testing Class::Meta.',
     );
 
     # Add a constructor.
@@ -50,7 +51,6 @@ BEGIN {
                   authz    => Class::Meta::RDWR,
                   create   => Class::Meta::GETSET,
                   type     => 'string',
-                  length      => 256,
                   label    => 'Name',
                   field    => 'text',
                   desc     => "The person's name.",
@@ -108,9 +108,6 @@ like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 # Grab its metadata object.
 ok( my $class = $t->my_class, "Get Class::Meta::Class object" );
 
-# Check that its key is the same as for the class' my_key shortcut.
-is( $class->my_key, $t->my_key, "Check keys" );
-
 # Test the is_a() method.
 ok( $class->is_a('Class::Meta::TestPerson'), 'Class is_a TestPerson');
 
@@ -164,9 +161,7 @@ is( $p->my_desc, "The person object's ID.", 'ID description' );
 is( $p->my_view, Class::Meta::PUBLIC, 'ID view' );
 is( $p->my_authz, Class::Meta::READ, 'ID authorization' );
 is( $p->my_type, 'integer', 'ID type' );
-is( $p->my_length, undef, 'ID length' );
 is( $p->my_label, 'ID', 'ID label' );
-is( $p->my_field, undef, 'ID field type' );
 ok( $p->is_required, "ID required" );
 is( $p->my_default, undef, "ID default" );
 
@@ -184,9 +179,7 @@ is( $p->my_desc, "The person's name.", 'Name description' );
 is( $p->my_view, Class::Meta::PUBLIC, 'Name view' );
 is( $p->my_authz, Class::Meta::RDWR, 'Name authorization' );
 is( $p->my_type, 'string', 'Name type' );
-is( $p->my_length, 256, 'Name length' );
 is( $p->my_label, 'Name', 'Name label' );
-is( $p->my_field, 'text', 'Name field type' );
 ok( $p->is_required, "Name required" );
 is( $p->my_default, '', "Name default" );
 
@@ -205,9 +198,7 @@ is( $p->my_desc, "The person's age.", 'Age description' );
 is( $p->my_view, Class::Meta::PUBLIC, 'Age view' );
 is( $p->my_authz, Class::Meta::RDWR, 'Age authorization' );
 is( $p->my_type, 'integer', 'Age type' );
-is( $p->my_length, undef, 'Age length' );
 is( $p->my_label, 'Age', 'Age label' );
-is( $p->my_field, 'text', 'Age field type' );
 ok( $p->is_required == 0, "Age required" );
 is( $p->my_default, undef, "Age default" );
 

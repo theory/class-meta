@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.34 2004/01/08 03:16:15 david Exp $
+# $Id: Meta.pm,v 1.35 2004/01/08 03:27:36 david Exp $
 
 =head1 NAME
 
@@ -844,7 +844,6 @@ C<my_class()> class method, and all requisite constructors and accessors.
         # Build the Class::Meta::Class accessor and my_key shortcut.
         no strict 'refs';
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
-        *{"$spec->{package}::my_key"} = sub { $spec->{key} };
 
         $spec->{class}->build;
         return $self;
