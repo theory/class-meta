@@ -1,6 +1,6 @@
 package Class::Meta::Types::Perl;
 
-# $Id: Perl.pm,v 1.11 2004/01/28 02:09:04 david Exp $
+# $Id: Perl.pm,v 1.12 2004/04/18 17:48:39 david Exp $
 
 =head1 NAME
 
@@ -14,6 +14,8 @@ Class::Meta::Types::Perl - Perl data types
   use Class::Meta::Types::Perl;
   # OR...
   # use Class::Meta::Types::Perl 'affordance';
+  # OR...
+  # use Class::Meta::Types::Perl 'semi-affordance';
 
   BEGIN {
       # Create a Class::Meta object for this class.
@@ -76,7 +78,7 @@ A code reference. Also known as a closure. C<UNIVERSAL::isa()> must return
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = "0.20";
+our $VERSION = "0.21";
 
 sub import {
     my ($pkg, $builder) = @_;
@@ -131,7 +133,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.20 distribution.
+This file was packaged with the Class-Meta-0.21 distribution.
 
 =head1 BUGS
 

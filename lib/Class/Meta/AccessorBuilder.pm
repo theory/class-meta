@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.19 2004/01/28 21:57:26 david Exp $
+# $Id: AccessorBuilder.pm,v 1.20 2004/04/18 17:48:38 david Exp $
 
 =head1 NAME
 
@@ -135,7 +135,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.20";
+our $VERSION = "0.21";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -302,7 +302,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.20 distribution.
+This file was packaged with the Class-Meta-0.21 distribution.
 
 =head1 BUGS
 
@@ -324,7 +324,13 @@ Class::Meta.
 
 =item L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 
-This module generates affordance style accessors.
+This module generates affordance style accessors (e.g., C<get_foo()> and
+C<set_foo()>.
+
+=item L<Class::Meta::AccessorBuilder::SemiAffordance|Class::Meta::AccessorBuilder::SemiAffordance>
+
+This module generates semi-affordance style accessors (e.g., C<foo()> and
+C<set_foo()>.
 
 =item L<Class::Meta::Type|Class::Meta::Type>
 

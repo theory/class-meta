@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.70 2004/01/30 17:04:30 david Exp $
+# $Id: Meta.pm,v 1.71 2004/04/18 17:48:38 david Exp $
 
 =head1 NAME
 
@@ -320,9 +320,9 @@ modules for more information.
 =head2 Accessors
 
 Class::Meta supports the creation of two different types of attribute
-accessors: typical Perl single-method accessors, and "affordance" accessors.
-The single accessors are named for their attributes, and typically tend
-to look like this:
+accessors: typical Perl single-method accessors, "affordance" accessors, and
+"semi-affordance" accessors. The single accessors are named for their
+attributes, and typically tend to look like this:
 
   sub tail {
       my $self = shift;
@@ -348,10 +348,24 @@ write-only accessors, one can't tell just by looking at them which is the
 case. The affordance accessors make this point moot, as they make clear what
 their purpose is.
 
+Semi-affordance accessors are similar to affordance accessors in that they
+provide at least two accessors for every attribute. However, the accessor that
+fetches the value is named for the attribute. Thus, they tend to look like
+this:
+
+  sub tail { shift->{tail} }
+
+  sub set_tail { shift->{tail} = shift }
+
 To get Class::Meta's data types to create affordance accessors, simply pass
 the string "affordance" to them when you load them:
 
-  use Class::Meta::Types::Perl 'affordances';
+  use Class::Meta::Types::Perl 'affordance';
+
+Likewise, to get them to create semi-affordance accessors, pass the string
+"semi-affordance":
+
+  use Class::Meta::Types::Perl 'semi-affordance';
 
 The boolean data type is the only one that uses a slightly different approach
 to the creation of affordance accessors: It creates three of them. Assuming
@@ -964,7 +978,7 @@ attribute is in to modify other values.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.20 distribution.
+This file was packaged with the Class-Meta-0.21 distribution.
 
 =head1 BUGS
 

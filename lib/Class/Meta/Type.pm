@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.28 2004/01/28 02:09:03 david Exp $
+# $Id: Type.pm,v 1.29 2004/04/18 17:48:38 david Exp $
 
 =head1 NAME
 
@@ -41,14 +41,15 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.20";
+our $VERSION = "0.21";
 
 ##############################################################################
 # Private Package Globals                                                    #
 ##############################################################################
 my %def_builders = (
-    default => 'Class::Meta::AccessorBuilder',
-    affordance => 'Class::Meta::AccessorBuilder::Affordance',
+    'default'         => 'Class::Meta::AccessorBuilder',
+    'affordance'      => 'Class::Meta::AccessorBuilder::Affordance',
+    'semi-affordance' => 'Class::Meta::AccessorBuilder::SemiAffordance',
 );
 
 ##############################################################################
@@ -267,6 +268,16 @@ mutator. See
 L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 for more information.
 
+=item "semi-affordance"
+
+The string 'default' uses Class::Meta::Type's semi-affordance accessor
+building code, provided by Class::Meta::AccessorBuilder::SemiAffordance.
+Semi-affordance accessors differ from affordance accessors in that they do not
+prepend C<get_> to the accessor. So for an attribute "foo", the accessor would
+be named C<foo()> and the mutator named C<set_foo()>. See
+L<Class::Meta::AccessorBuilder::SemiAffordance|Class::Meta::AccessorBuilder::SemiAffordance>
+for more information.
+
 =item A Package Name
 
 Pass in the name of a package that contains the functions C<build()>,
@@ -451,6 +462,8 @@ add the requisite C<builder> attribute:
                                      desc    => 'DateTime object',
                                      name    => 'DateTime Object' );
 
+The same goes for using semi-affordance accessors.
+
 Other than that, adding other data types is really a matter of the judicious
 use of the C<check> parameter. Ultimately, all attributes are scalar
 values. Whether they adhere to a particular data type depends entirely on the
@@ -487,11 +500,10 @@ C<set()> method.
 =head2 Custom Accessor Building
 
 Class::Meta also allows you to craft your own accessors. Perhaps you'd prefer
-a semi-affordance accessor standard, where the get accessor has the same name
-as your attribute, and the set accessor is preceded by C<set_>. In that case,
-you'll need to create your own module that builds accessors. I recommend that
-you study L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> and
-LLClass::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
+to use a StudlyCaps affordance accessor standard. In that case, you'll need to
+create your own module that builds accessors. I recommend that you study
+L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> and
+LClass::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 before taking on creating your own.
 
 Custom accessor building modules must have three functions.
@@ -552,7 +564,7 @@ before creating your own.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.20 distribution.
+This file was packaged with the Class-Meta-0.21 distribution.
 
 =head1 BUGS
 
@@ -606,6 +618,11 @@ Standard Perl-style accessors.
 =item L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 
 Affordance accessors--that is, explicit and independent get and set accessors.
+
+=item L<Class::Meta::AccessorBuilder::SemiAffordance|Class::Meta::AccessorBuilder::SemiAffordance>
+
+Semi-ffordance accessors--that is, independent get and set accessors with an
+explicit set accessor.
 
 =back
 

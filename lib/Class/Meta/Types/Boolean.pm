@@ -1,6 +1,6 @@
 package Class::Meta::Types::Boolean;
 
-# $Id: Boolean.pm,v 1.13 2004/01/28 02:09:04 david Exp $
+# $Id: Boolean.pm,v 1.14 2004/04/18 17:48:39 david Exp $
 
 =head1 NAME
 
@@ -14,6 +14,8 @@ Class::Meta::Types::Boolean - Boolean data types
   use Class::Meta::Types::Boolean;
   # OR...
   # use Class::Meta::Types::Boolean 'affordance';
+  # OR...
+  # use Class::Meta::Types::Boolean 'semi-affordance';
 
   BEGIN {
       # Create a Class::Meta object for this class.
@@ -68,7 +70,7 @@ without the overhead of validation checks.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = "0.20";
+our $VERSION = "0.21";
 
 sub import {
     my ($pkg, $builder) = @_;
@@ -108,7 +110,8 @@ sub build {
     }
 }|
     } else {
-        eval q|
+
+        my $code = q|
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, 'is_' . $_[0]->name);
 }
@@ -133,6 +136,9 @@ sub build {
         *{"${pkg}::set_$attr\_off"} = sub { $_[0]->{$attr} = 0 };
     }
 }|;
+
+        $code =~ s/get_//g unless $builder eq 'affordance';
+        eval $code;
     }
 
     Class::Meta::Type->add(
@@ -149,7 +155,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.20 distribution.
+This file was packaged with the Class-Meta-0.21 distribution.
 
 =head1 BUGS
 

@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Meta.
 
+0.21
+      - Added semi-affordance accessor generation.
+
 0.20  2004-01-28T22:03:09
       - Added more documentation to the Class::Meta synopsis that highlights
         the generated constructor and attribute accessors, as well as the
