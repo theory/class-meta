@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.26 2004/01/21 01:07:10 david Exp $
+# $Id: Type.pm,v 1.27 2004/01/21 01:33:22 david Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.11";
+our $VERSION = "0.12";
 
 ##############################################################################
 # Private Package Globals                                                    #
@@ -516,7 +516,7 @@ attribute object was created. Use this argument to determine what type of
 accessor(s) to create. See L<Class::Meta::Attribute|Class::Meta::Attribute>
 for the possible values for this argument.
 
-=item <@checks>
+=item C<@checks>
 
 A list of one or more data type validation code references. Use these in any
 accessors that set attribute values to check that the new value has a valid
