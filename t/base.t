@@ -24,46 +24,46 @@ BEGIN {
     $c->set_desc('Special person class just for testing Class::Meta.');
 
     # Add a couple of properties with generated methods.
-    $c->add_prop({ name => 'id',
-		   vis   => Class::Meta::PUBLIC,
-		   auth  => Class::Meta::READ,
-		   gen   => Class::Meta::GET
-		   type  => 'integer',
-		   label => 'ID',
-		   desc  => "The person object's ID.",
-		   req   => 1,
-		   def   => undef,
-		 });
-    $c->add_prop({ name  => 'name',
-		   vis   => Class::Meta::PUBLIC,
-		   auth  => Class::Meta::RDWR,
-		   gen   => Class::Meta::GETSET
-		   type  => 'string',
-		   len   => 256,
-		   label => 'Name',
-		   field => 'text',
-		   desc  => "The person's name.",
-		   req   => 1,
-		   def   => undef,
-		 });
-    $c->add_prop({ name  => 'age',
-		   vis   => Class::Meta::PUBLIC,
-		   auth  => Class::Meta::RDWR,
-		   gen   => Class::Meta::GETSET
-		   type  => 'inteter',
-		   label => 'Age',
-		   field => 'text',
-		   desc  => "The person's age.",
-		   req   => 0,
-		   def   => undef,
-		 });
+    $c->add_prop( name => 'id',
+		  vis   => Class::Meta::PUBLIC,
+		  auth  => Class::Meta::READ,
+		  gen   => Class::Meta::GET
+		  type  => 'integer',
+		  label => 'ID',
+		  desc  => "The person object's ID.",
+		  req   => 1,
+		  def   => undef,
+		);
+    $c->add_prop( name  => 'name',
+		  vis   => Class::Meta::PUBLIC,
+		  auth  => Class::Meta::RDWR,
+		  gen   => Class::Meta::GETSET
+		  type  => 'string',
+		  len   => 256,
+		  label => 'Name',
+		  field => 'text',
+		  desc  => "The person's name.",
+		  req   => 1,
+		  def   => undef,
+		);
+    $c->add_prop( name  => 'age',
+		  vis   => Class::Meta::PUBLIC,
+		  auth  => Class::Meta::RDWR,
+		  gen   => Class::Meta::GETSET
+		  type  => 'inteter',
+		  label => 'Age',
+		  field => 'text',
+		  desc  => "The person's age.",
+		  req   => 0,
+		  def   => undef,
+		);
 
     # Add a custom method.
-    $c->add_meth({ name => 'chk_pass',
-		   vis  => Class::Meta::PUBLIC,
-		   ret  => 'boolean',
-		   args => ['string', 'string']
-		 });
+    $c->add_meth( name => 'chk_pass',
+		  vis  => Class::Meta::PUBLIC,
+		  ret  => 'boolean',
+		  args => ['string', 'string']
+		);
     $c->build;
 }
 
@@ -103,6 +103,13 @@ is( $class->get_key, 'person', 'Key is correct');
 eval { $class->set_key('foo') };
 ok (my $err = $@, "Got an error trying to change key");
 like( $err, qr/Can't locate object method/, "Shouln't be able to change key");
+
+# Test the package methods.
+is($class->my_pkg, 'Class::Meta::PersonTest', 'my_pkg()');
+eval { $class->set_pkg('foo') };
+ok ($err = $@, "Try to change pacakge");
+like( $err, qr/^Can't locate object method/,
+      "Correct method not found exception for package name");
 
 # Test the name methods.
 is( $class->get_name, 'Class::Meta TestPerson Class', "Name is correct");

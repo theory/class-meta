@@ -6,49 +6,73 @@ use Class::Meta;
 use Class::Meta::Property;
 use Class::Meta::Method;
 
-{
-    my %classes;
+sub new {
+    my ($pkg, $spec) = @_;
+    # Check to make sure that only Class::Meta or a subclass is
+    # constructing a Class::Meta::Class object.
+    my $caller = caller;
+    Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+      unless grep { $_ eq 'Class::Meta' }
+                  $caller, eval '@' . $caller . "::ISA";
 
-    sub new {
-	my ($pkg, $class, $spec) = @_;
-	# Check to make sure that only Class::Meta or a subclass is instantiating
-	# a Class::Meta::Class object.
-	my $caller = caller;
-	Carp::croak "Package '$caller' cannot create " . __PACKAGE__
-	    . " objects" unless grep { $_ eq 'Class::Meta' }
-	              $caller, eval '@' . $caller . "::ISA";
+    # Okay, create the object.
+    return bless $spec, ref $pkg || $pkg;
+}
 
-	# Make sure that a class object for this class doens't already exist.
-	Carp::croak "Class object for class '$class' already exists"
-	  if exists $classes{$class};
+# Basic accessors.
+sub my_key  { $_[0]->{def}{key}  }
+sub my_pkg  { $_[0]->{def}{pkg}  }
+sub my_name { $_[0]->{def}{name} }
+sub my_desc { $_[0]->{def}{desc} }
 
-	# Okay, create the object.
-	$classes{$class} = $spec;
-	return bless \$class, ref $pkg || $pkg;
+# Check inheritance.
+sub isa { exists $_[0]->{def}{isa}{$_[1]} }
+
+# Constructor objects.
+sub my_consts {
+    my $self = shift;
+    my $consts = $self->{def}{consts};
+    if ($_[0]) {
+	# Return the requested constructors.
+	return @{$consts}{@_};
+    } elsif ($self->{def}{isa}{caller()}) {
+	# Return the protected list of constructors.
+	return @{$consts}{@{ $self->{def}{prot_const_ord} } };
+    } else {
+	# Return the private list of constructors.
+	return @{$consts}{@{ $self->{def}{const_ord} } };
     }
+}
 
-
-    # Basic accessors.
-    sub my_key  { $classes{ ${$_[0]} }->{key}  }
-    sub my_name { $classes{ ${$_[0]} }->{name} }
-    sub my_desc { $classes{ ${$_[0]} }->{desc} }
-
-    # Property objects.
-    sub my_props {
-	my $self = shift;
-	my $props = $classes{ $$self }->{props};
-	return $_[0] ?
-	  @{$props}{@_} :
-	  @{$props}{@{ $classes{ $$self }->{prop_ord} } };
+# Property objects.
+sub my_props {
+    my $self = shift;
+    my $props = $self->{def}{props};
+    if ($_[0]) {
+	# Return the requested properties.
+	return @{$props}{@_};
+    } elsif ($self->{def}{isa}{caller()}) {
+	# Return the protected list of properties.
+	return @{$props}{@{ $self->{def}{prot_prop_ord} } };
+    } else {
+	# Return the private list of properties.
+	return @{$props}{@{ $self->{def}{prop_ord} } };
     }
+}
 
-    # Method objects.
-    sub my_meths {
-	my $self = shift;
-	my $meths = $classes{ $$self }->{meths};
-	return $_[0] ?
-	  @{$meths}{@_} :
-	  @{$meths}{@{ $classes{ $$self }->{meth_ord} } };
+# Method objects.
+sub my_meths {
+    my $self = shift;
+    my $meths = $self->{def}{meths};
+    if ($_[0]) {
+	# Return the requested methods.
+	return @{$meths}{@_};
+    } elsif ($self->{def}{isa}{caller()}) {
+	# Return the protected list of methods.
+	return @{$meths}{@{ $self->{def}{prot_meth_ord} } };
+    } else {
+	# Return the private list of methods.
+	return @{$meths}{@{ $self->{def}{meth_ord} } };
     }
 }
 
