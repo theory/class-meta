@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.5 2002/05/16 18:12:47 david Exp $
+# $Id: Method.pm,v 1.6 2002/05/18 02:00:53 david Exp $
 
 =head1 NAME
 
@@ -49,7 +49,7 @@ $VERSION = "0.01";
 
 =head2 new
 
-  my $type = Class::Meta::Method->new($def, @params);
+  my $meth = Class::Meta::Method->new($def, @params);
 
 Creates a new C<Class::Meta::Method> object. This is a protected method,
 callable only from C<Class::Meta> or its subclasses. Use the C<Class::Meta>
@@ -93,8 +93,8 @@ sub new {
     my $pkg = shift;
     my $def = shift;
 
-    # Check to make sure that only Class::Meta or a subclass is
-    # constructing a Class::Meta::Class object.
+    # Check to make sure that only Class::Meta or a subclass is constructing a
+    # Class::Meta::Method object.
     my $caller = caller;
     Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
       unless grep { $_ eq 'Class::Meta' }
@@ -121,6 +121,7 @@ sub new {
 
     # Check the visibility.
     if (exists $params{vis}) {
+
         Carp::croak("Not a valid vis parameter: '$params{vis}'")
           unless $params{vis} == Class::Meta::PUBLIC
           ||     $params{vis} == Class::Meta::PROTECTED
@@ -149,8 +150,9 @@ sub new {
           $params{caller} = eval "sub { shift->$params{name}(\@_) }";
       }
 
-    # Return the object!
-    return bless \%params, ref $pkg || $pkg;
+    # Create and cache the object and return it.
+    $def->{meths}{$params{name}} = bless \%params, ref $pkg || $pkg;
+    return $def->{meths}{$params{name}};
 }
 
 ##############################################################################
@@ -234,7 +236,8 @@ David Wheeler <david@wheeler.net>
 
 =head1 SEE ALSO
 
-L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>
+L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>,
+L<Class::Meta::Constructor|Class::Meta::Constructor>
 
 =head1 COPYRIGHT AND LICENSE
 
