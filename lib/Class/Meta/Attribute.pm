@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.12 2003/11/25 00:58:17 david Exp $
+# $Id: Attribute.pm,v 1.13 2003/12/10 07:34:12 david Exp $
 
 =head1 NAME
 
@@ -20,7 +20,6 @@ Kinet::Meta::Attribute - Objects describing Kinet object attributes.
 # Dependencies                                                               #
 ##############################################################################
 use strict;
-use Carp ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -30,8 +29,12 @@ use constant DEBUG => 0;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-use vars qw($VERSION);
-$VERSION = "0.01";
+our $VERSION = "0.01";
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
 # Constructors                                                               #
@@ -44,33 +47,33 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Attribute object.
     my $caller = caller;
-    Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+    $croak->("Package '$caller' cannot create " . __PACKAGE__ . " objects")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
-    Carp::croak("Odd number of parameters in call to new() when named "
-                . "parameters were expected" ) if @_ % 2;
+    $croak->("Odd number of parameters in call to new() when named "
+             . "parameters were expected" ) if @_ % 2;
     my %p = @_;
 
     # Validate the name.
-    Carp::croak("Parameter 'name' is required in call to new()")
+    $croak->("Parameter 'name' is required in call to new()")
       unless $p{name};
     # Is this too paranoid?
-    Carp::croak("Attribute '$p{name}' is not a valid attribute name "
-                . "-- only alphanumeric and '_' characters allowed")
+    $croak->("Attribute '$p{name}' is not a valid attribute name "
+             . "-- only alphanumeric and '_' characters allowed")
       if $p{name} =~ /\W/;
 
     # Grab the package name.
     $p{package} = $spec->{package};
 
     # Make sure the name hasn't already been used for another attribute
-    Carp::croak("Attribute '$p{name}' already exists in class",
-                " '", $spec->{attrs}{$p{name}}{package}, "'")
+    $croak->("Attribute '$p{name}' already exists in class",
+             " '", $spec->{attrs}{$p{name}}{package}, "'")
       if exists $spec->{attrs}{$p{name}};
 
     # Check the view.
     if (exists $p{view}) {
-        Carp::croak("Not a valid view parameter: '$p{view}'")
+        $croak->("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           or     $p{view} == Class::Meta::PROTECTED
           or     $p{view} == Class::Meta::PRIVATE;
@@ -81,7 +84,7 @@ sub new {
 
     # Check the authorization level.
     if (exists $p{authz}) {
-        Carp::croak("Not a valid authz parameter: '$p{authz}'")
+        $croak->("Not a valid authz parameter: '$p{authz}'")
           unless $p{authz} == Class::Meta::NONE
           or     $p{authz} == Class::Meta::READ
           or     $p{authz} == Class::Meta::WRITE
@@ -93,7 +96,7 @@ sub new {
 
     # Check the creation constant.
     if (exists $p{create}) {
-        Carp::croak("Not a valid create parameter: '$p{create}'")
+        $croak->("Not a valid create parameter: '$p{create}'")
           unless $p{create} == Class::Meta::NONE
           or     $p{create} == Class::Meta::GET
           or     $p{create} == Class::Meta::SET
@@ -105,7 +108,7 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
-        Carp::croak("Not a valid context parameter: '$p{context}'")
+        $croak->("Not a valid context parameter: '$p{context}'")
           unless $p{context} == Class::Meta::OBJECT
           or     $p{context} == Class::Meta::CLASS;
     } else {
@@ -165,19 +168,19 @@ sub my_options   {
 sub call_get   {
     my $self = shift;
     my $code = $self->{_get}
-      or Carp::croak "Cannot get attribute '", $self->my_name, "'";
+      or $croak->("Cannot get attribute '", $self->my_name, "'");
     $code->(@_);
 }
 
 sub call_set   {
     my $self = shift;
     my $code = $self->{_set}
-      or Carp::croak "Cannot set attribute '", $self->my_name, "'";
+      or $croak->("Cannot set attribute '", $self->my_name, "'");
     $code->(@_);
 }
 
 my $req_chk = sub {
-    Carp::croak "Attribute must be defined" unless defined $_[0];
+    $croak->("Attribute must be defined") unless defined $_[0];
 };
 
 sub build {
@@ -186,7 +189,7 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Just return if this attribute doesn't need accessors created for it.

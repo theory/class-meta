@@ -1,13 +1,23 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.16 2003/11/25 01:21:31 david Exp $
+# $Id: Class.pm,v 1.17 2003/12/10 07:34:12 david Exp $
 
 use strict;
-use Carp ();
 use Class::ISA ();
 use Class::Meta;
 use Class::Meta::Attribute;
 use Class::Meta::Method;
+
+##############################################################################
+# Package Globals                                                            #
+##############################################################################
+our $VERSION = "0.01";
+our @CARP_NOT = qw(Class::Meta);
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
 
 {
     # We'll keep the class specifications in here.
@@ -19,12 +29,12 @@ use Class::Meta::Method;
         # Check to make sure that only Class::Meta or a subclass is
         # constructing a Class::Meta::Class object.
         my $caller = caller;
-        Carp::croak("Package '$caller' cannot create ", __PACKAGE__,
-                    " objects")
+        $croak->("Package '$caller' cannot create ", __PACKAGE__,
+                 " objects")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
 
         # Check to make sure we haven't created this class already.
-        Carp::croak("Class object for class '$spec->{package}' already exists")
+        $croak->("Class object for class '$spec->{package}' already exists")
           if $specs{$spec->{package}};
 
         # Save a reference to the spec hash ref.
@@ -100,7 +110,7 @@ use Class::Meta::Method;
         # Check to make sure that only Class::Meta or a subclass is building
         # attribute accessors.
         my $caller = caller;
-        Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+        $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
         $self->_inherit(qw(ctor meth));
     }

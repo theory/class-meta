@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.11 2003/11/22 01:45:47 david Exp $
+# $Id: Type.pm,v 1.12 2003/12/10 07:34:12 david Exp $
 
 =head1 NAME
 
@@ -40,13 +40,17 @@ as that shown in the <LSYNOPSIS>, on the other hand, are encouraged.
 use strict;
 use Data::Types ();
 use DateTime;
-use Carp ();
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-use vars qw($VERSION);
-$VERSION = "0.01";
+our $VERSION = "0.01";
+our @CARP_NOT = qw(Class::Meta::Attribute);
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
 # Closure definition                                                         #
@@ -127,7 +131,7 @@ $VERSION = "0.01";
             sub {
                 return unless defined $_[0];
                 $code->($_[0])
-                  or Carp::croak("Value '$_[0]' is not a valid $type");
+                  or $croak->("Value '$_[0]' is not a valid $type");
                 }
         ];
     };
@@ -139,7 +143,7 @@ $VERSION = "0.01";
             sub {
                 return unless defined $_[0];
                 UNIVERSAL::isa($_[0], $pkg)
-                  or Carp::croak("Value '$_[0]' is not a valid $type")
+                  or $croak->("Value '$_[0]' is not a valid $type")
               }
         ];
     };
@@ -415,8 +419,8 @@ those values.
 =cut
 
     sub new {
-        my $key = lc $_[1] || Carp::croak("Type argument required");
-        Carp::croak("Type '$_[1]' does not exist")
+        my $key = lc $_[1] || $croak->("Type argument required");
+        $croak->("Type '$_[1]' does not exist")
           unless $types{$key};
         return bless $types{$key}, ref $_[0] || $_[0];
     }
@@ -635,25 +639,25 @@ template for your custom get attributes:
     sub add {
         my $pkg = shift;
         # Make sure we can process the parameters.
-        Carp::croak("Odd number of parameters in call to add() when named ",
-                    "parameters were expected" ) if @_ % 2;
+        $croak->("Odd number of parameters in call to add() when named ",
+                 "parameters were expected" ) if @_ % 2;
         my %params = @_;
 
         # Check required paremeters.
         foreach (qw(key name)) {
-            Carp::croak("Parameter '$_' is required") unless $params{$_};
+            $croak->("Parameter '$_' is required") unless $params{$_};
         }
 
         # Check the key parameter.
         $params{key} = lc $params{key};
-        Carp::croak("Type '$params{key}' already defined")
+        $croak->("Type '$params{key}' already defined")
           if exists $types{$params{key}};
 
         # Set up the check croak.
         my $chk_die = sub {
-            Carp::croak("Paremter 'check' in call to add() must be a code ",
-                        "reference, an array of code references, or a ",
-                        "scalar naming an object type");
+            $croak->("Paremter 'check' in call to add() must be a code ",
+                     "reference, an array of code references, or a ",
+                     "scalar naming an object type");
         };
 
         # Check the check parameter.
@@ -677,8 +681,8 @@ template for your custom get attributes:
 
         # Check the converter parameter.
         if ($params{converter}) {
-            Carp::croak("Paremter 'converter' in call to add() must be a ",
-                        "code reference")
+            $croak->("Paremter 'converter' in call to add() must be a ",
+                     "code reference")
               unless ref $params{converter} eq 'CODE';
         }
 
@@ -689,8 +693,8 @@ template for your custom get attributes:
                         attr_get_maker => $mk_pgetter );
         while (my ($p, $c) = each %acc_map) {
             if ($params{$p}) {
-                Carp::croak("Parameter '$p' in call to add() must be a code "
-                            . "reference") unless ref $params{$p} eq 'CODE';
+                $croak->("Parameter '$p' in call to add() must be a code "
+                         . "reference") unless ref $params{$p} eq 'CODE';
             } else {
                 $params{$p} = $c;
             }

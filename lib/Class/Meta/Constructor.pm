@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.16 2003/11/25 01:21:31 david Exp $
+# $Id: Constructor.pm,v 1.17 2003/12/10 07:34:12 david Exp $
 
 use strict;
 
@@ -34,12 +34,17 @@ C<Class::Meta::Class> object.
 ##############################################################################
 use strict;
 use warnings;
-use Carp ();
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
 our $VERSION = "0.01";
+our @CARP_NOT = qw(Class::Meta);
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
 # Constructors                                                               #
@@ -91,31 +96,30 @@ sub new {
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Constructor object.
     my $caller = caller;
-    Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+    $croak->("Package '$caller' cannot create " . __PACKAGE__ . " objects")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
-    Carp::croak("Odd number of parameters in call to new() when named "
-                . "parameters were expected" ) if @_ % 2;
+    $croak->("Odd number of parameters in call to new() when named "
+             . "parameters were expected" ) if @_ % 2;
     my %p = @_;
 
     # Validate the name.
-    Carp::croak("Parameter 'name' is required in call to new()")
+    $croak->("Parameter 'name' is required in call to new()")
       unless $p{name};
-    Carp::croak("Method '$p{name}' is not a valid method name "
-                . "-- only alphanumeric and '_' characters allowed")
+    $croak->("Method '$p{name}' is not a valid method name "
+             . "-- only alphanumeric and '_' characters allowed")
       if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another constructor or
     # method.
-    Carp::croak("Method '$p{name}' already exists in class "
-                . "'$spec->{package}'")
+    $croak->("Method '$p{name}' already exists in class '$spec->{package}'")
       if exists $spec->{ctors}{$p{name}}
       or exists $spec->{meths}{$p{name}};
 
     # Check the visibility.
     if (exists $p{view}) {
-        Carp::croak("Not a valid view parameter: '$p{view}'")
+        $croak->("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
           ||     $p{view} == Class::Meta::PRIVATE;
@@ -127,7 +131,7 @@ sub new {
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
-        Carp::croak("Parameter caller must be a code reference")
+        $croak->("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE'
       } else {
           $p{caller} = eval "sub { shift->$p{name}(\@_) }";
@@ -218,7 +222,7 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # constructors.
     my $caller = caller;
-    Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+    $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Build a construtor that takes a parameter list and assigns the
@@ -254,8 +258,7 @@ sub build {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attrs > 0 ? 'attributes' : 'attribute';
             local $" = "', '";
-            Carp::croak("No such $c '@attrs' in $self->{package} "
-                          . "objects");
+            $croak->("No such $c '@attrs' in $self->{package} objects");
         }
         return $new;
     };

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.31 2003/11/25 19:12:11 david Exp $
+# $Id: Meta.pm,v 1.32 2003/12/10 07:34:11 david Exp $
 
 =head1 NAME
 
@@ -86,7 +86,6 @@ implementation of an introspection API.
 use 5.008;
 use strict;
 use warnings;
-use Carp ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -132,6 +131,11 @@ use Class::Meta::Method;
 our $VERSION = "0.01";
 
 ##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
+
+##############################################################################
 # Constructors                                                               #
 ##############################################################################
 {
@@ -141,15 +145,15 @@ our $VERSION = "0.01";
         my $pkg = shift;
 
         # Make sure we can get all the arguments.
-        Carp::croak("Odd number of parameters in call to new() when named "
-                    . "parameters were expected" ) if @_ % 2;
+        $croak->("Odd number of parameters in call to new() when named "
+                 . "parameters were expected" ) if @_ % 2;
         my %p = @_;
 
         # Class defaults to caller. Key defaults to class.
         $p{key} ||= $p{package} ||= caller;
 
         # Make sure we haven't been here before.
-        Carp::croak("Class '$p{package}' already created")
+        $croak->("Class '$p{package}' already created")
           if exists $classes{$p{package}};
 
         $p{class_class} ||= 'Class::Meta::Class';
@@ -234,11 +238,16 @@ __END__
 
 =item *
 
-Add control over exceptions (borrow from Params::CallbackRequest).
+Move types to separate package so that they can be loaded. Leave a few
+default types in Class::Meta::Type.
 
 =item *
 
-Add localization using Locale::Maketext.
+Add tests for all errors.
+
+=item *
+
+Add tests for subclasses of the C::M classes.
 
 =back
 
