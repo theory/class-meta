@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: view.t,v 1.3 2004/01/28 02:09:04 david Exp $
+# $Id: view.t,v 1.4 2004/04/20 08:33:35 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -238,7 +238,9 @@ is( $obj->id, 10, 'Check 10 ID' );
 is( $obj->name, 'Damian', 'Check Damian name' );
 
 # Make sure that the private attribute fails.
+$ENV{FOO} = 1;
 eval { __PACKAGE__->new( age => 44 ) };
+delete $ENV{FOO};
 main::chk('constructor private exception',
           qr/age is a private attribute of Class::Meta::Test/);
 

@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.38 2004/04/18 23:37:35 david Exp $
+# $Id: Class.pm,v 1.39 2004/04/20 08:33:34 david Exp $
 
 =head1 NAME
 
@@ -56,7 +56,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.30";
+our $VERSION = "0.31";
 our @CARP_NOT = qw(Class::Meta);
 
 ##############################################################################
@@ -312,7 +312,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.30 distribution.
+This file was packaged with the Class-Meta-0.31 distribution.
 
 =head1 BUGS
 

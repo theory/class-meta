@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.77 2004/04/19 23:36:20 david Exp $
+# $Id: Meta.pm,v 1.78 2004/04/20 08:33:34 david Exp $
 
 =head1 NAME
 
@@ -645,7 +645,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.30";
+our $VERSION = "0.31";
 
 ##############################################################################
 # Private Package Globals
@@ -662,6 +662,12 @@ our $VERSION = "0.30";
                            Class::Meta::Types::Numeric
                            Class::Meta::Types::String
                            Class::Meta::AccessorBuilder);
+        no strict 'refs';
+        # XXX Make sure the caller doesn't confuse Class::AccessorBuilder.
+        # I have no idea why this is necessary for AccessorBuilder by no
+        # where else!
+        @Class::Meta::AccessorBuilder::CARP_NOT = @CARP_NOT
+          if caller(1) eq 'Class::Meta::AccessorBuilder';
         Carp::croak(@_);
     };
 
@@ -1046,7 +1052,7 @@ may not be easy.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.30 distribution.
+This file was packaged with the Class-Meta-0.31 distribution.
 
 =head1 BUGS
 

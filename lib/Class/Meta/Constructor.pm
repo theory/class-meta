@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.42 2004/04/19 13:48:11 david Exp $
+# $Id: Constructor.pm,v 1.43 2004/04/20 08:33:34 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.30";
+our $VERSION = "0.31";
 
 ##############################################################################
 # Constructors                                                               #
@@ -295,7 +295,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.30 distribution.
+This file was packaged with the Class-Meta-0.31 distribution.
 
 =head1 BUGS
 

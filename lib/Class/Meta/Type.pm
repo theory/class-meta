@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.31 2004/04/18 23:37:35 david Exp $
+# $Id: Type.pm,v 1.32 2004/04/20 08:33:34 david Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.30";
+our $VERSION = "0.31";
 
 ##############################################################################
 # Private Package Globals                                                    #
@@ -585,7 +585,7 @@ before creating your own.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.30 distribution.
+This file was packaged with the Class-Meta-0.31 distribution.
 
 =head1 BUGS
 

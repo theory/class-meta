@@ -1,5 +1,10 @@
 Revision history for Perl extension Class::Meta.
 
+0.31
+      - Moved extra code to prevent AccessorBuilder from pointing to
+        Constructor in the default (croak) error handler from AccessorBuilder
+        to the default error handler. Carp is a PITA.
+
 0.30  2004-04-19T23:44:26
       - Added semi-affordance accessor generation.
       - Modified arguments passed to check code references. Now, in addition

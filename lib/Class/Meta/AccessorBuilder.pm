@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.24 2004/04/19 22:16:46 david Exp $
+# $Id: AccessorBuilder.pm,v 1.25 2004/04/20 08:33:34 david Exp $
 
 =head1 NAME
 
@@ -135,7 +135,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.30";
+our $VERSION = "0.31";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -276,11 +276,7 @@ sub build {
                  $caller = caller($i);
              }
 
-             # XXX Why oh why does carp insist on making Constructor.pm the
-             # context?? So we use the deprecated $Carp::CarpLevel as a hack
-             # to get 'round it.
-             local $Carp::CarpLevel = 4,
-               $attr->class->handle_error("$name is a protected attribute "
+             $attr->class->handle_error("$name is a protected attribute "
                                         . "of $pkg")
                unless UNIVERSAL::isa($caller, $pkg);
              goto &$real_sub;
@@ -294,11 +290,7 @@ sub build {
                  $caller = caller($i);
              }
 
-             # XXX Why oh why does carp insist on making Constructor.pm the
-             # context?? So we use the deprecated $Carp::CarpLevel as a hack
-             # to get 'round it.
-             local $Carp::CarpLevel = 4,
-               $attr->class->handle_error("$name is a private attribute of $pkg")
+             $attr->class->handle_error("$name is a private attribute of $pkg")
                unless $caller eq $pkg;
              goto &$real_sub;
          };
@@ -314,7 +306,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.30 distribution.
+This file was packaged with the Class-Meta-0.31 distribution.
 
 =head1 BUGS
 
