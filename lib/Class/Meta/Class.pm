@@ -218,7 +218,7 @@ sub attributes {
     my $list = @_
       # Explicit list requested.
       ? \@_
-        : UNIVERSAL::isa(scalar caller, $self->{package})
+      : UNIVERSAL::isa(scalar caller, $self->{package})
         # List of protected interface objects.
         ? $self->{prot_attr_ord}
         # List of public interface objects.
