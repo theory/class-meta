@@ -19,7 +19,8 @@ Class::Meta - Class Automation and Introspection
 # Dependencies                                                               #
 ##############################################################################
 use strict;
-use Carp;
+use Carp ();
+use Class::Meta::Type;
 use Class::Meta::Class;
 use Class::Meta::Property;
 use Class::Meta::Method;
@@ -55,7 +56,7 @@ use constant GETSET    => GET | SET;
 # Class::Meta objects.
 use constant PROP      => 'prop';
 use constant METH      => 'meth';
-use constant CONST     => 'const';
+use constant CTOR      => 'ctor';
 
 ##############################################################################
 # Package Globals                                                            #
@@ -81,7 +82,8 @@ my $add_memb;
 	$key ||= $class;
 
 	# Make sure we haven't been here before.
-	croak "Class '$class' already created" if exists $classes{$class};
+	Carp::croak("Class '$class' already created")
+	  if exists $classes{$class};
 
 	# Set up the definition hash.
 	my $def = { key => $key,
@@ -154,19 +156,19 @@ my $add_memb;
     }
 
 ##############################################################################
-# add_const()
+# add_ctor()
     # Set up Params::Validate spec for Constructor objects.
-    my $const_defs = { name  => { type => $pvscalar, callbacks => $chkname },
+    my $ctor_defs = { name  => { type => $pvscalar, callbacks => $chkname },
 		       vis   => { type => $pvscalar, default => PUBLIC },
 		       gen   => { type => $pvscalar, default => 0 },
 		       label => { type => $pvscalar, default => '' },
 		       desc  => { type => $pvscalar, default => '' }
 		     };
 
-    sub add_const {
+    sub add_ctor {
 	my $self = shift;
-	my %spec = Params::Validate::validate(@_, $const_defs);
-	return $add_memb->(CONST, $classes{ $self->{pkg} }, \%spec);
+	my %spec = Params::Validate::validate(@_, $ctor_defs);
+	return $add_memb->(CTOR, $classes{ $self->{pkg} }, \%spec);
     }
 
 ##############################################################################
@@ -181,9 +183,9 @@ my $add_memb;
 	}
 
 	# Build the constructors.
-	foreach my $const (@{$def->{build_const_ord}}) {
+	foreach my $ctor (@{$def->{build_ctor_ord}}) {
 	    # Create a constructor.
-	    *{$def->{pkg} . '::' . $const->my_name } = sub {
+	    *{$def->{pkg} . '::' . $ctor->my_name } = sub {
 		my $init = $_[1] || {};
 		my $new = bless({}, ref $_[0] || $_[0]);
 
@@ -218,12 +220,12 @@ my $add_memb;
 ##############################################################################
 
 {
-    my %types = ( &PROP  => { label => 'Property',
-			      class  => 'Class::Meta::Property' },
-		  &METH  => { label => 'Method',
-			      class => 'Class::Meta::Method' },
-		  &CONST => { label => 'Constructor',
-			      class => 'Class::Meta::Constructor' }
+    my %types = ( &PROP => { label => 'Property',
+			     class  => 'Class::Meta::Property' },
+		  &METH => { label => 'Method',
+			     class => 'Class::Meta::Method' },
+		  &CTOR => { label => 'Constructor',
+			     class => 'Class::Meta::Constructor' }
 		);
 
     $add_memb = sub {
@@ -241,8 +243,8 @@ my $add_memb;
 	    # Methods musn't conflict with constructors, either.
 	    Carp::croak("Construtor '$spec->{name}' already exists in class "
 			. "'$def->{class}'")
-	      if exists $def->{consts}{$spec->{name}};
-	} elsif ($type eq CONST) {
+	      if exists $def->{ctors}{$spec->{name}};
+	} elsif ($type eq CTOR) {
 	    # Constructors musn't conflict with methods, either.
 	    Carp::croak("Method '$spec->{name}' already exists in class "
 			. "'$def->{class}'")

@@ -19,7 +19,7 @@ use Carp;
 
 BEGIN {
     main::use_ok( 'Class::Meta');
-    main::use_ok( 'Class::Meta::Types');
+    main::use_ok( 'Class::Meta::Type');
 
     # Set up functions to verify and convert values.
     my $ip_chk = sub {
@@ -29,12 +29,12 @@ BEGIN {
     my $ip_conv = sub { inet_aton(shift) };
 
     # Add the new data type.
-    Class::Meta::Types->add( { key  => 'ip_addr',
-			       name => 'IP Address',
-			       desc => 'IP Address data type.',
-			       chk  => $ip_chk,
-			       conv => $ip_conv
-			     });
+    Class::Meta::Type->add( { key  => 'ip_addr',
+			      name => 'IP Address',
+			      desc => 'IP Address data type.',
+			      chk  => $ip_chk,
+			      conv => $ip_conv
+			    });
 
     # Build the class with the new data type as a property.
     my $c = Class::Meta->new(ip_test => __PACKAGE__);

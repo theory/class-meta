@@ -29,18 +29,18 @@ sub my_desc { $_[0]->{def}{desc} }
 sub isa { exists $_[0]->{def}{isa}{$_[1]} }
 
 # Constructor objects.
-sub my_consts {
+sub my_ctors {
     my $self = shift;
-    my $consts = $self->{def}{consts};
+    my $ctors = $self->{def}{ctors};
     if ($_[0]) {
 	# Return the requested constructors.
-	return @{$consts}{@_};
+	return @{$ctors}{@_};
     } elsif ($self->{def}{isa}{caller()}) {
 	# Return the protected list of constructors.
-	return @{$consts}{@{ $self->{def}{prot_const_ord} } };
+	return @{$ctors}{@{ $self->{def}{prot_ctor_ord} } };
     } else {
 	# Return the private list of constructors.
-	return @{$consts}{@{ $self->{def}{const_ord} } };
+	return @{$ctors}{@{ $self->{def}{ctor_ord} } };
     }
 }
 

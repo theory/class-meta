@@ -6,7 +6,6 @@
 
 use strict;
 use Test::More tests => 4;
-#BEGIN { use_ok( 'Class::Meta' ) }
 
 ##############################################################################
 # Create a simple class.
@@ -22,12 +21,18 @@ BEGIN {
     my $c = Class::Meta->new(person => __PACKAGE__);
     $c->set_name('Class::Meta::TestPerson Class');
     $c->set_desc('Special person class just for testing Class::Meta.');
+    $c->enable_chk;
+    $c->enable_conv;
+
+    # Add a constructor.
+    $c->add_ctor( name => 'new',
+		   gen  => 1 );
 
     # Add a couple of properties with generated methods.
     $c->add_prop( name => 'id',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::READ,
-		  gen   => Class::Meta::GET
+		  gen   => Class::Meta::GET,
 		  type  => 'integer',
 		  label => 'ID',
 		  desc  => "The person object's ID.",
@@ -37,7 +42,7 @@ BEGIN {
     $c->add_prop( name  => 'name',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::RDWR,
-		  gen   => Class::Meta::GETSET
+		  gen   => Class::Meta::GETSET,
 		  type  => 'string',
 		  len   => 256,
 		  label => 'Name',
@@ -49,7 +54,7 @@ BEGIN {
     $c->add_prop( name  => 'age',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::RDWR,
-		  gen   => Class::Meta::GETSET
+		  gen   => Class::Meta::GETSET,
 		  type  => 'inteter',
 		  label => 'Age',
 		  field => 'text',
@@ -59,10 +64,12 @@ BEGIN {
 		);
 
     # Add a custom method.
-    $c->add_meth( name => 'chk_pass',
-		  vis  => Class::Meta::PUBLIC,
-		  ret  => 'boolean',
-		  args => ['string', 'string']
+    $c->add_meth( name  => 'chk_pass',
+		  vis   => Class::Meta::PUBLIC,
+		  label => 'Check password',
+		  desc  => 'Password checking method.',
+		  ret   => 'boolean',
+		  args  => ['string', 'string']
 		);
     $c->build;
 }
