@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.35 2004/01/08 03:27:36 david Exp $
+# $Id: Meta.pm,v 1.36 2004/01/08 05:03:24 david Exp $
 
 =head1 NAME
 
@@ -602,6 +602,16 @@ constructor for the class. The supported parameters are:
 The name of the constructor. The name must consist of only alphanumeric
 characters or "_".
 
+=item label
+
+A label for the constructor. Generally used for displaying its name in a user
+interface. Optional.
+
+=item desc
+
+A description of the constructor. Possibly useful for displaying help text in
+a user interface. Optional.
+
 =item view
 
 The visibility of the constructor. The possible values are defined by the
@@ -649,10 +659,25 @@ attribute of the class. The supported parameters are:
 
 =over 4
 
+=item type
+
+The data type of the attribute. See L</"Data Types"> for some possible values
+for this parameter. Required.
+
 =item name
 
 The name of the attribute. The name must consist of only alphanumeric
-characters or "_".
+characters or "_". Required.
+
+=item label
+
+A label for the attribute. Generally used for displaying its name in a user
+interface. Optional.
+
+=item desc
+
+A description of the attribute. Possibly useful for displaying help text in a
+user interface. Optional.
 
 =item view
 
@@ -771,6 +796,16 @@ the class. The supported parameters are:
 
 The name of the method. The name must consist of only alphanumeric
 characters or "_".
+
+=item label
+
+A label for the method. Generally used for displaying its name in a user
+interface. Optional.
+
+=item desc
+
+A description of the method. Possibly useful for displaying help text in a
+user interface. Optional.
 
 =item view
 
