@@ -1,5 +1,22 @@
 Revision history for Perl extension Class::Meta.
 
+0.35
+      - Fixed the names of the included types classes in the documentation
+        of Class::Meta::Type. Spotted by Dan Kubb.
+      - Fixed a few documentation references to a "class()" method to
+        reference the correctly named "my_class()" method.
+      - Fixed failing tests on Win32. For real this time, I hope! Reported
+        by Robert Rothenberg's CPAN testing.
+      - Added build() method to Class::Meta::Method to parallel the same
+        method in Class::Meta::Attribute and Class::Meta::Constructor.
+        It's a no-op, but will be called when Class::Meta::build() is
+        called, so it could be useful for subclasses. Inspired by a
+        suggestion by Mark Jaroski.
+      - Added POD coverage test.
+      - Documented undocumented methods and functions. Most of these are
+        actually protected methods, but they will be of interest to those
+        creating their own subclasses or accessor generators Class::Meta.
+
 0.34  2004-06-17T17:52:30
       - Fixed failing tests on Win32. Reported by Robert Rothenberg's CPAN
         testing.

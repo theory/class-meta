@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.38 2004/06/17 00:11:11 david Exp $
+# $Id: Method.pm,v 1.39 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -26,8 +26,8 @@ visibility (private, protected, or public).
 
 Class::Meta::Method objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the method objects for a
-Class::Meta-generated class, simply call its C<class> method to retrieve its
-Class::Meta::Class object, and then call the C<methods()> method on the
+Class::Meta-generated class, simply call its C<my_class()> method to retrieve
+its Class::Meta::Class object, and then call the C<methods()> method on the
 Class::Meta::Class object.
 
 =cut
@@ -42,11 +42,17 @@ use strict;
 ##############################################################################
 our $VERSION = "0.34";
 
-##############################################################################
-# Constructors                                                               #
-##############################################################################
-# We don't document new(), since it's a protected method, really. Its
-# parameters are documented in Class::Meta.
+=head1 INTERFACE
+
+=head2 Constructors
+
+=head3 new
+
+A protected method for constructing a Class::Meta::Method object. Do not call
+this method directly; Call the L<C<add_method()>|Class::Meta/"add_method">
+method on a Class::Meta object, instead.
+
+=cut
 
 sub new {
     my $pkg = shift;
@@ -134,8 +140,6 @@ sub new {
 ##############################################################################
 # Instance Methods                                                           #
 ##############################################################################
-
-=head1 INTERFACE
 
 =head2 Instance Methods
 
@@ -230,12 +234,36 @@ sub call {
     goto &$code;
 }
 
+##############################################################################
+
+=head3 build
+
+This is a protected method, designed to be called only by the Class::Meta
+class or a subclass of Class::Meta. It takes a single argument, a hash of the
+class specification maintained internally by Class::Meta. Currently,
+C<Class::Meta::Method::build()> is a no-op, although it does check to make
+sure that it is only called by Class::Meta or a subclass of Class::Meta.
+Although you should never call this method directly, subclasses of
+Class::Meta::Method may need to override it in order to add behavior.
+
+=cut
+
+sub build {
+    my ($self, $spec) = @_;
+
+    # Check to make sure that only Class::Meta or a subclass is building
+    # attribute accessors.
+    my $caller = caller;
+    $self->class->handle_error("Package '$caller' cannot call "
+                              . __PACKAGE__ . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta');
+
+    # No-op.
+    return $self;
+}
+
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

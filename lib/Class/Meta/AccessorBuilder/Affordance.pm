@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.26 2004/06/17 00:11:11 david Exp $
+# $Id: Affordance.pm,v 1.27 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -131,6 +131,64 @@ This is a bit of a hack, but since Perl uses call stacks for checking security
 in this way, it's the best I could come up with. Other suggestions welcome. Or
 see L<Class::Meta::Type|Class::Meta::Type/"Custom Accessor Building"> to
 create your own accessor generation code
+
+=head1 INTERFACE
+
+The following functions must be implemented by any Class::Meta accessor
+generation module.
+
+=head2 Functions
+
+=head3 build_attr_get
+
+  my $code = Class::Meta::AccessorBuilder::Affordance::build_attr_get();
+
+This function is called by C<Class::Meta::Type::make_attr_get()> and returns a
+code reference that can be used by the C<get()> method of
+Class::Meta::Attribute to return the value stored for that attribute for the
+object passed to the code reference.
+
+=head3 build_attr_set
+
+  my $code = Class::Meta::AccessorBuilder::Affordance::build_attr_set();
+
+This function is called by C<Class::Meta::Type::make_attr_set()> and returns a
+code reference that can be used by the C<set()> method of
+Class::Meta::Attribute to set the value stored for that attribute for the
+object passed to the code reference.
+
+=head3 build
+
+  Class::Meta::AccessorBuilder::Affordance::build(
+    $pkg, $attribute, $create, @checks
+  );
+
+This method is called by the C<build()> method of Class::Meta::Type, and does
+the work of actually generating the accessors for an attribute object. The
+arguments passed to it are:
+
+=over 4
+
+=item $pkg
+
+The name of the class to which the accessors will be added.
+
+=item $attribute
+
+The Class::Meta::Attribute object that specifies the attribute for which the
+accessors will be created.
+
+=item $create
+
+The value of the C<create> attribute of the Class::Meta::Attribute object,
+which determines what accessors, if any, are to be created.
+
+=item @checks
+
+A list of code references that validate the value of an attribute. These will
+be used in the set acccessor (mutator) to validate new attribute values.
+
+=back
 
 =cut
 
@@ -266,10 +324,6 @@ sub _build {
 
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.47 2004/06/17 00:11:11 david Exp $
+# $Id: Constructor.pm,v 1.48 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -25,9 +25,9 @@ label, and the constructor visibility (private, protected, or public).
 
 Class::Meta::Constructor objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the constructor objects for a
-Class::Meta-generated class, simply call its C<class> method to retrieve its
-Class::Meta::Class object, and then call the C<constructors()> method on the
-Class::Meta::Class object.
+Class::Meta-generated class, simply call its C<my_class()> method to retrieve
+its Class::Meta::Class object, and then call the C<constructors()> method on
+the Class::Meta::Class object.
 
 =cut
 
@@ -44,8 +44,19 @@ our $VERSION = "0.34";
 ##############################################################################
 # Constructors                                                               #
 ##############################################################################
-# We don't document new(), since it's a protected method, really. Its
-# parameters are documented in Class::Meta.
+
+=head1 INTERFACE
+
+=head2 Constructors
+
+=head3 new
+
+A protected method for constructing a Class::Meta::Constructor object. Do not
+call this method directly; Call the
+L<C<add_constructor()>|Class::Meta/"add_constructor"> method on a Class::Meta
+object, instead.
+
+=cut
 
 sub new {
     my $pkg = shift;
@@ -127,8 +138,6 @@ sub new {
 # Instance Methods                                                           #
 ##############################################################################
 
-=head1 INTERFACE
-
 =head2 Instance Methods
 
 =head3 name
@@ -208,8 +217,18 @@ sub call {
 }
 
 ##############################################################################
-# Private Methods
-##############################################################################
+
+=head3 build
+
+This is a protected method, designed to be called only by the Class::Meta
+class or a subclass of Class::Meta. It takes a single argument, a hash of the
+class specification maintained internally by Class::Meta, and generates
+constructor methods for the Class::Meta::Constructor object.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Attribute may need to override its behavior.
+
+=cut
 
 sub build {
     my ($self, $specs) = @_;
@@ -292,10 +311,6 @@ sub build {
 
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

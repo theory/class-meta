@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.84 2004/06/17 00:11:11 david Exp $
+# $Id: Meta.pm,v 1.85 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -534,8 +534,6 @@ instance method in Class::Meta::Class, instead.
 # Constructors                                                               #
 ##############################################################################
 
-=head1 INTERFACE
-
 =head2 Constructors
 
 =head3 new
@@ -1015,12 +1013,18 @@ C<my_class()> class method, and all requisite constructors and accessors.
         my $self = shift;
         my $spec = $classes{ $self->{package} };
 
-        # Build the attribute accessors and constructors.
+        # Build the attribute accessors.
         if (my $objs = $spec->{build_attr_ord}) {
             $_->build($spec) for @$objs;
         }
 
+        # Build the constructors.
         if (my $objs = $spec->{build_ctor_ord}) {
+            $_->build(\%classes) for @$objs;
+        }
+
+        # Build the methods.
+        if (my $objs = $spec->{build_meth_ord}) {
             $_->build(\%classes) for @$objs;
         }
 
@@ -1054,10 +1058,6 @@ newly generated accessors for subclasses are shared between threads, too. This
 may not be easy.
 
 =back
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

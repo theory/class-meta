@@ -1,6 +1,6 @@
 package Class::Meta::Types::Numeric;
 
-# $Id: Numeric.pm,v 1.18 2004/06/17 00:11:11 david Exp $
+# $Id: Numeric.pm,v 1.19 2004/06/28 23:15:31 david Exp $
 
 =head1 NAME
 
@@ -140,10 +140,6 @@ sub import {
 
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

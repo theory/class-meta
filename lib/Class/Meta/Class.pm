@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.44 2004/06/17 00:11:11 david Exp $
+# $Id: Class.pm,v 1.45 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -40,7 +40,7 @@ of the utility of the Class::Meta suite of modules.
 
 Class::Meta::Class objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the class object for a
-Class::Meta-generated class, simply call its C<class> method.
+Class::Meta-generated class, simply call its C<my_class()> method.
 
 =cut
 
@@ -59,10 +59,20 @@ use Class::Meta::Method;
 our $VERSION = "0.34";
 our @CARP_NOT = qw(Class::Meta);
 
-##############################################################################
-# Constructors                                                               #
-##############################################################################
-# We don't document new(), since it's a protected method, really.
+=head1 INTERFACE
+
+=head2 Constructors
+
+=head3 new
+
+A protected method for constructing a Class::Meta::Class object. Do not call
+this method directly; Call the L<C<new()>|Class::Meta/new"> constructor on a
+Class::Meta object, instead. A Class::Meta::Class object will be constructed
+by default, and can always be retreived via the C<my_class()> method of the
+class for which it was constructed.
+
+=cut
+
 {
     # We'll keep the class specifications in here.
     my %specs;
@@ -98,8 +108,6 @@ our @CARP_NOT = qw(Class::Meta);
 ##############################################################################
 # Instance Methods
 ##############################################################################
-
-=head1 INTERFACE
 
 =head2 Instance Methods
 
@@ -262,8 +270,20 @@ returns all of the method objects with the specified names.
     }
 
 ##############################################################################
-# Private Methods.
-##############################################################################
+
+=head3 build
+
+This is a protected method, designed to be called only by the Class::Meta
+class or a subclass of Class::Meta. It copies the attribute, constructor, and
+method objects from all of the parent classes of the class object so that they
+will be readily available from the C<attributes()>, C<constructors()>, and
+C<methods()> methods.
+
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Class may need to override its behavior.
+
+=cut
 
     sub build {
         my $self = shift;
@@ -280,6 +300,9 @@ returns all of the method objects with the specified names.
     }
 
 ##############################################################################
+# Private Methods.
+##############################################################################
+
     sub _inherit {
         my $self = shift;
         my $spec = $specs{$self->{package}};
@@ -311,10 +334,6 @@ returns all of the method objects with the specified names.
 
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

@@ -31,6 +31,7 @@ t/custom_type_maker.t
 t/errors.t
 t/inherit.t
 t/meth.t
+t/pod-coverage.t
 t/pod.t
 t/types.t
 t/types_affordance.t

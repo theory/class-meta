@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.36 2004/06/17 00:11:11 david Exp $
+# $Id: Type.pm,v 1.37 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -89,7 +89,7 @@ following modules:
 
 =over 4
 
-=item L<Class::Meta::Type::Perl|Class::Meta::Type::Perl>
+=item L<Class::Meta::Types::Perl|Class::Meta::Types::Perl>
 
 =over 4
 
@@ -105,7 +105,7 @@ following modules:
 
 =back
 
-=item L<Class::Meta::Type::String|Class::Meta::Type::String>
+=item L<Class::Meta::Types::String|Class::Meta::Types::String>
 
 =over 4
 
@@ -113,7 +113,7 @@ following modules:
 
 =back
 
-=item L<Class::Meta::Type::Boolean|Class::Meta::Type::Boolean>
+=item L<Class::Meta::Types::Boolean|Class::Meta::Types::Boolean>
 
 =over 4
 
@@ -121,7 +121,7 @@ following modules:
 
 =back
 
-=item L<Class::Meta::Type::Numeric|Class::Meta::Type::Numeric>
+=item L<Class::Meta::Types::Numeric|Class::Meta::Types::Numeric>
 
 =over 4
 
@@ -360,15 +360,15 @@ accessor builders.
 
         $params{builder} = UNIVERSAL::can($builder, 'build')
           || Class::Meta->handle_error("No such function "
-                                                 . "'${builder}::build()'");
+                                         . "'${builder}::build()'");
 
         $params{attr_get} = UNIVERSAL::can($builder, 'build_attr_get')
           || Class::Meta->handle_error("No such function "
-                                                 . "'${builder}::build_attr_get()'");
+                                         . "'${builder}::build_attr_get()'");
 
         $params{attr_set} = UNIVERSAL::can($builder, 'build_attr_set')
           || Class::Meta->handle_error("No such function "
-                                                 . "'${builder}::build_attr_set()'");
+                                         . "'${builder}::build_attr_set()'");
 
         # Okay, add the new type to the cache and construct it.
         $types{$params{key}} = \%params;
@@ -423,8 +423,18 @@ sub check  {
 }
 
 ##############################################################################
-# Private methods.
-##############################################################################
+
+=head3 build
+
+This is a protected method, designed to be called only by the
+Class::Meta::Attribute class or a subclass of Class::Meta::Attribute. It
+creates accessors for the class that the Class::Meta::Attribute object is a
+part of by calling out to the C<build()> method of the accessor builder class.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Type may need to override its behavior.
+
+=cut
 
 sub build {
     # Check to make sure that only Class::Meta or a subclass is building
@@ -442,6 +452,19 @@ sub build {
 
 ##############################################################################
 
+=head3 make_attr_set
+
+This is a protected method, designed to be called only by the
+Class::Meta::Attribute class or a subclass of Class::Meta::Attribute. It
+returns a reference to the attribute set accessor (mutator) created by the
+call to C<build()>, and usable as an indirect attribute accessor by the
+Class::Meta::Attribute C<set()> method.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Type may need to override its behavior.
+
+=cut
+
 sub make_attr_set {
     my $self = shift;
     my $code = $self->{attr_set};
@@ -449,6 +472,19 @@ sub make_attr_set {
 }
 
 ##############################################################################
+
+=head3 make_attr_get
+
+This is a protected method, designed to be called only by the
+Class::Meta::Attribute class or a subclass of Class::Meta::Attribute. It
+returns a reference to the attribute get accessor created by the call to
+C<build()>, and usable as an indirect attribute accessor by the
+Class::Meta::Attribute C<get()> method.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Type may need to override its behavior.
+
+=cut
 
 sub make_attr_get {
     my $self = shift;
@@ -582,10 +618,6 @@ references will be used by Class::Meta::Attribute's C<get()> and
 C<set()> methods to get and set attribute values. Again, see
 L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for examples
 before creating your own.
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

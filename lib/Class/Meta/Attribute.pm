@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.50 2004/06/17 00:11:11 david Exp $
+# $Id: Attribute.pm,v 1.51 2004/06/28 23:15:30 david Exp $
 
 =head1 NAME
 
@@ -31,9 +31,9 @@ instance of the class.
 
 Class::Meta::Attribute objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the attribute objects for a
-Class::Meta-generated class, simply call its C<class> method to retrieve
-its Class::Meta::Class object, and then call the C<attributes()> method on
-the Class::Meta::Class object.
+Class::Meta-generated class, simply call its C<my_class()> method to retrieve
+its Class::Meta::Class object, and then call the C<attributes()> method on the
+Class::Meta::Class object.
 
 =cut
 
@@ -50,8 +50,19 @@ our $VERSION = "0.34";
 ##############################################################################
 # Constructors                                                               #
 ##############################################################################
-# We don't document new(), since it's a protected method, really. Its
-# parameters are documented in Class::Meta.
+
+=head1 INTERFACE
+
+=head2 Constructors
+
+=head3 new
+
+A protected method for constructing a Class::Meta::Attribute object. Do not
+call this method directly; Call the
+L<C<add_attribute()>|Class::Meta/"add_attribute"> method on a Class::Meta
+object, instead.
+
+=cut
 
 sub new {
     my $pkg = shift;
@@ -176,8 +187,6 @@ sub new {
 ##############################################################################
 # Instance Methods                                                           #
 ##############################################################################
-
-=head1 INTERFACE
 
 =head2 Instance Methods
 
@@ -365,8 +374,20 @@ sub set {
 }
 
 ##############################################################################
-# Private Methods
-##############################################################################
+
+=head3 build
+
+This is a protected method, designed to be called only by the Class::Meta
+class or a subclass of Class::Meta. It takes a single argument, a hash of the
+class specification maintained internally by Class::Meta, and generates
+attribute accessors by calling out to the C<make_attr_get()> and
+C<make_attr_set()> methods of Class::Meta::Type as appropriate for the
+Class::Meta::Attribute object.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Constructor may need to override its behavior.
+
+=cut
 
 sub build {
     my ($self, $spec) = @_;
@@ -399,10 +420,6 @@ sub build {
 
 1;
 __END__
-
-=head1 DISTRIBUTION INFORMATION
-
-This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 
