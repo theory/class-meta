@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types.t,v 1.5 2003/11/22 01:45:47 david Exp $
+# $Id: types.t,v 1.6 2003/11/25 01:21:31 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -32,10 +32,10 @@ BEGIN {
                             converter => sub { IO::Handle->new }
                         );
 
-    my $c = Class::Meta->new(class => __PACKAGE__,
-                             key   => 'types',
-                             name  => 'Class::Meta::TestTypes Class',
-                             desc  => 'Just for testing Class::Meta.'
+    my $c = Class::Meta->new(package => __PACKAGE__,
+                             key     => 'types',
+                             name    => 'Class::Meta::TestTypes Class',
+                             desc    => 'Just for testing Class::Meta.'
                          );
     $c->add_ctor(name => 'new');
 

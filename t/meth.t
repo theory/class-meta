@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.4 2003/11/22 00:49:18 david Exp $
+# $Id: meth.t,v 1.5 2003/11/25 01:21:31 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -24,7 +24,10 @@ BEGIN {
     Test::More->import;
 
     # Create a new Class::Meta object.
-    ok( my $c = Class::Meta->new(person => __PACKAGE__), "Create CM object" );
+    ok( my $c = Class::Meta->new(key     => 'person',
+                                 package => __PACKAGE__),
+        "Create CM object" );
+
     isa_ok($c, 'Class::Meta');
 
     # Create a new method with all of the parameters set.
@@ -116,8 +119,11 @@ BEGIN {
     Test::More->import;
 
     # Create a new Class::Meta object.
-    ok( my $c = Class::Meta::SubClass->new
-        (another => __PACKAGE__), "Create subclassed CM object" );
+    ok( my $c = Class::Meta::SubClass->new(
+        key     => 'another',
+        package => __PACKAGE__
+    ), "Create subclassed CM object" );
+
     isa_ok($c, 'Class::Meta');
     isa_ok($c, 'Class::Meta::SubClass');
     sub foo_meth { 100 }

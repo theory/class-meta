@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.15 2003/11/25 00:58:17 david Exp $
+# $Id: Constructor.pm,v 1.16 2003/11/25 01:21:31 david Exp $
 
 use strict;
 
@@ -109,7 +109,7 @@ sub new {
     # Make sure the name hasn't already been used for another constructor or
     # method.
     Carp::croak("Method '$p{name}' already exists in class "
-                . "'$spec->{class}'")
+                . "'$spec->{package}'")
       if exists $spec->{ctors}{$p{name}}
       or exists $spec->{meths}{$p{name}};
 

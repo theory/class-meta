@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.10 2003/11/25 00:58:17 david Exp $
+# $Id: Method.pm,v 1.11 2003/11/25 01:21:31 david Exp $
 
 =head1 NAME
 
@@ -114,7 +114,7 @@ sub new {
     # Make sure the name hasn't already been used for another method
     # or constructor.
     Carp::croak("Method '$p{name}' already exists in class "
-                . "'$spec->{class}'")
+                . "'$spec->{package}'")
       if exists $spec->{meths}{$p{name}}
       || exists $spec->{ctors}{$p{name}};
 

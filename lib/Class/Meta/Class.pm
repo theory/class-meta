@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.15 2003/11/25 00:58:17 david Exp $
+# $Id: Class.pm,v 1.16 2003/11/25 01:21:31 david Exp $
 
 use strict;
 use Carp ();
@@ -24,14 +24,14 @@ use Class::Meta::Method;
           unless UNIVERSAL::isa($caller, 'Class::Meta');
 
         # Check to make sure we haven't created this class already.
-        Carp::croak("Class object for class '$spec->{class}' already exists")
-          if $specs{$spec->{class}};
+        Carp::croak("Class object for class '$spec->{package}' already exists")
+          if $specs{$spec->{package}};
 
         # Save a reference to the spec hash ref.
-        $specs{$spec->{class}} = $spec;
+        $specs{$spec->{package}} = $spec;
 
         # Okay, create the class object.
-        my $self = bless { package => $spec->{class} }, ref $pkg || $pkg;
+        my $self = bless { package => $spec->{package} }, ref $pkg || $pkg;
 
         # Copy its parents' attributes and return.
         return $self->_inherit('attr');

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.27 2003/11/25 00:58:17 david Exp $
+# $Id: Meta.pm,v 1.28 2003/11/25 01:21:31 david Exp $
 
 =head1 NAME
 
@@ -146,12 +146,11 @@ our $VERSION = "0.01";
         my %p = @_;
 
         # Class defaults to caller. Key defaults to class.
-        $p{package} = $p{class} ||= caller;
-        $p{key} ||= $p{class};
+        $p{key} ||= $p{package} ||= caller;
 
         # Make sure we haven't been here before.
-        Carp::croak("Class '$p{class}' already created")
-          if exists $classes{$p{class}};
+        Carp::croak("Class '$p{package}' already created")
+          if exists $classes{$p{package}};
 
         # Instantiate a Class object.
         $p{class} = Class::Meta::Class->new(\%p);

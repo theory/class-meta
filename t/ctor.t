@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.2 2003/11/22 00:23:29 david Exp $
+# $Id: ctor.t,v 1.3 2003/11/25 01:21:31 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -24,7 +24,9 @@ BEGIN {
     Test::More->import;
 
     # Create a new Class::Meta object.
-    ok( my $c = Class::Meta->new(person => __PACKAGE__), "Create CM object" );
+    ok( my $c = Class::Meta->new(package => __PACKAGE__,
+                                 key     => 'person'),
+        "Create CM object" );
     isa_ok($c, 'Class::Meta');
 
     # Create a constructor.

@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.13 2003/11/25 00:58:18 david Exp $
+# $Id: base.t,v 1.14 2003/11/25 01:21:31 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -23,11 +23,12 @@ BEGIN {
 }
 
 BEGIN {
-    my $c = Class::Meta->new
-      (key     => 'person',
-       package => __PACKAGE__,
-       name    => 'Class::Meta::TestPerson Class',
-       desc    => 'Special person class just for testing Class::Meta.');
+    my $c = Class::Meta->new(
+        key     => 'person',
+        package => __PACKAGE__,
+        name    => 'Class::Meta::TestPerson Class',
+        desc    => 'Special person class just for testing Class::Meta.'
+    );
 
     # Add a constructor.
     $c->add_ctor( name => 'new',

@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.1 2003/11/25 00:58:18 david Exp $
+# $Id: inherit.t,v 1.2 2003/11/25 01:21:31 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -21,10 +21,10 @@ BEGIN {
 }
 
 BEGIN {
-    ok( my $c = Class::Meta->new( key   => 'one',
-                                  class => __PACKAGE__,
-                                  name  => 'One Class',
-                                  desc  => 'Test One Class.'),
+    ok( my $c = Class::Meta->new( key     => 'one',
+                                  package => __PACKAGE__,
+                                  name    => 'One Class',
+                                  desc    => 'Test One Class.'),
         "Create One's Class::Meta" );
 
     # Add a constructor.
@@ -75,10 +75,10 @@ BEGIN {
 }
 
 BEGIN {
-    ok( my $c = Class::Meta->new( key   => 'two',
-                                  class => __PACKAGE__,
-                                  name  => 'Two Class',
-                                  desc  => 'Test Two Class.'),
+    ok( my $c = Class::Meta->new( key     => 'two',
+                                  package => __PACKAGE__,
+                                  name    => 'Two Class',
+                                  desc    => 'Test Two Class.'),
         "Create Two's Class::Meta" );
 
     # Add another constructor.
