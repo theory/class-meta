@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.76 2004/04/19 23:35:33 david Exp $
+# $Id: Meta.pm,v 1.77 2004/04/19 23:36:20 david Exp $
 
 =head1 NAME
 
@@ -1041,13 +1041,6 @@ changing their values. If they've also been made to behave as they do in
 Class::Data::Inheritable, we'll have to figure out a way to make it so that
 newly generated accessors for subclasses are shared between threads, too. This
 may not be easy.
-
-=item *
-
-Pass more arguments to atrribute validation check code references (possibly in
-a hash reference) so that more can be done. For example, pass in the name of
-the attribute to be used in exceptions. Pass in the object (or class) the
-attribute is in to modify other values.
 
 =back
 
