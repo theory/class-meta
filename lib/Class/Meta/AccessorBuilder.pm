@@ -1,5 +1,7 @@
 package Class::Meta::AccessorBuilder;
 
+# $Id: AccessorBuilder.pm,v 1.2 2004/01/08 05:14:42 david Exp $
+
 use strict;
 use Class::Meta;
 

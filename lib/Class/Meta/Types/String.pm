@@ -1,5 +1,7 @@
 package Class::Meta::Types::String;
 
+# $Id: String.pm,v 1.2 2004/01/08 05:14:42 david Exp $
+
 use strict;
 use Class::Meta::Type;
 

@@ -1,5 +1,7 @@
 package Class::Meta::Types::Numeric;
 
+# $Id: Numeric.pm,v 1.3 2004/01/08 05:14:42 david Exp $
+
 use strict;
 use Class::Meta::Type;
 use Data::Types ();
