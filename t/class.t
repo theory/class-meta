@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.4 2002/05/17 23:32:56 david Exp $
+# $Id: class.t,v 1.5 2003/11/22 00:07:05 david Exp $
 
 use strict;
 use Test::More tests => 9;
@@ -9,7 +9,7 @@ BEGIN { use_ok( 'Class::Meta') }
 # Make sure we can't instantiate a class object from here.
 my $class;
 eval { $class = Class::Meta::Class->new };
-ok(my $err = $@, 'Error creating class' );
+ok( my $err = $@, 'Error creating class' );
 like($err, qr/^Package 'main' cannot create.*objects/,
      'Check error message' );
 
@@ -19,10 +19,10 @@ package Class::Meta::FooSub;
 @Class::Meta::FooSub::ISA = qw(Class::Meta);
 
 # Set up simple settings.
-my $spec = { name => 'Foo Class',
-             desc => 'Foo Class description',
-             pkg  => 'FooClass',
-             key  => 'foo' };
+my $spec = { name  => 'Foo Class',
+             desc  => 'Foo Class description',
+             class => 'FooClass',
+             key   => 'foo' };
 # This should be okay.
 main::ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
