@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.100 2004/09/20 06:30:03 david Exp $
+# $Id$
 
 =head1 NAME
 
@@ -1091,8 +1091,7 @@ may not be easy.
 
 =head1 BUGS
 
-Please report all bugs via the CPAN Request Tracker at
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+Please send bug reports to <bug-class-meta@rt.cpan.org>.
 
 =head1 AUTHOR
 
