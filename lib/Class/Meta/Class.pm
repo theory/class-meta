@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.20 2004/01/08 18:37:51 david Exp $
+# $Id: Class.pm,v 1.21 2004/01/08 18:41:55 david Exp $
 
 use strict;
 use Class::ISA ();
@@ -31,7 +31,7 @@ Class::Meta::Class - Objects describing Class::Meta-generated classes.
 
   print "Examing object of class ", $class->package, $/;
 
-  print "\nConstruconstructors:\n";
+  print "\nConstructors:\n";
   for my $ctor ($class->constructors) {
       print "  o ", $ctor->name, $/;
   }
@@ -64,7 +64,7 @@ Class::Meta-generated class, simply call its C<class> method.
 =cut
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really.
 {

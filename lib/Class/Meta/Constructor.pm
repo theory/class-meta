@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.21 2004/01/08 18:37:51 david Exp $
+# $Id: Constructor.pm,v 1.22 2004/01/08 18:41:55 david Exp $
 
 use strict;
 
@@ -47,7 +47,7 @@ our @CARP_NOT = qw(Class::Meta);
 my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 
 =head1 CONSTRUCTORS

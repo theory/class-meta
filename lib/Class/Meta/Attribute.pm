@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.20 2004/01/08 18:37:51 david Exp $
+# $Id: Attribute.pm,v 1.21 2004/01/08 18:41:55 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -60,7 +60,7 @@ the Class::Meta::Class object.
 =cut
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really.
 

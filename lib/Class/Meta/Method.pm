@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.16 2004/01/08 18:37:51 david Exp $
+# $Id: Method.pm,v 1.17 2004/01/08 18:41:55 david Exp $
 
 =head1 NAME
 
@@ -46,7 +46,7 @@ our @CARP_NOT = qw(Class::Meta);
 my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 
 =head1 CONSTRUCTORS

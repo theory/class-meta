@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.43 2004/01/08 18:37:51 david Exp $
+# $Id: Meta.pm,v 1.44 2004/01/08 18:41:55 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -494,12 +494,12 @@ of their interfaces.
 =cut
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 
 =head1 INTERFACE
 
-=head2 Construconstructors
+=head2 Constructors
 
 =head3 new
 

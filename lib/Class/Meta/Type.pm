@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.16 2004/01/08 18:37:51 david Exp $
+# $Id: Type.pm,v 1.17 2004/01/08 18:41:55 david Exp $
 
 =head1 NAME
 
@@ -79,7 +79,7 @@ my $mk_isachk = sub {
     my %types = ();
 
 ##############################################################################
-# Construconstructors                                                               #
+# Constructors                                                               #
 ##############################################################################
 
 =head1 CONSTRUCTORS
