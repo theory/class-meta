@@ -1,5 +1,7 @@
 package Class::Meta::Type;
 
+# $Id
+
 =head1 NAME
 
 Class::Meta::Type - Data type conversion, validation, and method building.
@@ -40,7 +42,13 @@ use Data::Types ();
 use Carp ();
 
 ##############################################################################
-# Closure definition.
+# Package Globals                                                            #
+##############################################################################
+use vars qw($VERSION);
+$VERSION = "0.01";
+
+##############################################################################
+# Closure definition                                                         #
 ##############################################################################
 {
     # This code ref will be used to create most get_* methods.
