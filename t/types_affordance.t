@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types_affordance.t,v 1.2 2004/01/08 00:19:48 david Exp $
+# $Id: types_affordance.t,v 1.3 2004/01/08 17:56:32 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -172,13 +172,13 @@ ok( my $class = $t->my_class, "Get the Class::Meta::Class object" );
 ok( $class->is_a('Class::Meta::TestTypes'), 'Class isa TestTypes');
 
 # Test the key methods.
-is( $class->my_key, 'types', 'Key is correct');
+is( $class->key, 'types', 'Key is correct');
 
 # Test the name method.
-is( $class->my_name, 'Class::Meta::TestTypes Class', "Name is correct");
+is( $class->name, 'Class::Meta::TestTypes Class', "Name is correct");
 
 # Test the description methods.
-is( $class->my_desc, 'Just for testing Class::Meta.',
+is( $class->desc, 'Just for testing Class::Meta.',
     "Description is correct");
 
 # Test string.

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.6 2003/11/25 00:58:18 david Exp $
+# $Id: class.t,v 1.7 2004/01/08 17:56:32 david Exp $
 
 use strict;
 use Test::More tests => 9;
@@ -30,9 +30,9 @@ main::ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
 
 # Test the simple accessors.
-main::is( $class->my_name, $spec->{name}, 'my_name' );
-main::is( $class->my_desc, $spec->{desc}, 'my_name' );
-main::is( $class->my_key, $spec->{key}, 'my_name' );
+main::is( $class->name, $spec->{name}, 'name' );
+main::is( $class->desc, $spec->{desc}, 'name' );
+main::is( $class->key, $spec->{key}, 'name' );
 
 # This should throw an exception because we can only create a class once.
 eval { $class = Class::Meta::Class->new($spec) };

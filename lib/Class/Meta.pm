@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.39 2004/01/08 07:05:19 david Exp $
+# $Id: Meta.pm,v 1.40 2004/01/08 17:56:31 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -222,14 +222,14 @@ And finally, we tell Class::Meta to build the class. This is the point at
 which all constructors and accessor methods will be created in the class. In
 this case, these include the C<new()> constructor and a C<tail()> accessor for
 the "tail" attribute. And finally, Class::Meta will install another method,
-C<my_class()>. This method will return a Class::Meta::Class object that
+C<class()>. This method will return a Class::Meta::Class object that
 describes the class, and provides the complete introspection API.
 
 =back
 
 Thus, the class the above code creates has this interface:
 
-  sub my_class;
+  sub class;
   sub new;
   sub tail;
   sub wag;
@@ -393,24 +393,24 @@ Class::Meta-generated classes. Those classes are:
 =head3 L<Class::Meta::Class|Class::Meta::Class>
 
 Describes the class. Each Class::Meta-generated class has a single constructor
-object that can be retrieved by calling a class' C<my_class()> class
+object that can be retrieved by calling a class' C<class()> class
 method. Using the Class::Meta::Class object, you can get access to all of the
 other objects that describe the class. The relevant methods are:
 
 =over 4
 
-=item my_ctors
+=item ctors
 
 Provides access to all of the Class::Meta::Constructor objects that describe
 the class' constructors, and provide indirect access to those constructors.
 
-=item my_attrs
+=item attrs
 
 Provides access to all of the Class::Meta::Attribute objects that describe the
 class' attributes, and provide methods for indirectly getting and setting
 their values.
 
-=item my_meths
+=item meths
 
 Provides access to all of the Class::Meta::Method objects that describe the
 class' methods, and provide indirect execution of those constructors.
@@ -426,7 +426,7 @@ all of the constructors in a class. The most useful methods are:
 
 =over 4
 
-=item my_name
+=item name
 
 Returns the name of the constructor, such as "new".
 
@@ -446,11 +446,11 @@ interesting methods are:
 
 =over 4
 
-=item my_name
+=item name
 
 Returns the name of the attribute.
 
-=item my_type
+=item type
 
 Returns the name of the attribute's data type.
 
@@ -475,11 +475,11 @@ vs. instance). The relevant methods are:
 
 =over 4
 
-=item my_name
+=item name
 
 The method name.
 
-=item my_context
+=item context
 
 The context of the method indicated by a value corresponding to either
 Class::Meta::OBJECT or Class::Meta::CLASS.
@@ -839,9 +839,9 @@ being defined.
 
 =head2 Instance Methods
 
-=head3 my_class
+=head3 class
 
-  my $class = $cm->my_class;
+  my $class = $cm->class;
 
 Returns the instance of the Class::Meta::Class object that will be used to
 provide the introspection API for the class being generated.
@@ -849,7 +849,7 @@ provide the introspection API for the class being generated.
 =cut
 
 # Simple accessors.
-    sub my_class { $classes{ $_[0]->{package} }->{class} }
+    sub class { $classes{ $_[0]->{package} }->{class} }
 
 ##############################################################################
 # build()
@@ -859,7 +859,7 @@ provide the introspection API for the class being generated.
   $cm->build;
 
 Builds the class defined by the Class::Meta object, including the
-C<my_class()> class method, and all requisite constructors and accessors.
+C<class()> class method, and all requisite constructors and accessors.
 
 =cut
 
@@ -876,7 +876,7 @@ C<my_class()> class method, and all requisite constructors and accessors.
             $_->build(\%classes) for @$objs;
         }
 
-        # Build the Class::Meta::Class accessor and my_key shortcut.
+        # Build the Class::Meta::Class accessor and key shortcut.
         no strict 'refs';
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
 
@@ -898,11 +898,7 @@ Add ability to create object attribute accessors.
 
 =item *
 
-Rename my_ methods?
-
-=item *
-
-Actually use my_options in Attribute?
+Actually use options in Attribute?
 
 =item *
 

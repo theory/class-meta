@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.14 2004/01/08 03:27:36 david Exp $
+# $Id: Method.pm,v 1.15 2004/01/08 17:56:31 david Exp $
 
 =head1 NAME
 
@@ -8,14 +8,14 @@ Class::Meta::Method - Method introspection objects
 
 =head1 SYNOPSIS
 
-  my $meth = $c->my_meths('chk_passwd');
-  print "Method Name: ", $meth->my_name, "()\n";
-  print "Description: ", $meth->my_desc, "\n";
-  print "Label:       ", $meth->my_label, "\n";
-  print "Context:     ", $meth->my_context == Class::Meta::CLASS ?
+  my $meth = $c->meths('chk_passwd');
+  print "Method Name: ", $meth->name, "()\n";
+  print "Description: ", $meth->desc, "\n";
+  print "Label:       ", $meth->label, "\n";
+  print "Context:     ", $meth->context == Class::Meta::CLASS ?
     "Class\n" : "Object\n";
-  print "Viewibility:  ", $meth->my_view == Class::Meta::PUBLIC
-    ? "Public\n"  :      $meth->my_view == Class::Meta::PRIVATE
+  print "Viewibility:  ", $meth->view == Class::Meta::PUBLIC
+    ? "Public\n"  :      $meth->view == Class::Meta::PRIVATE
     ? "Private\n" : "Protected\n";
 
 =head1 DESCRIPTION
@@ -25,7 +25,7 @@ class methods. It supports a simple description of the method, a label, the
 method context (class or object), and the method visibility (private,
 protected, or public). Construction is performed internally by
 C<Class::Meta>, and objects of this class may be retreived by calling the
-C<my_meths()> method on a C<Class::Meta::Class> object.
+C<meths()> method on a C<Class::Meta::Class> object.
 
 =cut
 
@@ -173,49 +173,49 @@ sub new {
 
 =head1 INSTANCE METHODS
 
-=head2 my_name
+=head2 name
 
-  my $name = $meth->my_name;
+  my $name = $meth->name;
 
 Returns the method name.
 
 =cut
 
-sub my_name { $_[0]->{name} }
+sub name { $_[0]->{name} }
 
-=head2 my_package
+=head2 package
 
-  my $package = $meth->my_package;
+  my $package = $meth->package;
 
 Returns the method package.
 
 =cut
 
-sub my_package { $_[0]->{package} }
+sub package { $_[0]->{package} }
 
-=head2 my_desc
+=head2 desc
 
-  my $desc = $meth->my_desc;
+  my $desc = $meth->desc;
 
 Returns the description of the method.
 
 =cut
 
-sub my_desc { $_[0]->{desc} }
+sub desc { $_[0]->{desc} }
 
-=head2 my_label
+=head2 label
 
-  my $desc = $meth->my_label;
+  my $desc = $meth->label;
 
 Returns label for the method.
 
 =cut
 
-sub my_label { $_[0]->{label} }
+sub label { $_[0]->{label} }
 
-=head2 my_view
+=head2 view
 
-  my $view = $meth->my_view;
+  my $view = $meth->view;
 
 Returns the visibility level of this method. Possible values are defined by
 the constants C<PRIVATE>, C<PROTECTED>, and C<PUBLIC>, as defined in
@@ -223,18 +223,18 @@ C<Class::Meta>.
 
 =cut
 
-sub my_view { $_[0]->{view} }
+sub view { $_[0]->{view} }
 
-=head2 my_context
+=head2 context
 
-  my $context = $meth->my_context;
+  my $context = $meth->context;
 
 Returns the context of this method. Possible values are defined by the
 constants C<CLASS> and C<OBJECT>, as defined in C<Class::Meta>.
 
 =cut
 
-sub my_context { $_[0]->{context} }
+sub context { $_[0]->{context} }
 
 =head2 call
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.5 2003/11/25 01:21:31 david Exp $
+# $Id: meth.t,v 1.6 2004/01/08 17:56:32 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -42,11 +42,11 @@ BEGIN {
     isa_ok($meth, 'Class::Meta::Method');
 
     # Test its accessors.
-    is( $meth->my_name, "foo_meth", "Check foo_meth name" );
-    is( $meth->my_desc, "The foo method", "Check foo_meth desc" );
-    is( $meth->my_label, "Foo method", "Check foo_meth label" );
-    ok( $meth->my_view == Class::Meta::PUBLIC, "Check foo_meth view" );
-    ok( $meth->my_context == Class::Meta::CLASS, "Check foo_meth context" );
+    is( $meth->name, "foo_meth", "Check foo_meth name" );
+    is( $meth->desc, "The foo method", "Check foo_meth desc" );
+    is( $meth->label, "Foo method", "Check foo_meth label" );
+    ok( $meth->view == Class::Meta::PUBLIC, "Check foo_meth view" );
+    ok( $meth->context == Class::Meta::CLASS, "Check foo_meth context" );
     is ($meth->call(__PACKAGE__), 'foo', 'Call the foo_meth method' );
 
     # Okay, now test to make sure that an attempt to create a method directly
@@ -95,11 +95,11 @@ BEGIN {
     isa_ok($meth, 'Class::Meta::Method');
 
     # Test its accessors.
-    is( $meth->my_name, "new_meth", "Check new_meth name" );
-    ok( ! defined $meth->my_desc, "Check new_meth desc" );
-    ok( ! defined $meth->my_label, "Check new_meth label" );
-    ok( $meth->my_view == Class::Meta::PUBLIC, "Check new_meth view" );
-    ok( $meth->my_context == Class::Meta::OBJECT, "Check new_meth context" );
+    is( $meth->name, "new_meth", "Check new_meth name" );
+    ok( ! defined $meth->desc, "Check new_meth desc" );
+    ok( ! defined $meth->label, "Check new_meth label" );
+    ok( $meth->view == Class::Meta::PUBLIC, "Check new_meth view" );
+    ok( $meth->context == Class::Meta::OBJECT, "Check new_meth context" );
     is( $meth->call(__PACKAGE__), '22', 'Call the new_meth method' );
 }
 
@@ -108,7 +108,7 @@ BEGIN {
 package Class::Meta::SubClass;
 BEGIN { @Class::Meta::SubClass::ISA = qw(Class::Meta) }
 sub add_meth {
-    Class::Meta::Method->new( shift->SUPER::my_class, @_);
+    Class::Meta::Method->new( shift->SUPER::class, @_);
 }
 
 package Class::Meta::AnotherTest;
@@ -133,10 +133,10 @@ BEGIN {
     isa_ok($meth, 'Class::Meta::Method');
 
     # Test its accessors.
-    is( $meth->my_name, "foo_meth", "Check new foo_meth name" );
-    ok( ! defined $meth->my_desc, "Check new foo_meth desc" );
-    ok( ! defined $meth->my_label, "Check new foo_meth label" );
-    ok( $meth->my_view == Class::Meta::PUBLIC, "Check new foo_meth view" );
-    ok( $meth->my_context == Class::Meta::OBJECT, "Check new foo_meth context" );
+    is( $meth->name, "foo_meth", "Check new foo_meth name" );
+    ok( ! defined $meth->desc, "Check new foo_meth desc" );
+    ok( ! defined $meth->label, "Check new foo_meth label" );
+    ok( $meth->view == Class::Meta::PUBLIC, "Check new foo_meth view" );
+    ok( $meth->context == Class::Meta::OBJECT, "Check new foo_meth context" );
     is( $meth->call(__PACKAGE__), '100', 'Call the new foo_meth method' );
 }

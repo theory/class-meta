@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.19 2004/01/08 03:27:36 david Exp $
+# $Id: Constructor.pm,v 1.20 2004/01/08 17:56:31 david Exp $
 
 use strict;
 
@@ -10,12 +10,12 @@ Class::Meta::Construtor - Constructor introspection objects
 
 =head1 SYNOPSIS
 
-  my $ctor = $c->my_ctors('new');
-  print "Constructor Name: ", $ctor->my_name, "()\n";
-  print "Description: ", $ctor->my_desc, "\n";
-  print "Label:       ", $ctor->my_label, "\n";
-  print "Visibility:  ", $ctor->my_vis == Class::Meta::PUBLIC
-    ? "Public\n"  :      $ctor->my_vis == Class::Meta::PRIVATE
+  my $ctor = $c->ctors('new');
+  print "Constructor Name: ", $ctor->name, "()\n";
+  print "Description: ", $ctor->desc, "\n";
+  print "Label:       ", $ctor->label, "\n";
+  print "Visibility:  ", $ctor->vis == Class::Meta::PUBLIC
+    ? "Public\n"  :      $ctor->vis == Class::Meta::PRIVATE
     ? "Private\n" : "Protected\n";
 
 =head1 DESCRIPTION
@@ -24,7 +24,7 @@ This class provides an interface to the C<Class::Meta> objects that describe
 class constructors. It supports a simple description of the constructor, a
 label, and the constructor visibility (private, protected, or public).
 Construction is performed internally by C<Class::Meta>, and objects of this
-class may be retreived by calling the C<my_ctors()> method on a
+class may be retreived by calling the C<ctors()> method on a
 C<Class::Meta::Class> object.
 
 =cut
@@ -159,39 +159,39 @@ sub new {
 
 =head1 INSTANCE METHODS
 
-=head2 my_name
+=head2 name
 
-  my $name = $ctor->my_name;
+  my $name = $ctor->name;
 
 Returns the constructor name.
 
 =cut
 
-sub my_name { $_[0]->{name} }
+sub name { $_[0]->{name} }
 
-=head2 my_desc
+=head2 desc
 
-  my $desc = $ctor->my_desc;
+  my $desc = $ctor->desc;
 
 Returns the description of the constructor.
 
 =cut
 
-sub my_desc { $_[0]->{desc} }
+sub desc { $_[0]->{desc} }
 
-=head2 my_label
+=head2 label
 
-  my $desc = $ctor->my_label;
+  my $desc = $ctor->label;
 
 Returns label for the constructor.
 
 =cut
 
-sub my_label { $_[0]->{label} }
+sub label { $_[0]->{label} }
 
-=head2 my_view
+=head2 view
 
-  my $view = $ctor->my_view;
+  my $view = $ctor->view;
 
 Returns the visibility level of this constructor. Possible values are defined
 by the constants C<PRIVATE>, C<PROTECTED>, and C<PUBLIC>, as defined in
@@ -199,9 +199,9 @@ C<Class::Meta>.
 
 =cut
 
-sub my_view { $_[0]->{view} }
+sub view { $_[0]->{view} }
 
-sub my_package { $_[0]->{package} }
+sub package { $_[0]->{package} }
 
 =head2 call
 
@@ -228,7 +228,7 @@ sub build {
     # Build a construtor that takes a parameter list and assigns the
     # the values to the appropriate attributes.
     no strict 'refs';
-    *{"$self->{package}::" . $self->my_name } = sub {
+    *{"$self->{package}::" . $self->name } = sub {
         my $class = ref $_[0] ? ref shift : shift;
         my $spec = $specs->{$class};
 
@@ -240,15 +240,15 @@ sub build {
         # Assign all of the attribute values.
         if ($spec->{attrs}) {
             foreach my $attr (values %{ $spec->{attrs} }) {
-                my $key = $attr->my_name;
-                if ($attr->my_authz >= Class::Meta::SET) {
+                my $key = $attr->name;
+                if ($attr->authz >= Class::Meta::SET) {
                     # Let them set the value.
                     $attr->call_set($new, exists $p{$key}
                                       ? delete $p{$key}
-                                      : $attr->my_default);
+                                      : $attr->default);
                 } else {
                     # Use the default value.
-                    $new->{$key} = $attr->my_default;
+                    $new->{$key} = $attr->default;
                 }
             }
         }

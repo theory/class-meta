@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.3 2004/01/08 00:33:36 david Exp $
+# $Id: inherit.t,v 1.4 2004/01/08 17:56:32 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -141,10 +141,10 @@ ok( $one_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( ! $one_class->is_a('Test::Two'), "Check it's not for Test::Two" );
 
 # Check One's attributes.
-ok( my @one_attrs = $one_class->my_attrs, "Get attributes" );
+ok( my @one_attrs = $one_class->attrs, "Get attributes" );
 is( scalar @one_attrs, 2, "Check for two attributes" );
-is( $one_attrs[0]->my_name, 'id', "Check for id attribute" );
-is( $one_attrs[1]->my_name, 'name', "Check for name attribute" );
+is( $one_attrs[0]->name, 'id', "Check for id attribute" );
+is( $one_attrs[1]->name, 'name', "Check for name attribute" );
 
 # Check out Test::Two's class object.
 ok( my $two_class = Test::Two->my_class, "Get Two's Class object" );
@@ -153,13 +153,13 @@ ok( $two_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( $two_class->is_a('Test::Two'), "Check it's for Test::Two" );
 
 # Check Two's attributes.
-ok( my @two_attrs = $two_class->my_attrs, "Get attributes" );
+ok( my @two_attrs = $two_class->attrs, "Get attributes" );
 is( scalar @two_attrs, 3, "Check for two attributes" );
-is( $two_attrs[0]->my_name, 'id', "Check for id attribute" );
+is( $two_attrs[0]->name, 'id', "Check for id attribute" );
 is( $one_attrs[0], $two_attrs[0], "Check for same id as One" );
-is( $two_attrs[1]->my_name, 'name', "Check for name attribute" );
+is( $two_attrs[1]->name, 'name', "Check for name attribute" );
 is( $one_attrs[1], $two_attrs[1], "Check for same name as One" );
-is( $two_attrs[2]->my_name, 'description', "Check for description attribute" );
+is( $two_attrs[2]->name, 'description', "Check for description attribute" );
 
 # Make sure that One's new() constructor works.
 ok( my $one = Test::One->new( name => 'foo'), "Construct One object" );
@@ -189,11 +189,11 @@ eval { $one->woah };
 ok( $err = $@, "Catch One->woah exception" );
 
 # Check One's method objects.
-ok( my $foo = $one_class->my_meths('foo'), "Get foo method object" );
-is( $foo->my_package, 'Test::One', "Check One foo's package" );
+ok( my $foo = $one_class->meths('foo'), "Get foo method object" );
+is( $foo->package, 'Test::One', "Check One foo's package" );
 is( $foo->call($one), 'Test::One', "Check One foo's call" );
-ok( my $bar = $one_class->my_meths('bar'), "Get bar method object" );
-is( $bar->my_package, 'Test::One', "Check One bar's package" );
+ok( my $bar = $one_class->meths('bar'), "Get bar method object" );
+is( $bar->package, 'Test::One', "Check One bar's package" );
 is( $bar->call($one), 'Test::One', "Check One bar's call" );
 
 # Make sure that Two inherits new() and works with its attributes.
@@ -239,12 +239,12 @@ is( $two->bar, 'Test::Two', "Check Two->bar" );
 is( $two->woah, 'Test::Two', "Check Two->woah" );
 
 # Check Two's method objects.
-ok( $foo = $two_class->my_meths('foo'), "Get foo method object" );
-is( $foo->my_package, 'Test::One', "Check Two foo's package" );
+ok( $foo = $two_class->meths('foo'), "Get foo method object" );
+is( $foo->package, 'Test::One', "Check Two foo's package" );
 is( $foo->call($two), 'Test::One', "Check Two foo's call" );
-ok( $bar = $two_class->my_meths('bar'), "Get bar method object" );
-is( $bar->my_package, 'Test::Two', "Check Two bar's package" );
+ok( $bar = $two_class->meths('bar'), "Get bar method object" );
+is( $bar->package, 'Test::Two', "Check Two bar's package" );
 is( $bar->call($two), 'Test::Two', "Check Two bar's call" );
-ok( my $woah = $two_class->my_meths('woah'), "Get woah method object" );
-is( $woah->my_package, 'Test::Two', "Check Two woah's package" );
+ok( my $woah = $two_class->meths('woah'), "Get woah method object" );
+is( $woah->package, 'Test::Two', "Check Two woah's package" );
 is( $woah->call($two), 'Test::Two', "Check Two woah's call" );

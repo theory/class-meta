@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.3 2003/11/25 01:21:31 david Exp $
+# $Id: ctor.t,v 1.4 2004/01/08 17:56:32 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -39,10 +39,10 @@ BEGIN {
     isa_ok($ctor, 'Class::Meta::Constructor');
 
     # Test its accessors.
-    is( $ctor->my_name, "inst", "Check inst name" );
-    is( $ctor->my_desc, "The inst constructor", "Check inst desc" );
-    is( $ctor->my_label, "inst Constructor", "Check inst label" );
-    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check inst view" );
+    is( $ctor->name, "inst", "Check inst name" );
+    is( $ctor->desc, "The inst constructor", "Check inst desc" );
+    is( $ctor->label, "inst Constructor", "Check inst label" );
+    ok( $ctor->view == Class::Meta::PUBLIC, "Check inst view" );
     isa_ok( $ctor->call(__PACKAGE__), __PACKAGE__);
 
     # Okay, now test to make sure that an attempt to create a constructor
@@ -89,10 +89,10 @@ BEGIN {
     isa_ok($ctor, 'Class::Meta::Constructor');
 
     # Test its accessors.
-    is( $ctor->my_name, "new_ctor", "Check new_ctor name" );
-    ok( ! defined $ctor->my_desc, "Check new_ctor desc" );
-    ok( ! defined $ctor->my_label, "Check new_ctor label" );
-    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check new_ctor view" );
+    is( $ctor->name, "new_ctor", "Check new_ctor name" );
+    ok( ! defined $ctor->desc, "Check new_ctor desc" );
+    ok( ! defined $ctor->label, "Check new_ctor label" );
+    ok( $ctor->view == Class::Meta::PUBLIC, "Check new_ctor view" );
     is ($ctor->call(__PACKAGE__), '22', 'Call the new_ctor constructor' );
 }
 
@@ -101,7 +101,7 @@ BEGIN {
 package Class::Meta::SubClass;
 BEGIN { @Class::Meta::SubClass::ISA = qw(Class::Meta) }
 sub add_ctor {
-    Class::Meta::Constructor->new( shift->SUPER::my_class, @_);
+    Class::Meta::Constructor->new( shift->SUPER::class, @_);
 }
 
 package Class::Meta::AnotherTest;
@@ -124,9 +124,9 @@ BEGIN {
     isa_ok($ctor, 'Class::Meta::Constructor');
 
     # Test its accessors.
-    is( $ctor->my_name, "foo_ctor", "Check new foo_ctor name" );
-    ok( ! defined $ctor->my_desc, "Check new foo_ctor desc" );
-    ok( ! defined $ctor->my_label, "Check new foo_ctor label" );
-    ok( $ctor->my_view == Class::Meta::PUBLIC, "Check new foo_ctor view" );
+    is( $ctor->name, "foo_ctor", "Check new foo_ctor name" );
+    ok( ! defined $ctor->desc, "Check new foo_ctor desc" );
+    ok( ! defined $ctor->label, "Check new foo_ctor label" );
+    ok( $ctor->view == Class::Meta::PUBLIC, "Check new foo_ctor view" );
     isa_ok($ctor->call(__PACKAGE__), __PACKAGE__);
 }
