@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.17 2004/01/28 16:51:14 david Exp $
+# $Id: AccessorBuilder.pm,v 1.18 2004/01/28 21:41:22 david Exp $
 
 =head1 NAME
 
@@ -130,13 +130,10 @@ use Class::Meta;
 our $VERSION = "0.20";
 
 sub build_attr_get {
-    my $attr = shift;
-    return $attr->context == Class::Meta::CLASS
-      ? eval "sub { shift->$name }"
-      : UNIVERSAL::can($attr->package, $attr->name);
+    UNIVERSAL::can($_[0]->package, $_[0]->name);
 }
 
-*build_attr_set = \&build_attr_get;
+sub build_attr_set { &build_attr_get }
 
 my $croak = sub {
     require Carp;
@@ -164,7 +161,7 @@ sub build {
 
     my $sub;
     if ($attr->context == Class::Meta::CLASS) {
-        # Create class attribute accessors by creating a closure tha
+        # Create class attribute accessors by creating a closure that
         # references this variable.
         my $data = $attr->default;
 
