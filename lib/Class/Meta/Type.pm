@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.10 2003/11/22 01:13:11 david Exp $
+# $Id: Type.pm,v 1.11 2003/11/22 01:45:47 david Exp $
 
 =head1 NAME
 
@@ -127,19 +127,19 @@ $VERSION = "0.01";
             sub {
                 return unless defined $_[0];
                 $code->($_[0])
-                  or Carp::croak("Value '$_[0]' is not a $type");
+                  or Carp::croak("Value '$_[0]' is not a valid $type");
                 }
         ];
     };
 
     # This code ref builds object/reference value checkers.
     my $mk_isachk = sub {
-        my ($pkg, $type);
+        my ($pkg, $type) = @_;
         return [
             sub {
                 return unless defined $_[0];
                 UNIVERSAL::isa($_[0], $pkg)
-                  or Carp::croak("Value '$_[0]' is not a $type object")
+                  or Carp::croak("Value '$_[0]' is not a valid $type")
               }
         ];
     };

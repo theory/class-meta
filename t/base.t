@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.9 2003/11/21 23:50:04 david Exp $
+# $Id: base.t,v 1.10 2003/11/22 01:45:47 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -19,7 +19,6 @@ use IO::Socket;
 use Carp;
 
 BEGIN {
-    $SIG{__DIE__} = \&Carp::confess;
     main::use_ok( 'Class::Meta');
 }
 

@@ -7,6 +7,7 @@ my $build = Module::Build->new(
                              DateTime    => '0.18',
                            },
     build_requires     => { Test::Simple => '0.17',
+                            IO::Handle   => 0,
                             IO::Socket   => 0,
                             Socket       => 0,
                           },
