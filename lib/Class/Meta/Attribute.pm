@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.48 2004/05/25 17:15:17 david Exp $
+# $Id: Attribute.pm,v 1.49 2004/06/17 00:07:33 david Exp $
 
 =head1 NAME
 
@@ -91,7 +91,7 @@ sub new {
     $spec->{class}->handle_error("Attribute '$p{name}' already exists ",
                                  "in class '",
                                  $spec->{attrs}{$p{name}}{package}, "'")
-      if exists $spec->{attrs}{$p{name}};
+      if ! delete $p{override} && exists $spec->{attrs}{$p{name}};
 
     # Check the view.
     if (exists $p{view}) {

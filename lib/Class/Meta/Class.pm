@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.42 2004/05/25 17:15:17 david Exp $
+# $Id: Class.pm,v 1.43 2004/06/17 00:07:33 david Exp $
 
 =head1 NAME
 
@@ -274,7 +274,9 @@ returns all of the method objects with the specified names.
         $self->handle_error("Package '$caller' cannot call " . __PACKAGE__
                             . "->build")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
-        $self->_inherit(qw(ctor meth));
+        # Copy attributes again to make sure that overridden attributes
+        # truly override.
+        $self->_inherit(qw(ctor meth attr));
     }
 
 ##############################################################################
@@ -299,7 +301,7 @@ returns all of the method objects with the specified names.
                   if $specs{$super}{"prot_$key\_ord"};
             }
 
-            $spec->{"${key}s"}         = { @things } if @things;
+            $spec->{"${key}s"}        = { @things } if @things;
             $spec->{"$key\_ord"}      = \@ord       if @ord;
             $spec->{"prot_$key\_ord"} = \@prot      if @prot;
         }

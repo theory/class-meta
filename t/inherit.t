@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.8 2004/01/28 02:09:04 david Exp $
+# $Id: inherit.t,v 1.9 2004/06/17 00:07:33 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 126;
+use Test::More tests => 127;
 
 ##############################################################################
 # Create a simple class.
@@ -128,6 +128,20 @@ BEGIN {
     like( $err, qr/Attribute 'name' already exists in class 'Test::One'/,
           "Check error message" );
 
+    # But allow an attribute with the same name to be added using the override
+    # parameter.
+    $c->add_attribute( name     => 'name',
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::RDWR,
+                       create   => Class::Meta::GETSET,
+                       type     => 'string',
+                       label    => 'Overridden Name',
+                       desc     => "The object's name.",
+                       required => 1,
+                       default  => '',
+                       override => 1,
+                   );
+
     # Add a method.
     ok( $c->add_method(name => 'woah'), "Add woah method to One" );
     # Add an overriding method.
@@ -166,7 +180,8 @@ is( scalar @two_attributes, 4, "Check for four attributes" );
 is( $two_attributes[0]->name, 'id', "Check for id attribute" );
 is( $one_attributes[0], $two_attributes[0], "Check for same id as One" );
 is( $two_attributes[1]->name, 'name', "Check for name attribute" );
-is( $one_attributes[1], $two_attributes[1], "Check for same name as One" );
+isnt( $one_attributes[1], $two_attributes[1], "Check for different name than One" );
+is( $two_attributes[1]->label, 'Overridden Name', 'Check for overridden name' );
 is( $two_attributes[2]->name, 'count', "Check for count attribute" );
 is( $one_attributes[2], $two_attributes[2], "Check for same count as One" );
 is( $two_attributes[3]->name, 'description', "Check for description attribute" );

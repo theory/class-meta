@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.82 2004/05/25 17:15:17 david Exp $
+# $Id: Meta.pm,v 1.83 2004/06/17 00:07:33 david Exp $
 
 =head1 NAME
 
@@ -908,6 +908,14 @@ constants:
 
 The default value for the attribute, if any. This may be either a literal
 value or a code reference that will be executed to generate a default value.
+
+=item override
+
+If an attribute being added to a class has the same name as an attribute in a
+parent class, Class::Meta will normally throw an exception. However, in some
+cases you might want to override an attribute in a parent class to change its
+properties. In such a case, pass a true value to the C<override> parameter to
+override the attribute and avoid the exception.
 
 =back
 
