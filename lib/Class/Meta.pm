@@ -1,12 +1,14 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.64 2004/01/21 01:07:10 david Exp $
+# $Id: Meta.pm,v 1.65 2004/01/21 22:47:00 david Exp $
 
 =head1 NAME
 
 Class::Meta - Class automation, introspection, and data validation
 
 =head1 SYNOPSIS
+
+Generate a class:
 
   package MyApp::Thingy;
   use strict;
@@ -40,6 +42,47 @@ Class::Meta - Class automation, introspection, and data validation
       $cm->add_method( name => 'chk_pass',
                        view => Class::Meta::PUBLIC );
       $cm->build;
+  }
+
+Then use the class:
+
+  use MyApp::Thingy;
+
+  my $thingy = MyApp::Thingy->new;
+  print "ID: ", $thingy->id, $/;
+  $thingy->name('Larry');
+  print "Name: ", $thingy->name, $/;
+  $thingy->age(42);
+  print "Age: ", $thingy->age, $/;
+
+Or make use of the introspection API:
+
+  use MyApp::Thingy;
+
+  my $class = MyApp::Thingy->my_class;
+  my $thingy;
+
+  print "Examining object of class ", $class->package, $/;
+
+  print "\nConstructors:\n";
+  for my $ctor ($class->constructors) {
+      print "  o ", $ctor->name, $/;
+      $thingy = $ctor->call;
+  }
+
+  print "\nAttributes:\n";
+  for my $attr ($class->attributes) {
+      print "  o ", $attr->name, " => ", $attr->call_get($thingy), $/;
+      if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
+          $attr->call_get($thingy, 'hey there!');
+          print "    Changed to: ", $attr->call_get($thingy) $/;
+      }
+  }
+
+  print "\nMethods:\n";
+  for my $meth ($class->methods) {
+      print "  o ", $meth->name, $/;
+      $meth->call($thingy);
   }
 
 =head1 DESCRIPTION
@@ -158,7 +201,7 @@ And finally, we tell Class::Meta to build the class. This is the point at
 which all constructors and accessor methods will be created in the class. In
 this case, these include the C<new()> constructor and a C<tail()> accessor for
 the "tail" attribute. And finally, Class::Meta will install another method,
-C<class()>. This method will return a Class::Meta::Class object that
+C<my_class()>. This method will return a Class::Meta::Class object that
 describes the class, and provides the complete introspection API.
 
 =back
@@ -333,7 +376,7 @@ Class::Meta-generated classes. Those classes are:
 =head3 L<Class::Meta::Class|Class::Meta::Class>
 
 Describes the class. Each Class::Meta-generated class has a single constructor
-object that can be retrieved by calling a class' C<class()> class
+object that can be retrieved by calling a class' C<my_class()> class
 method. Using the Class::Meta::Class object, you can get access to all of the
 other objects that describe the class. The relevant methods are:
 
@@ -850,7 +893,7 @@ provide the introspection API for the class being generated.
   $cm->build;
 
 Builds the class defined by the Class::Meta object, including the
-C<class()> class method, and all requisite constructors and accessors.
+C<my_class()> class method, and all requisite constructors and accessors.
 
 =cut
 
