@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.5 2002/05/10 22:46:04 david Exp $
+# $Id: Type.pm,v 1.6 2002/05/11 22:18:17 david Exp $
 
 =head1 NAME
 
@@ -53,60 +53,60 @@ $VERSION = "0.01";
 {
     # This code ref will be used to create most get_* methods.
     my $mk_getter = sub {
-	my ($prop) = @_;
-	return { "get_$prop" => sub { $_[0]->{$prop} } };
+	my ($attr) = @_;
+	return { "get_$attr" => sub { $_[0]->{$attr} } };
     };
 
-    # This code ref will create Class::Meta::Property get code refs.
+    # This code ref will create Class::Meta::Attribute get code refs.
     my $mk_pgetter = sub { eval "sub { shift->get$_[0](\@_) }" };
 
     # This code ref will be used to create most set_* methods.
     my $mk_setter = sub {
-	my ($prop, $conv, $chk) = @_;
+	my ($attr, $conv, $chk) = @_;
 	if ($conv && $chk) {
-	    return { "set_$prop" => sub {
+	    return { "set_$attr" => sub {
 		my $self = shift;
 		# Convert the value.
 		my $val = $conv->(shift());
 		# Check the value passed in.
 		for (@$chk) { $_->($val, @_) }
 		# Assign the value.
-		$self->{$prop} = $val;
+		$self->{$attr} = $val;
 	    }};
 	} elsif ($conv) {
-	    return { "set_$prop" => sub {
+	    return { "set_$attr" => sub {
 		my $self = shift;
 		# Convert and assign the value.
-		$self->{$prop} = $conv->(shift());
+		$self->{$attr} = $conv->(shift());
 	    }};
 	} elsif ($chk) {
-	     return { "set_$prop" => sub {
+	     return { "set_$attr" => sub {
 		my $self = shift;
 		# Check the value passed in.
 		for (@$chk) { $_->(@_) }
 		# Assign the value.
-		$self->{$prop} = $_[1];
+		$self->{$attr} = $_[1];
 	    }};
 	 } else {
-	     return { "set_$prop" => sub {
+	     return { "set_$attr" => sub {
 		# Assign the value.
-		$_[0]->{$prop} = $_[1];
+		$_[0]->{$attr} = $_[1];
 	    }};
 	 }
     };
 
-    # This code ref will create Class::Meta::Property set code refs.
+    # This code ref will create Class::Meta::Attribute set code refs.
     my $mk_psetter = sub { eval "sub { shift->set$_[0](\@_) }" };
 
     # This code ref creates the boolean set methods. They never need
     # to do checks or conversions.
     my $bool_setter = sub {
-	my ($prop) = @_;
-	return { "set_${prop}_on" =>  sub { $_[0]->{$prop} = 1 },
-		 "set_${prop}_off" => sub { $_[0]->{$prop} = 0 } };
+	my ($attr) = @_;
+	return { "set_${attr}_on" =>  sub { $_[0]->{$attr} = 1 },
+		 "set_${attr}_off" => sub { $_[0]->{$attr} = 0 } };
     };
 
-    # This code ref creates the Class::Meta::Property set method for boolean
+    # This code ref creates the Class::Meta::Attribute set method for boolean
     # data types.
     my $bool_psetter = sub {
 	eval "sub { \$_[1] ? \$_[0]->set_$_[0]_on : \$_[0]->set_$_[0]_off }";
@@ -114,11 +114,11 @@ $VERSION = "0.01";
 
     # This code ref creats the boolean get method.
     my $bool_getter = sub {
-	my ($prop) = @_;
-	return { "is_$prop" => sub { $_[0]->{$prop} ? 1 : 0 } };
+	my ($attr) = @_;
+	return { "is_$attr" => sub { $_[0]->{$attr} ? 1 : 0 } };
     };
 
-    # This code ref creates the Class::Meta::Property get method for boolean
+    # This code ref creates the Class::Meta::Attribute get method for boolean
     # data types.
     my $bool_pgetter = sub { eval "sub { shift->is$_[0](\@_) }" };
 
@@ -162,8 +162,8 @@ $VERSION = "0.01";
 		      conv     => sub { Data::Types::to_string(@_) },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	boolean  => { key      => "boolean",
@@ -173,8 +173,8 @@ $VERSION = "0.01";
 		      conv     => undef,
 		      get      => $bool_getter,
 		      set      => $bool_setter,
-		      prop_set => $bool_psetter,
-		      prop_get => $bool_pgetter
+		      attr_set => $bool_psetter,
+		      attr_get => $bool_pgetter
 		    },
 
 	whole    => { key      => "whole",
@@ -185,8 +185,8 @@ $VERSION = "0.01";
 		      conv     => sub { Data::Types::to_whole($_[0]) },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	integer  => { key      => "integer",
@@ -196,8 +196,8 @@ $VERSION = "0.01";
 		      conv     => sub { Data::Types::to_int($_[0]) },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	decimal  => { key      => "decimal",
@@ -208,8 +208,8 @@ $VERSION = "0.01";
 		      conv     => sub {Data::Types::to_decimal($_[0])},
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	real     => { key      => "real",
@@ -220,8 +220,8 @@ $VERSION = "0.01";
 		      conv     => sub { Data::Types::to_real($_[0]) },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	float    => { key      => "float",
@@ -232,8 +232,8 @@ $VERSION = "0.01";
 		      conv     => sub { Data::Types::to_float($_[0]) },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	scalar   => { key      => "scalar",
@@ -243,8 +243,8 @@ $VERSION = "0.01";
 		      conv     => undef,
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	scalarref => { key      => "scalarref",
@@ -254,8 +254,8 @@ $VERSION = "0.01";
 		      conv     => sub { \$_[0] },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	array    => { key      => "array",
@@ -265,8 +265,8 @@ $VERSION = "0.01";
 		      conv     => sub { \@_ },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	hash     => { key      => "hash",
@@ -276,8 +276,8 @@ $VERSION = "0.01";
 		      conv     => sub { { @_ } },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	code     => { key      => "code",
@@ -287,8 +287,8 @@ $VERSION = "0.01";
 		      conv     => sub { sub { @_ } },
 		      set      => $mk_setter,
 		      get      => $mk_getter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
 
 	datetime => { key      => "datetime",
@@ -301,8 +301,8 @@ $VERSION = "0.01";
 				  },
 		      get     => $mk_getter,
 		      set     => $mk_setter,
-		      prop_set => $mk_psetter,
-		      prop_get => $mk_pgetter
+		      attr_set => $mk_psetter,
+		      attr_get => $mk_pgetter
 		    },
   );
 
@@ -456,7 +456,7 @@ Optional. A description of the data type.
 
 =item chk
 
-Optional. Specifies how to validate the value of a property of this type.
+Optional. Specifies how to validate the value of a attribute of this type.
 The chk parameter can be specified in any of the following ways:
 
 =over 4
@@ -465,7 +465,7 @@ The chk parameter can be specified in any of the following ways:
 
 As a code reference. When Class::Meta executes this code reference, it will
 pass in the value to check and the maximum length of the value [as specified
-returned from Class::Meta::Property::my_length()]. The code reference should
+returned from Class::Meta::Attribute::my_length()]. The code reference should
 check the value of the first argument, and if it's not the proper value for
 your custom data type, it should throw an exception. Here's an example; it's
 the code reference used by the datetime data type:
@@ -524,10 +524,10 @@ Optional. A code reference that creates set methods code references. You can
 create as many setters as you like, and return them as a hash reference
 where the keys are the method names, and the values are code referernces
 that constitute the methods. The arguments to the set code reference are the
-name of the property for which the method is to be created, an optional
+name of the attribute for which the method is to be created, an optional
 array reference of validation code references, and an optional conversion
 code reference. Your closure must create the proper "set" accessor for the
-property, and execute each of the validation check and/or conversion code
+attribute, and execute each of the validation check and/or conversion code
 references, if any exist.
 
 Note that, if no validation or conversion code references are present (and
@@ -539,8 +539,8 @@ present, you I<must> execute the conversion reference, first, so that the
 validation references will validate the new value.
 
 The reason you are allowed to create multiple set methods is that sometimes
-your property may require it. For example, the default "boolean" property
-creates two accessors, set_prop_on() and set_prop_off(), both to ensure that
+your attribute may require it. For example, the default "boolean" attribute
+creates two accessors, set_attr_on() and set_attr_off(), both to ensure that
 the interface accurately describes what the methods do, and to ensure the
 integrity of the boolean data.
 
@@ -550,35 +550,35 @@ you need different functionality, then use it as a template for what you
 need:
 
   my $mk_setter = sub {
-      my ($prop, $conv, $chk) = @_;
+      my ($attr, $conv, $chk) = @_;
       if ($conv && $chk) {
-          return { "set_$prop" => sub {
+          return { "set_$attr" => sub {
               my $self = shift;
               # Convert the value.
               my $val = $conv->(shift());
               # Check the value passed in.
               for (@$chk) { $_->($val, @_) }
               # Assign the value.
-              $self->{$prop} = $val;
+              $self->{$attr} = $val;
           }};
       } elsif ($conv) {
-          return { "set_$prop" => sub {
+          return { "set_$attr" => sub {
               my $self = shift;
               # Convert and assign the value.
-              $self->{$prop} = $conv->(shift());
+              $self->{$attr} = $conv->(shift());
           }};
       } elsif ($chk) {
-          return { "set_$prop" => sub {
+          return { "set_$attr" => sub {
               my $self = shift;
               # Check the value passed in.
               for (@$chk) { $_->(@_) }
               # Assign the value.
-              $self->{$prop} = $_[1];
+              $self->{$attr} = $_[1];
           }};
       } else {
-          return { "set_$prop" => sub {
+          return { "set_$attr" => sub {
               # Assign the value.
-              $_[0]->{$prop} = $_[1];
+              $_[0]->{$attr} = $_[1];
           }};
       }
   };
@@ -586,7 +586,7 @@ need:
 =item get
 
 Optional. A code reference that creates get methods. The sole argument to
-the code reference is the name of the property for which the method is to be
+the code reference is the name of the attribute for which the method is to be
 created. As with the set parameter, the code reference should return a hash
 reference where the keys are the method names and the values are the
 closures that constitute the methods themselves.
@@ -597,35 +597,35 @@ you need different functionality, then use it as a template for what you
 need:
 
   my $mk_getter = sub {
-      my ($prop) = @_;
-      return { "get_$prop" => sub { $_[0]->{$prop} } };
+      my ($attr) = @_;
+      return { "get_$attr" => sub { $_[0]->{$attr} } };
   };
 
-=item prop_set
+=item attr_set
 
 Optional. A code reference that generates code references. This code
 reference will be used to create the set accessor for the
-Class::Meta::Property object. The C<prop_set> code reference should expect
-the name of the property as its sole argument, and return a code reference
-with that property name hard-coded (by C<eval>ing a string) in a method call
-on the first argument to the code reference. If you left the set property
-above to its default value, then you are urged to leave this property to its
-default, as well. Here's what the defalt C<prop_set> closure looks like, and
-you can use it as a template for your custom set properties:
+Class::Meta::Attribute object. The C<attr_set> code reference should expect
+the name of the attribute as its sole argument, and return a code reference
+with that attribute name hard-coded (by C<eval>ing a string) in a method call
+on the first argument to the code reference. If you left the set attribute
+above to its default value, then you are urged to leave this attribute to its
+default, as well. Here's what the defalt C<attr_set> closure looks like, and
+you can use it as a template for your custom set attributes:
 
   my $mk_pgetter = sub { eval "sub { shift->get$_[0](\@_) }" };
 
-=item prop_get
+=item attr_get
 
 Optional. A code reference that generates code references. This code
 reference will be used to create the get accessor for the
-Class::Meta::Property object. The C<prop_get> code reference should expect the
-name of the property as its sole argument, and return a code reference with
-that property name hard-coded (by C<eval>ing a string) in a method call on
-the first argument to the code reference. If you left the get property above
-to its default value, then you are urged to leave this property to its
-default, as well. Here's what the defalt C<prop_get> closure looks like, and
-you can use it as a template for your custom get properties:
+Class::Meta::Attribute object. The C<attr_get> code reference should expect the
+name of the attribute as its sole argument, and return a code reference with
+that attribute name hard-coded (by C<eval>ing a string) in a method call on
+the first argument to the code reference. If you left the get attribute above
+to its default value, then you are urged to leave this attribute to its
+default, as well. Here's what the defalt C<attr_get> closure looks like, and
+you can use it as a template for your custom get attributes:
 
   my $mk_psetter = sub { eval "sub { shift->set$_[0](\@_) }" };
 
@@ -686,8 +686,8 @@ you can use it as a template for your custom get properties:
 	# Check the remaining parameters
 	my %acc_map = ( set => $mk_setter,
 			get => $mk_getter,
-			prop_set => $mk_psetter,
-			prop_get => $mk_pgetter );
+			attr_set => $mk_psetter,
+			attr_get => $mk_pgetter );
 	while (my ($p, $c) = each %acc_map) {
 	    if ($params{$p}) {
 		Carp::croak("Parameter '$p' in call to add() must be a code "
@@ -777,11 +777,11 @@ sub get_conv { $_[0]->{conv} }
 
 =head2 mk_set
 
-  my $prop_name = 'foo';
-  my $setters = $type->mk_set($prop_name);
-  $setters = $type->mk_set($prop_name, $type->get_chk);
-  $setters = $type->mk_set($prop_name, undef, $type->get_conv);
-  $setters = $type->mk_set($prop_name, $type->get_chk, $type->get_conv);
+  my $attr_name = 'foo';
+  my $setters = $type->mk_set($attr_name);
+  $setters = $type->mk_set($attr_name, $type->get_chk);
+  $setters = $type->mk_set($attr_name, undef, $type->get_conv);
+  $setters = $type->mk_set($attr_name, $type->get_chk, $type->get_conv);
 
 Returns a hash reference of set method code references. The hash keys are
 the names of the methods (e.g., "set_foo"), and the values are code
@@ -800,8 +800,8 @@ sub mk_set {
 
 =head2 mk_get
 
-  my $prop_name = 'foo';
-  my $getters = $type->mk_get($prop_name);
+  my $attr_name = 'foo';
+  my $getters = $type->mk_get($attr_name);
 
 Returns a hash reference of get method code references. The hash keys are
 the names of the methods (e.g., "get_foo"), and the values are code
@@ -818,39 +818,39 @@ sub mk_get {
 
 ##############################################################################
 
-=head2 mk_prop_set
+=head2 mk_attr_set
 
-  my $prop_name = 'foo';
-  my $code = $type->mk_prop_set($prop_name);
+  my $attr_name = 'foo';
+  my $code = $type->mk_attr_set($attr_name);
 
 Returns a code reference that will be used by the
-Class::Meta::Property::set() method to retreive the value of an object. See
-the description of the C<prop_set> parameter to the add() constructor above
+Class::Meta::Attribute::set() method to retreive the value of an object. See
+the description of the C<attr_set> parameter to the add() constructor above
 for more information.
 
 =cut
 
-sub mk_prop_set {
-    my $code = shift->{prop_set};
+sub mk_attr_set {
+    my $code = shift->{attr_set};
     $code->(@_);
 }
 
 ##############################################################################
 
-=head2 mk_prop_get
+=head2 mk_attr_get
 
-  my $prop_name = 'foo';
-  my $code = $type->mk_prop_get($prop_name);
+  my $attr_name = 'foo';
+  my $code = $type->mk_attr_get($attr_name);
 
 Returns a code reference that will be used by the
-Class::Meta::Property::get() method to retreive the value of an object. See
-the description of the C<prop_get> parameter to the add() constructor above
+Class::Meta::Attribute::get() method to retreive the value of an object. See
+the description of the C<attr_get> parameter to the add() constructor above
 for more information.
 
 =cut
 
-sub mk_prop_get {
-    my $code = shift->{prop_get};
+sub mk_attr_get {
+    my $code = shift->{attr_get};
     $code->(@_);
 }
 
@@ -863,7 +863,7 @@ David Wheeler <david@wheeler.net>
 
 =head1 SEE ALSO
 
-L<Class::Meta|Class::Meta>, L<Class::Meta::Property|Class::Meta::Property>
+L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -1,15 +1,15 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.4 2002/05/10 22:49:10 david Exp $
+# $Id: Class.pm,v 1.5 2002/05/11 22:18:17 david Exp $
 
 use strict;
 use Carp ();
 use Class::Meta;
-use Class::Meta::Property;
+use Class::Meta::Attribute;
 use Class::Meta::Method;
 
 sub new {
-    my ($pkg, $spec) = @_;
+    my ($pkg, $def) = @_;
     # Check to make sure that only Class::Meta or a subclass is
     # constructing a Class::Meta::Class object.
     my $caller = caller;
@@ -18,7 +18,7 @@ sub new {
                   $caller, eval '@' . $caller . "::ISA";
 
     # Okay, create the object.
-    return bless $spec, ref $pkg || $pkg;
+    return bless { def => $def }, ref $pkg || $pkg;
 }
 
 # Basic accessors.
@@ -46,19 +46,19 @@ sub my_ctors {
     }
 }
 
-# Property objects.
-sub my_props {
+# Attribute objects.
+sub my_attrs {
     my $self = shift;
-    my $props = $self->{def}{props};
+    my $attrs = $self->{def}{attrs};
     if ($_[0]) {
-	# Return the requested properties.
-	return @{$props}{@_};
+	# Return the requested attributes.
+	return @{$attrs}{@_};
     } elsif ($self->{def}{isa}{caller()}) {
-	# Return the protected list of properties.
-	return @{$props}{@{ $self->{def}{prot_prop_ord} } };
+	# Return the protected list of attributes.
+	return @{$attrs}{@{ $self->{def}{prot_attr_ord} } };
     } else {
-	# Return the private list of properties.
-	return @{$props}{@{ $self->{def}{prop_ord} } };
+	# Return the private list of attributes.
+	return @{$attrs}{@{ $self->{def}{attr_ord} } };
     }
 }
 

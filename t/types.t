@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types.t,v 1.2 2002/05/10 22:49:10 david Exp $
+# $Id: types.t,v 1.3 2002/05/11 22:18:17 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -25,7 +25,7 @@ BEGIN {
     $c->set_name('Class::Meta::TestTypes Class');
     $c->set_desc('Special class just for testing Class::Meta.');
 
-    $c->add_prop({ name  => 'name',
+    $c->add_attr({ name  => 'name',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'string',
 		   len   => 256,
@@ -36,7 +36,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ name  => 'age',
+    $c->add_attr({ name  => 'age',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'inteter',
 		   label => 'Age',
@@ -46,7 +46,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'alive',
+    $c->add_attr({ attr  => 'alive',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'bool',
 		   label => 'Living',
@@ -55,7 +55,7 @@ BEGIN {
 		   req   => 0,
 		   def   => 1,
 		 });
-    $c->add_prop({ prop  => 'whole',
+    $c->add_attr({ attr  => 'whole',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'whole',
 		   label => 'A whole number.',
@@ -65,7 +65,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'dec',
+    $c->add_attr({ attr  => 'dec',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'decimal',
 		   label => 'A decimal number.',
@@ -75,7 +75,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'real',
+    $c->add_attr({ attr  => 'real',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'real',
 		   label => 'A real number.',
@@ -85,7 +85,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'float',
+    $c->add_attr({ attr  => 'float',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'float',
 		   label => 'A float.',
@@ -95,7 +95,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'scalar',
+    $c->add_attr({ attr  => 'scalar',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'scalar',
 		   label => 'A scalar.',
@@ -105,7 +105,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'array',
+    $c->add_attr({ attr  => 'array',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'array',
 		   label => 'A array.',
@@ -115,7 +115,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'hash',
+    $c->add_attr({ attr  => 'hash',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'hash',
 		   label => 'A hash.',
@@ -125,17 +125,17 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'datetime',
+    $c->add_attr({ attr  => 'datetime',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'datetime',
 		   label => 'date/time',
 		   field => Class::Meta::TEXT,
-		   desc  => 'A date/time property.',
+		   desc  => 'A date/time attribute.',
 		   req   => 0,
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'io_socket',
+    $c->add_attr({ attr  => 'io_socket',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'object',
 		   label => 'An IO::Socket Object',
@@ -145,7 +145,7 @@ BEGIN {
 		   def   => 'IO::Socket',
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ prop  => 'obj',
+    $c->add_attr({ attr  => 'obj',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'object',
 		   label => 'An Object',

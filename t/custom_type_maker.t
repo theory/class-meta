@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_type_maker.t,v 1.2 2002/05/10 22:49:10 david Exp $
+# $Id: custom_type_maker.t,v 1.3 2002/05/11 22:18:17 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -10,7 +10,7 @@ use strict;
 use Test::More tests => 85;
 BEGIN { use_ok( 'Class::Meta::Type' ) }
 
-my $prop = 'foo';
+my $attr = 'foo';
 my $i = 0;
 my ($set, $get);
 
@@ -30,33 +30,33 @@ ok( ! defined $type->get_chk, "Check io_socket checker" );
 ok( ! defined $type->get_conv, "Check io_socket conversion" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking io_socket set" );
 is( ref $set, 'HASH', 'Io_socket set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Io_socket chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Io_socket chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting io_socket set" );
 is( ref $set, 'HASH', 'Io_socket set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Io_socket conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Io_socket conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full io_socket set" );
 is( ref $set, 'HASH', 'Full io_socket set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full io_socket set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full io_socket set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make io_socket get" );
+ok( $get = $type->mk_get($attr . $i), "Make io_socket get" );
 is( ref $get, 'HASH', 'Io_socket get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Io_socket get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Io_socket get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check io_socket prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check io_socket prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check io_socket attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check io_socket attr_get" );
 
 ##############################################################################
 # Try the same thing with undefs.
@@ -68,8 +68,8 @@ ok( $type = Class::Meta::Type->add
     conv     => undef,
     set      => undef,
     get      => undef,
-    prop_set => undef,
-    prop_get => undef,
+    attr_set => undef,
+    attr_get => undef,
   ), "Create Bart data type" );
 
 is( $type, Class::Meta::Type->new('Bart'), 'Check lc conversion on key' );
@@ -80,33 +80,33 @@ ok( ! defined $type->get_chk, "Check bart checker" );
 ok( ! defined $type->get_conv, "Check bart conversion" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking bart set" );
 is( ref $set, 'HASH', 'Bart set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Bart chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Bart chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting bart set" );
 is( ref $set, 'HASH', 'Bart set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Bart conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Bart conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full bart set" );
 is( ref $set, 'HASH', 'Full bart set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full bart set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full bart set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make bart get" );
+ok( $get = $type->mk_get($attr . $i), "Make bart get" );
 is( ref $get, 'HASH', 'Bart get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Bart get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Bart get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check bart prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check bart prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check bart attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check bart attr_get" );
 
 ##############################################################################
 # Now try one with the checker doing an isa() call.
@@ -210,16 +210,16 @@ like( $err, qr/Paremter 'conv' in call to add\(\) must be a code/,
 ##############################################################################
 # And finally, let's try some custom accessor code refs.
 my $mk_set = sub {
-    my ($prop, $chk) = @_;
-    return { "foo_$prop" => sub {
+    my ($attr, $chk) = @_;
+    return { "foo_$attr" => sub {
 	# Assign the value.
-	$_[0]->{$prop} = $_[1];
+	$_[0]->{$attr} = $_[1];
     }};
 };
 
 my $mk_get = sub {
-    my ($prop) = @_;
-     return { "bar_$prop" => sub { $_[0]->{$prop} } };
+    my ($attr) = @_;
+     return { "bar_$attr" => sub { $_[0]->{$attr} } };
 };
 
 ok( $type = Class::Meta::Type->add
@@ -228,8 +228,8 @@ ok( $type = Class::Meta::Type->add
     key      => 'marge',
     set      => $mk_set,
     get      => $mk_get,
-    prop_set => sub { sub {} },
-    prop_get => sub { sub {} }
+    attr_set => sub { sub {} },
+    attr_get => sub { sub {} }
   ), "Create Marge data type" );
 
 is( $type->get_key, 'marge', "Check marge key" );
@@ -238,31 +238,31 @@ is( $type->get_desc, 'Marge object', "Check marge desc" );
 ok( ! defined $type->get_chk, "Check marge checker" );
 ok( ! defined $type->get_conv, "Check marge conversion" );
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking Marge set" );
 is( ref $set, 'HASH', 'Marge set with checks is hashref' );
-is( ref $set->{'foo_' . $prop . $i}, 'CODE', "Marge chk set coderef" );
+is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Marge chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting Marge set" );
 is( ref $set, 'HASH', 'Marge set with conv is hashref' );
-is( ref $set->{'foo_' . $prop . $i}, 'CODE', "Marge conv set coderef" );
+is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Marge conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full Marge set" );
 is( ref $set, 'HASH', 'Full Marge set is hashref' );
-is( ref $set->{'foo_' . $prop . $i}, 'CODE', "Full Marge set coderef" );
+is( ref $set->{'foo_' . $attr . $i}, 'CODE', "Full Marge set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make Marge get" );
+ok( $get = $type->mk_get($attr . $i), "Make Marge get" );
 is( ref $get, 'HASH', 'Marge get is hashref' );
-is( ref $get->{'bar_' . $prop . $i}, 'CODE', "Marge get coderef" );
+is( ref $get->{'bar_' . $attr . $i}, 'CODE', "Marge get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check marge prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check marge prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check marge attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check marge attr_get" );
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_types.t,v 1.3 2002/05/10 22:49:10 david Exp $
+# $Id: custom_types.t,v 1.4 2002/05/11 22:18:17 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -38,9 +38,9 @@ BEGIN {
 			      conv => $ip_conv
 			    });
 
-    # Build the class with the new data type as a property.
+    # Build the class with the new data type as a attribute.
     my $c = Class::Meta->new(ip_test => __PACKAGE__);
-    $c->add_prop({ name  => 'name',
+    $c->add_attr({ name  => 'name',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'string',
 		   len   => 256,
@@ -51,7 +51,7 @@ BEGIN {
 		   def   => undef,
 		   gen   => Class::Meta::GETSET
 		 });
-    $c->add_prop({ name  => 'ip_address',
+    $c->add_attr({ name  => 'ip_address',
 		   vis   => Class::Meta::PUBLIC,
 		   type  => 'ip_addr',
 		   label => 'Age',

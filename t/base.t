@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: base.t,v 1.5 2002/05/10 22:49:10 david Exp $
+# $Id: base.t,v 1.6 2002/05/11 22:18:17 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -30,8 +30,8 @@ BEGIN {
     $c->add_ctor( name => 'new',
 		   gen  => 1 );
 
-    # Add a couple of properties with generated methods.
-    $c->add_prop( name => 'id',
+    # Add a couple of attributes with generated methods.
+    $c->add_attr( name => 'id',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::READ,
 		  gen   => Class::Meta::GET,
@@ -41,7 +41,7 @@ BEGIN {
 		  req   => 1,
 		  def   => undef,
 		);
-    $c->add_prop( name  => 'name',
+    $c->add_attr( name  => 'name',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::RDWR,
 		  gen   => Class::Meta::GETSET,
@@ -53,7 +53,7 @@ BEGIN {
 		  req   => 1,
 		  def   => undef,
 		);
-    $c->add_prop( name  => 'age',
+    $c->add_attr( name  => 'age',
 		  vis   => Class::Meta::PUBLIC,
 		  auth  => Class::Meta::RDWR,
 		  gen   => Class::Meta::GETSET,
@@ -68,10 +68,6 @@ BEGIN {
     # Add a custom method.
     $c->add_meth( name  => 'chk_pass',
 		  vis   => Class::Meta::PUBLIC,
-		  label => 'Check password',
-		  desc  => 'Password checking method.',
-		  ret   => 'boolean',
-		  args  => ['string', 'string']
 		);
     $c->build;
 }
@@ -135,23 +131,23 @@ ok ($err = $@, "Got an error trying to change description");
 like( $er, qr/^Can't locate object method/,
       "Correct method not found exception for class description");
 
-# Test my_props().
-ok(my @props = $class->my_props, "Get props from my_props()" );
-ok( $#props == 2, "Three props from my_props()" );
-isa_ok($props[0], 'Class::Meta::Property', "First object is a property object" );
-isa_ok($props[1], 'Class::Meta::Property', "Second object is a property object" );
-isa_ok($props[2], 'Class::Meta::Property', "Third object is a property object" );
+# Test my_attrs().
+ok(my @attrs = $class->my_attrs, "Get attrs from my_attrs()" );
+ok( $#attrs == 2, "Three attrs from my_attrs()" );
+isa_ok($attrs[0], 'Class::Meta::Attribute', "First object is a attribute object" );
+isa_ok($attrs[1], 'Class::Meta::Attribute', "Second object is a attribute object" );
+isa_ok($attrs[2], 'Class::Meta::Attribute', "Third object is a attribute object" );
 
-# Get specific properities.
-ok( @props = $class->my_props(qw(age name)), 'Get specific props' );
-ok( $#props == 1, "Two specific props from my_props()" );
-isa_ok($props[0], 'Class::Meta::Property', "Property object type" );
+# Get specific attrerities.
+ok( @attrs = $class->my_attrs(qw(age name)), 'Get specific attrs' );
+ok( $#attrs == 1, "Two specific attrs from my_attrs()" );
+isa_ok($attrs[0], 'Class::Meta::Attribute', "Attribute object type" );
 
-is( $props[0]->get_name, 'age', 'First prop name' );
-is( $props[1]->get_name, 'name', 'Second prop name' );
+is( $attrs[0]->get_name, 'age', 'First attr name' );
+is( $attrs[1]->get_name, 'name', 'Second attr name' );
 
-# Check the properties of the "ID" property object.
-ok( my $p = $class->my_props('id') );
+# Check the attributes of the "ID" attribute object.
+ok( my $p = $class->my_attrs('id') );
 is( $p->my_name, 'id', 'ID name' );
 is( $p->my_desc, "The person object's ID.", 'ID description' );
 ok( $p->my_vis == Class::Meta::PUBLIC, 'ID visibility' );
@@ -162,15 +158,15 @@ is( $p->my_label, 'ID', 'ID label' );
 is( $p->my_field, 'text', 'ID field type' );
 ok( $p->is_req, "ID required" );
 ok( ! defined $p->my_def, "ID default" );
-# Test the property accessors.
+# Test the attribute accessors.
 ok( ! defined $p->get_val($t), 'ID not defined' );
 # ID is READ, so we shouldn't be able to set it.
 eval{ $p->set_val($t, 10) };
 ok( my $err = $@, "Set val failure" );
-like( $err, qr/property 'id' is read only/, 'set val exception' );
+like( $err, qr/attribute 'id' is read only/, 'set val exception' );
 
-# Check the properties of the "Name" property object.
-ok( my $p = $class->my_props('name') );
+# Check the attributes of the "Name" attribute object.
+ok( my $p = $class->my_attrs('name') );
 is( $p->my_name, 'name', 'Name name' );
 is( $p->my_desc, "The person's name.", 'Name description' );
 ok( $p->my_vis == Class::Meta::PUBLIC, 'Name visibility' );
@@ -181,7 +177,7 @@ is( $p->my_label, 'Name', 'Name label' );
 is( $p->my_field, 'text', 'Name field type' );
 ok( $p->is_req, "Name required" );
 ok( ! defined $p->my_def, "Name default" );
-# Test the property accessors.
+# Test the attribute accessors.
 is( $p->get_val($t), 'David', 'Name get_val' );
 ok( $p->set_val($t, 'Larry'), 'Name set_val' );
 is( $p->get_val($t), 'Larry', 'New Name get_val' );
@@ -189,8 +185,8 @@ is( $t->get_name, 'Larry', 'Object get_name');
 ok( $t->set_name('Damian'), 'Object set_name' );
 is( $p->get_val($t), 'Damian', 'Final Name get_val' );
 
-# Check the properties of the "Age" property object.
-ok( $p = $class->my_props('age') );
+# Check the attributes of the "Age" attribute object.
+ok( $p = $class->my_attrs('age') );
 is( $p->my_name, 'age', 'Age name' );
 is( $p->my_desc, "The person's age.", 'Age description' );
 ok( $p->my_vis == Class::Meta::PUBLIC, 'Age visibility' );
@@ -201,7 +197,7 @@ is( $p->my_label, 'Age', 'Age label' );
 is( $p->my_field, 'text', 'Age field type' );
 ok( $p->is_req == 0, "Age required" );
 ok( ! defined $p->my_def, "Age default" );
-# Test the property accessors.
+# Test the attribute accessors.
 ok( ! defined $p->get_val($t), 'Age get_val' );
 ok( $p->set_val($t, 10), 'Age set_val' );
 ok( $p->get_val($t), 10, 'New Age get_val' );

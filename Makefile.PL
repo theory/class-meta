@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: Makefile.PL,v 1.3 2002/05/10 22:49:10 david Exp $
+# $Id: Makefile.PL,v 1.4 2002/05/11 22:18:17 david Exp $
 
 use strict;
 use ExtUtils::MakeMaker;
@@ -9,8 +9,10 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'Class::Meta',
     'VERSION_FROM'	=> 'lib/Class/Meta.pm', # finds $VERSION
-    'PREREQ_PM'		=> {Data::Types => 0.02,
-			    Params::Validate => '0.15' }, # e.g., Module::Name => 1.1
+    'PREREQ_PM'		=> { Data::Types => 0.02,
+			     Time::Piece => 1.01,
+			     Time::Piece::ISO => 0.03,
+			   },
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/Class/Meta.pm', # retrieve abstract from module
        AUTHOR     => 'David Wheeler <david@wheeler.net') : ()),

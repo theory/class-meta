@@ -1,15 +1,15 @@
-package Class::Meta::Property;
+package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.3 2002/05/10 22:49:10 david Exp $
+# $Id: Attribute.pm,v 1.4 2002/05/11 22:18:17 david Exp $
 
 =head1 NAME
 
-Kinet::Meta::Prop - Objects describing Kinet object properties.
+Kinet::Meta::Attribute - Objects describing Kinet object attributes.
 
 =head1 SYNOPSIS
 
-  use Kinet::Meta::Prop;
-  my $prop = Kinet::Meta::Prop->new($spec);
+  use Kinet::Meta::Attribute;
+  my $attr = Kinet::Meta::Attribute->new($spec);
 
 =head1 DESCRIPTION
 

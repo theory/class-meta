@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: chk_types.t,v 1.2 2002/05/10 22:49:10 david Exp $
+# $Id: chk_types.t,v 1.3 2002/05/11 22:18:17 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -10,7 +10,7 @@ use strict;
 use Test::More tests => 322;
 BEGIN { use_ok( 'Class::Meta::Type' ) }
 
-my $prop = 'foo';
+my $attr = 'foo';
 my $i = 0;
 
 ##############################################################################
@@ -28,38 +28,38 @@ is( ref $type->get_conv, 'CODE', "Check string conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( my $set = $type->mk_set($prop . ++$i), "Make simple string set" );
+ok( my $set = $type->mk_set($attr . ++$i), "Make simple string set" );
 is( ref $set, 'HASH', 'Simple string set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "String set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "String set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking string set" );
 is( ref $set, 'HASH', 'String set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "String chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "String chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting string set" );
 is( ref $set, 'HASH', 'String set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "String conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "String conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full string set" );
 is( ref $set, 'HASH', 'Full string set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full string set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full string set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( my $get = $type->mk_get($prop . $i), "Make string get" );
+ok( my $get = $type->mk_get($attr . $i), "Make string get" );
 is( ref $get, 'HASH', 'String get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "String get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "String get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check string prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check string prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check string attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check string attr_get" );
 ##############################################################################
 # Check boolean data type.
 ok( $type = Class::Meta::Type->new('boolean'), 'Get boolean' );
@@ -73,50 +73,50 @@ ok( ! defined $type->get_conv, "Check boolean conversion" );
 
 # Check to make sure that the set_ method codrefs area created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple boolean set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple boolean set" );
 is( ref $set, 'HASH', 'Simple boolean set is hashref' );
-is( ref $set->{'set_' . $prop . $i . '_on'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_on'}, 'CODE',
     "Boolean set_on coderef" );
-is( ref $set->{'set_' . $prop . $i . '_off'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_off'}, 'CODE',
     "Boolean set_off coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking boolean set" );
 is( ref $set, 'HASH', 'Boolean set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i . '_on'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_on'}, 'CODE',
     "Boolean chk set on coderef" );
-is( ref $set->{'set_' . $prop . $i . '_off'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_off'}, 'CODE',
     "Boolean chk set off coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting boolean set" );
 is( ref $set, 'HASH', 'Boolean set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i . '_on'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_on'}, 'CODE',
     "Boolean conv set on coderef" );
-is( ref $set->{'set_' . $prop . $i . '_off'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_off'}, 'CODE',
     "Boolean conv set off coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full boolean set" );
 is( ref $set, 'HASH', 'Full boolean set is hashref' );
-is( ref $set->{'set_' . $prop . $i . '_on'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_on'}, 'CODE',
     "Full boolean set on coderef" );
-is( ref $set->{'set_' . $prop . $i . '_off'}, 'CODE',
+is( ref $set->{'set_' . $attr . $i . '_off'}, 'CODE',
     "Full boolean set off coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make boolean get" );
+ok( $get = $type->mk_get($attr . $i), "Make boolean get" );
 is( ref $get, 'HASH', 'Boolean get is hashref' );
-is( ref $get->{'is_' . $prop . $i}, 'CODE', "Boolean get coderef" );
+is( ref $get->{'is_' . $attr . $i}, 'CODE', "Boolean get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check boolean prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check boolean prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check boolean attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check boolean attr_get" );
 
 ##############################################################################
 # Check whole data type.
@@ -132,38 +132,38 @@ is( ref $type->get_conv, 'CODE', "Check whole conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple whole set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple whole set" );
 is( ref $set, 'HASH', 'Simple whole set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Whole set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Whole set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking whole set" );
 is( ref $set, 'HASH', 'Whole set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Whole chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Whole chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting whole set" );
 is( ref $set, 'HASH', 'Whole set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Whole conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Whole conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full whole set" );
 is( ref $set, 'HASH', 'Full whole set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full whole set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full whole set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make whole get" );
+ok( $get = $type->mk_get($attr . $i), "Make whole get" );
 is( ref $get, 'HASH', 'Whole get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Whole get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Whole get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check whole prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check whole prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check whole attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check whole attr_get" );
 
 ##############################################################################
 # Check integer data type.
@@ -180,38 +180,38 @@ is( ref $type->get_conv, 'CODE', "Check integer conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple integer set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple integer set" );
 is( ref $set, 'HASH', 'Simple integer set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Integer set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Integer set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking integer set" );
 is( ref $set, 'HASH', 'Integer set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Integer chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Integer chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting integer set" );
 is( ref $set, 'HASH', 'Integer set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Integer conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Integer conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full integer set" );
 is( ref $set, 'HASH', 'Full integer set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full integer set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full integer set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make integer get" );
+ok( $get = $type->mk_get($attr . $i), "Make integer get" );
 is( ref $get, 'HASH', 'Integer get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Integer get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Integer get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check integer prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check integer prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check integer attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check integer attr_get" );
 
 ##############################################################################
 # Check decimal data type.
@@ -228,38 +228,38 @@ is( ref $type->get_conv, 'CODE', "Check decimal conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple decimal set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple decimal set" );
 is( ref $set, 'HASH', 'Simple decimal set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Decimal set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Decimal set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking decimal set" );
 is( ref $set, 'HASH', 'Decimal set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Decimal chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Decimal chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting decimal set" );
 is( ref $set, 'HASH', 'Decimal set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Decimal conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Decimal conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full decimal set" );
 is( ref $set, 'HASH', 'Full decimal set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full decimal set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full decimal set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make decimal get" );
+ok( $get = $type->mk_get($attr . $i), "Make decimal get" );
 is( ref $get, 'HASH', 'Decimal get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Decimal get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Decimal get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check decimal prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check decimal prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check decimal attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check decimal attr_get" );
 
 ##############################################################################
 # Check real data type.
@@ -275,38 +275,38 @@ is( ref $type->get_conv, 'CODE', "Check real conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple real set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple real set" );
 is( ref $set, 'HASH', 'Simple real set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Real set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Real set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking real set" );
 is( ref $set, 'HASH', 'Real set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Real chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Real chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting real set" );
 is( ref $set, 'HASH', 'Real set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Real conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Real conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full real set" );
 is( ref $set, 'HASH', 'Full real set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full real set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full real set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make real get" );
+ok( $get = $type->mk_get($attr . $i), "Make real get" );
 is( ref $get, 'HASH', 'Real get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Real get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Real get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check real prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check real prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check real attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check real attr_get" );
 
 ##############################################################################
 # Check float data type.
@@ -322,38 +322,38 @@ is( ref $type->get_conv, 'CODE', "Check float conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple float set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple float set" );
 is( ref $set, 'HASH', 'Simple float set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Float set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Float set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking float set" );
 is( ref $set, 'HASH', 'Float set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Float chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Float chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting float set" );
 is( ref $set, 'HASH', 'Float set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Float conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Float conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full float set" );
 is( ref $set, 'HASH', 'Full float set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full float set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full float set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make float get" );
+ok( $get = $type->mk_get($attr . $i), "Make float get" );
 is( ref $get, 'HASH', 'Float get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Float get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Float get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check float prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check float prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check float attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check float attr_get" );
 
 ##############################################################################
 # Check scalar data type.
@@ -367,38 +367,38 @@ ok( ! defined $type->get_conv, "Check scalar conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple scalar set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple scalar set" );
 is( ref $set, 'HASH', 'Simple scalar set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking scalar set" );
 is( ref $set, 'HASH', 'Scalar set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting scalar set" );
 is( ref $set, 'HASH', 'Scalar set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full scalar set" );
 is( ref $set, 'HASH', 'Full scalar set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full scalar set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full scalar set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make scalar get" );
+ok( $get = $type->mk_get($attr . $i), "Make scalar get" );
 is( ref $get, 'HASH', 'Scalar get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Scalar get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Scalar get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check scalar prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check scalar prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check scalar attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check scalar attr_get" );
 
 ##############################################################################
 # Check scalar reference data type.
@@ -414,38 +414,38 @@ is( ref $type->get_conv, 'CODE', "Check scalar ref conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple scalar ref set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple scalar ref set" );
 is( ref $set, 'HASH', 'Simple scalar ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar Ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar Ref set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking scalar ref set" );
 is( ref $set, 'HASH', 'Scalar Ref set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar Ref chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar Ref chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting scalar ref set" );
 is( ref $set, 'HASH', 'Scalar Ref set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Scalar Ref conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Scalar Ref conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full scalar ref set" );
 is( ref $set, 'HASH', 'Full scalar ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full scalar ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full scalar ref set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make scalar ref get" );
+ok( $get = $type->mk_get($attr . $i), "Make scalar ref get" );
 is( ref $get, 'HASH', 'Scalar Ref get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Scalar Ref get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Scalar Ref get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check scalar ref prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check scalar ref prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check scalar ref attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check scalar ref attr_get" );
 
 ##############################################################################
 # Check array data type.
@@ -462,38 +462,38 @@ is( ref $type->get_conv, 'CODE', "Check array conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple array ref set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple array ref set" );
 is( ref $set, 'HASH', 'Simple array ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Array Ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Array Ref set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking array ref set" );
 is( ref $set, 'HASH', 'Array Ref set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Array Ref chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Array Ref chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting array ref set" );
 is( ref $set, 'HASH', 'Array Ref set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Array Ref conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Array Ref conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full array ref set" );
 is( ref $set, 'HASH', 'Full array ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full array ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full array ref set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make array ref get" );
+ok( $get = $type->mk_get($attr . $i), "Make array ref get" );
 is( ref $get, 'HASH', 'Array Ref get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Array Ref get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Array Ref get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check array prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check array prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check array attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check array attr_get" );
 
 ##############################################################################
 # Check hash data type.
@@ -510,38 +510,38 @@ is( ref $type->get_conv, 'CODE', "Check hash conversion" );
 
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple hash ref set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple hash ref set" );
 is( ref $set, 'HASH', 'Simple hash ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Hash Ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Hash Ref set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking hash ref set" );
 is( ref $set, 'HASH', 'Hash Ref set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Hash Ref chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Hash Ref chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting hash ref set" );
 is( ref $set, 'HASH', 'Hash Ref set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Hash Ref conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Hash Ref conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full hash ref set" );
 is( ref $set, 'HASH', 'Full hash ref set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full hash ref set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full hash ref set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make hash ref get" );
+ok( $get = $type->mk_get($attr . $i), "Make hash ref get" );
 is( ref $get, 'HASH', 'Hash Ref get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Hash Ref get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Hash Ref get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check hash prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check hash prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check hash attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check hash attr_get" );
 
 ##############################################################################
 # Check code data type.
@@ -557,38 +557,38 @@ foreach my $chk (@{ $type->get_chk }) {
 is( ref $type->get_conv, 'CODE', "Check code conversion" );
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple code set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple code set" );
 is( ref $set, 'HASH', 'Simple code set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Code set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Code set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking code set" );
 is( ref $set, 'HASH', 'Code set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Code chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Code chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting code set" );
 is( ref $set, 'HASH', 'Code set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Code conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Code conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full code set" );
 is( ref $set, 'HASH', 'Full code set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full code set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full code set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make code get" );
+ok( $get = $type->mk_get($attr . $i), "Make code get" );
 is( ref $get, 'HASH', 'Code get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Code get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Code get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check code prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check code prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check code attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check code attr_get" );
 
 ##############################################################################
 # Check datetime data type.
@@ -603,35 +603,35 @@ foreach my $chk (@{ $type->get_chk }) {
 is( ref $type->get_conv, 'CODE', "Check datetime conversion" );
 # Check to make sure that the set_ method codrefs are created properly, and
 # keyed off the proper method name. Start with a simple set_ method.
-ok( $set = $type->mk_set($prop . ++$i), "Make simple datetime set" );
+ok( $set = $type->mk_set($attr . ++$i), "Make simple datetime set" );
 is( ref $set, 'HASH', 'Simple datetime set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Datetime set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Datetime set coderef" );
 
 # Now check with checks added.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk),
     "Make checking datetime set" );
 is( ref $set, 'HASH', 'Datetime set with checks is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Datetime chk set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Datetime chk set coderef" );
 
 # Now check with a conversion.
-ok( $set = $type->mk_set($prop . ++$i, undef, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, undef, $type->get_conv),
     "Make converting datetime set" );
 is( ref $set, 'HASH', 'Datetime set with conv is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Datetime conv set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Datetime conv set coderef" );
 
 # And finally, with both a check and a conversion.
-ok( $set = $type->mk_set($prop . ++$i, $type->get_chk, $type->get_conv),
+ok( $set = $type->mk_set($attr . ++$i, $type->get_chk, $type->get_conv),
     "Make full datetime set" );
 is( ref $set, 'HASH', 'Full datetime set is hashref' );
-is( ref $set->{'set_' . $prop . $i}, 'CODE', "Full datetime set coderef" );
+is( ref $set->{'set_' . $attr . $i}, 'CODE', "Full datetime set coderef" );
 
 # Now check to make sure that the get_ method coderefs are created properly,
 # and keyed off the proper method name.
-ok( $get = $type->mk_get($prop . $i), "Make datetime get" );
+ok( $get = $type->mk_get($attr . $i), "Make datetime get" );
 is( ref $get, 'HASH', 'Datetime get is hashref' );
-is( ref $get->{'get_' . $prop . $i}, 'CODE', "Datetime get coderef" );
+is( ref $get->{'get_' . $attr . $i}, 'CODE', "Datetime get coderef" );
 
-# And finally, check to make sure that the Property class accessor coderefs
+# And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-is( ref $type->mk_prop_set($prop . $i), 'CODE', "Check datetime prop_set" );
-is( ref $type->mk_prop_get($prop . $i), 'CODE', "Check datetime prop_get" );
+is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check datetime attr_set" );
+is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check datetime attr_get" );

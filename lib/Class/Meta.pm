@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.6 2002/05/10 22:49:10 david Exp $
+# $Id: Meta.pm,v 1.7 2002/05/11 22:18:17 david Exp $
 
 =head1 NAME
 
@@ -24,9 +24,8 @@ use strict;
 use Carp ();
 use Class::Meta::Type;
 use Class::Meta::Class;
-use Class::Meta::Property;
+use Class::Meta::Attribute;
 use Class::Meta::Method;
-use Params::Validate ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -39,7 +38,7 @@ use constant PROTECTED => 0x01;
 use constant PUBLIC    => 0x02;
 
 # Authorization. These determine what kind of accessors (get, set, both, or
-# none) are available for a given property or method.
+# none) are available for a given attribute or method.
 use constant NONE      => 0x00;
 use constant READ      => 0x01;
 use constant WRITE     => 0x02;
@@ -56,7 +55,7 @@ use constant GETSET    => GET | SET;
 
 # Metadata types. Used internally for tracking the different types of
 # Class::Meta objects.
-use constant PROP      => 'prop';
+use constant ATTR      => 'attr';
 use constant METH      => 'meth';
 use constant CTOR      => 'ctor';
 
@@ -100,7 +99,7 @@ my $add_memb;
 	$def->{isa_ord} = \@isa;
 
 	# Instantiate a Class object.
-	$def->{class} = Class::Meta::Class->new({ def => $classes{$class} });
+	$def->{class} = Class::Meta::Class->new($def);
 
 	# Cache the definition.
 	$classes{$class} = $def;
@@ -119,12 +118,12 @@ my $add_memb;
     sub set_desc { $classes{ $_[0]->{pkg} }->{class}{desc} = $_[1] }
 
 ##############################################################################
-# add_prop()
+# add_attr()
     my $pvscalar = Params::Validate::SCALAR;
     my $chkname = { 'valid name' => sub { $_[0] !~ /\W/ } };
 
-    # Set up Params::Validate spec for Property objects.
-    my $prop_defs = { name  => { type => $pvscalar, callbacks => $chkname },
+    # Set up Params::Validate spec for Attribute objects.
+    my $attr_defs = { name  => { type => $pvscalar, callbacks => $chkname },
 		      vis   => { type => $pvscalar, default => PUBLIC },
 		      auth  => { type => $pvscalar, default => RDWR },
 		      gen   => { type => $pvscalar, default => undef },
@@ -135,37 +134,30 @@ my $add_memb;
 		      def   => { default => undef }
 		    };
 
-    sub add_prop {
-	my $self = shift;
-	my %spec = Params::Validate::validate(@_, $prop_defs);
-	$spec{vis} ||= $spec{auth}
-	return $add_memb->(PROP, $classes{ $self->{pkg} }, \%spec);
+    sub add_attr {
+	Class::Meta::Attribute->new(@_);
+#	my $self = shift;
+#	my %spec = Params::Validate::validate(@_, $attr_defs);
+#	$spec{vis} ||= $spec{auth}
+#	return $add_memb->(ATTR, $classes{ $self->{pkg} }, \%spec);
     }
 
 ##############################################################################
 # add_meth()
-    # Set up Params::Validate spec for Method objects.
-    my $meth_defs =  { name  => { type => $pvscalar, callbacks => $chkname },
-		       vis   => { type => $pvscalar, default => PUBLIC },
-		       label => { type => $pvscalar, default => '' },
-		       desc  => { type => $pvscalar, default => '' }
-		    };
 
     sub add_meth {
-	my $self = shift;
-	my %spec = Params::Validate::validate(@_, $meth_defs);
-	return $add_memb->(METH, $classes{ $self->{pkg} }, \%spec);
+	Class::Meta::Method->new( $classes{ shift()->{pkg} }, @_)
     }
 
 ##############################################################################
 # add_ctor()
     # Set up Params::Validate spec for Constructor objects.
     my $ctor_defs = { name  => { type => $pvscalar, callbacks => $chkname },
-		       vis   => { type => $pvscalar, default => PUBLIC },
-		       gen   => { type => $pvscalar, default => 0 },
-		       label => { type => $pvscalar, default => '' },
-		       desc  => { type => $pvscalar, default => '' }
-		     };
+		      vis   => { type => $pvscalar, default => PUBLIC },
+		      gen   => { type => $pvscalar, default => 0 },
+		      label => { type => $pvscalar, default => '' },
+		      desc  => { type => $pvscalar, default => '' }
+		    };
 
     sub add_ctor {
 	my $self = shift;
@@ -180,8 +172,8 @@ my $add_memb;
 	my $def = $classes{ $self->{pkg} };
 	no strict 'refs';
 
-	# Build the property methods.
-	foreach my $prop (@{$def->{build_prop_ord}}) {
+	# Build the attribute methods.
+	foreach my $attr (@{$def->{build_attr_ord}}) {
 	}
 
 	# Build the constructors.
@@ -191,11 +183,11 @@ my $add_memb;
 		my $init = $_[1] || {};
 		my $new = bless({}, ref $_[0] || $_[0]);
 
-		foreach my $pobj (@{ $def->{props} }) {
+		foreach my $pobj (@{ $def->{attrs} }) {
 		    my $p = $pobj->my_name;
 		    if (exists $init->{$p}) {
 			# Assign the value passed in.
-			Carp::croak("Write access to property '$p' denied")
+			Carp::croak("Write access to attribute '$p' denied")
 			    unless $pobj->my_vis > READ;
 			$pobj->set($new, delete $init->{$p});
 		    } else {
@@ -203,11 +195,11 @@ my $add_memb;
 			$new->{$p} = $pobj->my_def;
 		    }
 		}
-		if (my @props = keys %$init) {
-		    # Attempts to assign to non-existent properties fail.
-		    my $c = $#props > 0 ? 'properties' : 'property';
+		if (my @attrs = keys %$init) {
+		    # Attempts to assign to non-existent attributes fail.
+		    my $c = $#attrs > 0 ? 'attributes' : 'attribute';
 		    local $" = "', '";
-		    Carp::croak("No such $c '@props' in $def->{pkg} "
+		    Carp::croak("No such $c '@attrs' in $def->{pkg} "
 				. "objects");
 		}
 		return $new;
@@ -222,8 +214,8 @@ my $add_memb;
 ##############################################################################
 
 {
-    my %types = ( &PROP => { label => 'Property',
-			     class  => 'Class::Meta::Property' },
+    my %types = ( &ATTR => { label => 'Attribute',
+			     class  => 'Class::Meta::Attribute' },
 		  &METH => { label => 'Method',
 			     class => 'Class::Meta::Method' },
 		  &CTOR => { label => 'Constructor',
@@ -233,7 +225,7 @@ my $add_memb;
     $add_memb = sub {
 	my ($type, $def, $spec) = @_;
 	# Make sure that the name hasn't already been used.
-	Carp::croak("Property '$p->{name}' is not a valid property name "
+	Carp::croak("Attribute '$p->{name}' is not a valid attribute name "
 		    . "-- only alphanumeric and '_' characters allowed")
 	  if $p->{name} =~ /\W/;
 	# Check to see if this member has been created already.
@@ -266,26 +258,26 @@ my $add_memb;
 	# Just return the object if it's private.
 	return $memb if $spec->{vis} == PRIVATE;
 
-	# Preserve the order in which the property is declared.
+	# Preserve the order in which the attribute is declared.
 	# Assume at least protected here.
 	push @{ $def->{'prot_' . $type . '_ord'} }, $spec->{name};
 	push @{ $def->{prot_ord} }, [$type, $spec->{name}];
 	if ($spec->{vis} == PUBLIC) {
-	    # Save the position of the property from the public perspective.
+	    # Save the position of the attribute from the public perspective.
 	    push @{ $def->{$type . '_ord'} }, $spec->{name};
 	    push @{ $def->{ord} }, [$type, $spec->{name}];
 	}
 
-	# Return the new property object.
+	# Return the new attribute object.
 	return $memb;
     };
 
-    my %prop_defs = ( vis => GETSET,
+    my %attr_defs = ( vis => GETSET,
 		      
 
 		    );
 
-    $set_prop = sub {
+    $set_attr = sub {
 	my $spec = shift;
 	$spec->{vis} ||= $spec->{auth} || GETSET if $type ne METH;
 
