@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.36
+0.36  2004-07-30T00:59:31
       - Finally, truly got the tests fixed for Windows. Without question.
         The fix was even tested, first! Thanks to Robert Rothenberg for
         his persistence.
