@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.3 2002/05/16 18:12:47 david Exp $
+# $Id: class.t,v 1.4 2002/05/17 23:32:56 david Exp $
 
 use strict;
 use Test::More tests => 9;
@@ -21,9 +21,10 @@ package Class::Meta::FooSub;
 # Set up simple settings.
 my $spec = { name => 'Foo Class',
              desc => 'Foo Class description',
+             pkg  => 'FooClass',
              key  => 'foo' };
 # This should be okay.
-main::ok( $class = Class::Meta::Class->new('FooClass', $spec),
+main::ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
 
 # Test the simple accessors.
@@ -31,9 +32,8 @@ main::is( $class->my_name, $spec->{name}, 'my_name' );
 main::is( $class->my_desc, $spec->{desc}, 'my_name' );
 main::is( $class->my_key, $spec->{key}, 'my_name' );
 
-
 # This should throw an exception because we can only create a class once.
-eval { $class = Class::Meta::Class->new('FooClass') };
+eval { $class = Class::Meta::Class->new($spec) };
 main::ok($err = $@, 'Error creating duplicate class' );
 main::like($err, qr/^Class object for class 'FooClass' already exists/,
      'Check duplicate class error message' );

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.9 2002/05/16 18:12:47 david Exp $
+# $Id: Meta.pm,v 1.10 2002/05/17 23:32:56 david Exp $
 
 =head1 NAME
 
@@ -22,7 +22,6 @@ Class::Meta - Class Automation and Introspection
 ##############################################################################
 use strict;
 use Carp ();
-use Params::Validate ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -128,50 +127,23 @@ my $add_memb;
 
 ##############################################################################
 # add_attr()
-    my $pvscalar = Params::Validate::SCALAR;
-    my $chkname = { 'valid name' => sub { $_[0] !~ /\W/ } };
-
-    # Set up Params::Validate spec for Attribute objects.
-    my $attr_defs = { name  => { type => $pvscalar, callbacks => $chkname },
-                      vis   => { type => $pvscalar, default => PUBLIC },
-                      auth  => { type => $pvscalar, default => RDWR },
-                      gen   => { type => $pvscalar, default => undef },
-                      type  => { type => $pvscalar, default => 'string' },
-                      label => { type => $pvscalar, default => '' },
-                      desc  => { type => $pvscalar, default => '' },
-                      req   => { type => $pvscalar, default => 0 },
-                      def   => { default => undef }
-                    };
 
     sub add_attr {
-        Class::Meta::Attribute->new(@_);
-#       my $self = shift;
-#       my %spec = Params::Validate::validate(@_, $attr_defs);
-#       $spec{vis} ||= $spec{auth}
-#       return $add_memb->(ATTR, $classes{ $self->{pkg} }, \%spec);
+        Class::Meta::Attribute->new( $classes{ shift()->{pkg} }, @_);
     }
 
 ##############################################################################
 # add_meth()
 
     sub add_meth {
-        Class::Meta::Method->new( $classes{ shift()->{pkg} }, @_)
+        Class::Meta::Method->new( $classes{ shift()->{pkg} }, @_);
     }
 
 ##############################################################################
 # add_ctor()
-    # Set up Params::Validate spec for Constructor objects.
-    my $ctor_defs = { name  => { type => $pvscalar, callbacks => $chkname },
-                      vis   => { type => $pvscalar, default => PUBLIC },
-                      gen   => { type => $pvscalar, default => 0 },
-                      label => { type => $pvscalar, default => '' },
-                      desc  => { type => $pvscalar, default => '' }
-                    };
 
     sub add_ctor {
-        my $self = shift;
-        my %spec = Params::Validate::validate(@_, $ctor_defs);
-        return $add_memb->(CTOR, $classes{ $self->{pkg} }, \%spec);
+        Class::Meta::Constructor->new( $classes{ shift()->{pkg} }, @_);
     }
 
 ##############################################################################
@@ -197,7 +169,7 @@ my $add_memb;
                     if (exists $init->{$p}) {
                         # Assign the value passed in.
                         Carp::croak("Write access to attribute '$p' denied")
-                            unless $pobj->my_vis > READ;
+                          unless $pobj->my_vis > READ;
                         $pobj->set($new, delete $init->{$p});
                     } else {
                         # NOTE: Might have to construct a new object here.

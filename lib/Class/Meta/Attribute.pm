@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.5 2002/05/13 16:01:53 david Exp $
+# $Id: Attribute.pm,v 1.6 2002/05/17 23:32:56 david Exp $
 
 =head1 NAME
 
@@ -62,7 +62,7 @@ sub my_vals   {
 
 sub call_get   {
     my $code = shift->{_get};
-    $cod->(@_);
+    $code->(@_);
 }
 
 sub call_set   {
