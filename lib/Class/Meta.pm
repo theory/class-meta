@@ -1,10 +1,10 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.11 2002/05/18 02:00:53 david Exp $
+# $Id: Meta.pm,v 1.12 2002/05/26 19:58:01 david Exp $
 
 =head1 NAME
 
-Class::Meta - Class Automation and Introspection
+Class::Meta - Class automation, introspection, and data validation
 
 =head1 SYNOPSIS
 
@@ -13,7 +13,7 @@ Class::Meta - Class Automation and Introspection
 
 =head1 DESCRIPTION
 
-
+Facade.
 
 =cut
 
