@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.39 2004/01/28 16:51:14 david Exp $
+# $Id: Attribute.pm,v 1.40 2004/01/28 21:45:33 david Exp $
 
 =head1 NAME
 
@@ -154,9 +154,6 @@ sub new {
     $spec->{attrs}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     my $def = defined $spec->{attrs}{$p{name}}->default;
-    $croak->('Required attributes must have a default value')
-      if $p{required} && ! $def;
-
     if ($p{once} && $def && $p{create} >= Class::Meta::SET) {
         # No need to generate a mutator for required values that can only be
         # set once.

@@ -11,7 +11,6 @@ Revision history for Perl extension Class::Meta.
       - Added "once" attribute to Class::Meta::Attribute. This attribute
         indicates whether an attribute value can be set to a defined value
         only once.
-      - Required attributes now must have a defined default value.
       - Renamed the call_get() and call_set() methods of
         Class::Meta::Attribute to simply get() and set().
 

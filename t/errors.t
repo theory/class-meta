@@ -1,12 +1,12 @@
 #!perl -w
 
-# $Id: errors.t,v 1.2 2004/01/28 02:09:04 david Exp $
+# $Id: errors.t,v 1.3 2004/01/28 21:45:33 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 use strict;
-use Test::More tests => 193;
+use Test::More tests => 189;
 
 BEGIN {
     main::use_ok('Class::Meta');
@@ -54,10 +54,6 @@ chk('Attribute name required',
 eval { $cm->add_attribute(name => 'fo&o') };
 chk('Invalid attribute name',
     qr/Attribute 'fo&o' is not a valid attribute name/);
-
-eval { $cm->add_attribute( name => 'whoohoo', type => 'int', required => 1 ) };
-chk('Required without default',
-    qr/Required attributes must have a default value/);
 
 # Create an attribute to use for a few tests. It's private so that there are
 # no accessors.
