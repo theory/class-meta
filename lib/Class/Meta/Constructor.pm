@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.6 2003/11/21 23:03:16 david Exp $
+# $Id: Constructor.pm,v 1.7 2003/11/21 23:04:02 david Exp $
 
 use strict;
 
@@ -113,7 +113,7 @@ sub new {
       if exists $spec->{ctors}{$p{name}}
       || exists $spec->{meths}{$p{name}};
 
-    # Check the viewibility.
+    # Check the visibility.
     if (exists $p{view}) {
         Carp::croak("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
