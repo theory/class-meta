@@ -1,12 +1,12 @@
 #!perl -w
 
-# $Id: errors.t,v 1.4 2004/04/18 23:37:35 david Exp $
+# $Id: errors.t,v 1.5 2004/04/19 22:43:26 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 use strict;
-use Test::More tests => 189;
+use Test::More tests => 198;
 
 BEGIN {
     main::use_ok('Class::Meta');
@@ -226,6 +226,28 @@ chk('No attr set', qr/No such function 'NoAttrSet::build_attr_set\(\)'/);
 
 eval { Class::Meta::Type->build };
 chk('Type->build protected', qr/ cannot call Class::Meta::Type->build/);
+
+eval { Class::Meta->default_error_handler('') };
+chk('Bad error handler', qr/Error handler must be a code reference/);
+
+my $foo;
+Class::Meta->default_error_handler(sub { $foo = shift });
+
+# Some places still use the default, of course.
+eval {
+    Class::Meta::Type->add( key => 'foo',
+                            name => 'foo',
+                            builder => 'NoAttrSet');
+};
+like( $foo, qr/No such function 'NoAttrSet::build_attr_set\(\)'/,
+      "New error handler");
+
+# Others muse use the original, since the class object was defined before
+# we set up the new default.
+
+eval { $cm->class->build };
+chk('Class->build still protected',
+    qr/ cannot call Class::Meta::Class->build/);
 
 ##############################################################################
 # This function handles all the tests.
