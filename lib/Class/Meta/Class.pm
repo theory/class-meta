@@ -256,6 +256,23 @@ sub methods {
 
 ##############################################################################
 
+=head3 parents
+
+  my @parents = $class->parents;
+
+Returns a list of Class::Meta::Class objects representing all of the
+Class::Meta-built parent classes of a class.
+
+=cut
+
+sub parents {
+    my $self = shift;
+    return map { $_->my_class } grep { UNIVERSAL::can($_, 'my_class') }
+      Class::ISA::super_path($self->package);
+}
+
+##############################################################################
+
 =head3 handle_error
 
   $class->handle_error($error)

@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.9 2004/06/17 00:07:33 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 127;
+use Test::More tests => 129;
 
 ##############################################################################
 # Create a simple class.
@@ -160,6 +160,7 @@ ok( my $one_class = Test::One->my_class, "Get One's Class object" );
 isa_ok( $one_class, 'Class::Meta::Class' );
 ok( $one_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( ! $one_class->is_a('Test::Two'), "Check it's not for Test::Two" );
+ok( ! $one_class->parents, "Check that One has no parents" );
 
 # Check One's attributes.
 ok( my @one_attributes = $one_class->attributes, "Get attributes" );
@@ -173,6 +174,7 @@ ok( my $two_class = Test::Two->my_class, "Get Two's Class object" );
 isa_ok( $two_class, 'Class::Meta::Class' );
 ok( $two_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( $two_class->is_a('Test::Two'), "Check it's for Test::Two" );
+is( ($two_class->parents)[0], $one_class, "Check that Two has One for a parent" );
 
 # Check Two's attributes.
 ok( my @two_attributes = $two_class->attributes, "Get attributes" );
