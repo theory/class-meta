@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.45 2004/09/20 06:30:03 david Exp $
+# $Id$
 
 =head1 NAME
 
@@ -53,7 +53,7 @@ my %def_builders = (
 );
 
 # This code ref builds object/reference value checkers.
-my $mk_isachk = sub {
+my $class_validation_generator = sub {
     my ($pkg, $type) = @_;
     return [
         sub {
@@ -82,10 +82,14 @@ my $mk_isachk = sub {
   my $type = Class::Meta::Type->new($key);
 
 Returns the data type definition for an existing data type. The definition
-will be looked up by the C<$key> argument. By default, Class::Meta::Type
-offers only a single data type: "scalar". Other data types can be added by
-means of the C<add()> constructor, or by simply C<use>ing one or more of the
-following modules:
+will be looked up by the C<$key> argument. Use C<add()> to specify new types.
+If no data type exists for a given key, but C<< Class::Meta->for_key >>
+returns a Class::Meta::Class object for that key, then C<new()> will
+implicitly call C<add()> to create add a new type corresponding to that
+class. This makes it easy to use any Class::Meta class as a data type.
+
+Other data types can be added by means of the C<add()> constructor, or by
+simply C<use>ing one or more of the following modules:
 
 =over 4
 
@@ -145,11 +149,22 @@ types.
 =cut
 
     sub new {
-        my $key = lc $_[1]
+        my $class = shift;
+        my $key = lc shift
           || Class::Meta->handle_error("Type argument required");
-        Class::Meta->handle_error("Type '$_[1]' does not exist")
-            unless $types{$key};
-        return bless $types{$key}, ref $_[0] || $_[0];
+        unless (exists $types{$key}) {
+            # See if there's a Class::Meta class defined for this key.
+            my $cmc = Class::Meta->for_key($key)
+              or Class::Meta->handle_error("Type '$key' does not exist");
+
+            # Create a new type for this class.
+            return $class->add(
+                key   => $key,
+                name  => $cmc->package,
+                check => $cmc->package
+            );
+        }
+        return bless $types{$key}, $class;
     }
 
 ##############################################################################
@@ -240,15 +255,12 @@ As a string. In this case, Class::Meta::Type assumes that your data type
 identifies a particular object type. Thus it will use the string to construct
 a validation code reference for you. For example, if you wanted to create a
 data type for IO::Socket objects, pass the string 'IO::Socket' to the check
-parameter and Class::Meta::Type will create this validation code reference:
-
-  sub {
-      my $value = shift;
-      return if UNIVERSAL::isa($value, 'IO::Socket')
-      require Carp;
-      our @CARP_NOT = qw(Class::Meta::Attribute);
-      Carp::croak("Value '$value' is not a IO::Socket object");
-  };
+parameter and Class::Meta::Type will use the code reference returned by
+C<class_validation_generator()> to generate the validation checks. If you'd
+like to specify an alternative class validation code generator, pass one to
+the C<class_validation_generator()> class method. Or pass in a code reference
+or array reference of code reference as just described to use your own
+validator once.
 
 =back
 
@@ -337,8 +349,11 @@ accessor builders.
         if ($params{check}) {
             my $ref = ref $params{check};
             if (not $ref) {
-                # It names the object to be checked.
-                $params{check} = $mk_isachk->(@params{qw(check name)});
+                # It names the object to be checked. So generate a validator.
+                $params{check} =
+                  $class_validation_generator->(@params{qw(check name)});
+                $params{check} = [$params{check}]
+                  if ref $params{check} eq 'CODE';
             } elsif ($ref eq 'CODE') {
                 $params{check} = [$params{check}]
             } elsif ($ref eq 'ARRAY') {
@@ -383,6 +398,63 @@ accessor builders.
         }
         return $pkg->new($params{key});
     }
+}
+
+##############################################################################
+
+=head3 class_validation_generator
+
+  my $gen = Class::Meta::Type->class_validation_generator;
+  Class::Meta::Type->class_validation_generator( sub {
+      my ($pkg, $name) = @_;
+      return sub {
+          die "'$pkg' is not a valid $name"
+            unless UNIVERSAL::isa($pkg, $name);
+      };
+  });
+
+Gets or sets a code reference that will be used to generate the validation
+checks for class data types. That is to say, it will be used when a string is
+passed to the C<checks> parameter to <add()> to generate the validation
+checking code for data types that are objects. By default, it will generate a
+validation checker like this:
+
+  sub {
+      my $value = shift;
+      return if UNIVERSAL::isa($value, 'IO::Socket')
+      require Carp;
+      our @CARP_NOT = qw(Class::Meta::Attribute);
+      Carp::croak("Value '$value' is not a IO::Socket object");
+  };
+
+But if you'd like to specify an alternate validation check generator--perhaps
+you'd like to throw exception objects rather than use Carp--just pass a code
+reference to this class method. The code reference should expect two
+arguments: the data type value to be validated, and the string passed via the
+C<checks> parameter to C<add()>. It should return a code reference or array of
+code references that validate the value. For example, you might want to do
+something like this to throw exception objects:
+
+  use Exception::Class('MyException');
+
+  Class::Meta::Type->class_validation_generator( sub {
+      my ($pkg, $type) = @_;
+      return [ sub {
+          my ($value, $object, $attr) = @_;
+          MyException->throw("Value '$value' is not a valid $type")
+            unless UNIVERSAL::isa($value, $pkg);
+      } ];
+  });
+
+But if the default object data type validator is good enough for you, don't
+worry about it.
+
+=cut
+
+sub class_validation_generator {
+    my $class = shift;
+    return $class_validation_generator unless @_;
+    $class_validation_generator = shift;
 }
 
 ##############################################################################

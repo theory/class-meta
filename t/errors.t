@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: errors.t,v 1.15 2004/09/20 06:22:38 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
@@ -55,12 +55,12 @@ package main;
 
 ##############################################################################
 # Test Class::Meta errors.
-eval { Class::Meta->new('foo') };
+eval { Class::Meta->new('foobar') };
 chk('odd number to Class::Meta->new',
     qr/Odd number of parameters in call to new()/);
 
-my $cm = Class::Meta->new( package => 'foo' );
-eval { Class::Meta->new( package => 'foo' ) };
+my $cm = Class::Meta->new( package => 'foobar' );
+eval { Class::Meta->new( package => 'foobar' ) };
 
 ##############################################################################
 # Test Class::Meta::Attribute errors.
@@ -111,8 +111,8 @@ eval { Class::Meta::Class->new };
 chk('Class->new protected',
     qr/ cannot create Class::Meta::Class objects/);
 
-eval { Class::Meta->new( package => 'foo' ) };
-chk('Duplicate class', qr/Class object for class 'foo' already exists/);
+eval { Class::Meta->new( package => 'foobar' ) };
+chk('Duplicate class', qr/Class object for class 'foobar' already exists/);
 
 eval { $cm->class->build };
 chk('Class->build protected',
