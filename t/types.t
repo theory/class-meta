@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types.t,v 1.7 2004/01/07 07:12:03 david Exp $
+# $Id: types.t,v 1.8 2004/01/08 00:19:48 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -15,7 +15,6 @@ use Test::More tests => 56;
 
 package Class::Meta::TestTypes;
 use strict;
-use IO::Socket;
 
 BEGIN {
     $SIG{__DIE__} = \&Carp::confess;
@@ -25,15 +24,15 @@ BEGIN {
     main::use_ok( 'Class::Meta::Types::Perl');
     main::use_ok( 'Class::Meta::Types::String');
     main::use_ok( 'Class::Meta::Types::Boolean');
+    @Bart::ISA = qw(Simpson);
 }
 
 BEGIN {
     # Add the new data type.
-    Class::Meta::Type->add( key       => 'io_handle',
-                            name      => 'IO Handle',
-                            desc      => 'An IO::Handle object.',
-                            check     => 'IO::Handle',
-                            converter => sub { IO::Handle->new }
+    Class::Meta::Type->add( key       => 'simpson',
+                            name      => 'Simpson',
+                            desc      => 'An Simpson object.',
+                            check     => 'Simpson',
                         );
 
     my $c = Class::Meta->new(package => __PACKAGE__,
@@ -143,14 +142,14 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'io_handle',
+    $c->add_attr( name  => 'simpson',
                   view   => Class::Meta::PUBLIC,
-                  type  => 'io_handle',
-                  label => 'An IO::Handle Object',
+                  type  => 'simpson',
+                  label => 'A Simpson Object',
                   field => 'text',
-                  desc  => 'An IO::Handle object.',
+                  desc  => 'A Simpson object.',
                   required   => 0,
-                  default => sub { IO::Handle->new },
+                  default => sub { bless {}, 'Simpson' },
                   create   => Class::Meta::GETSET
               );
     $c->build;
@@ -232,25 +231,25 @@ like( $err, qr/^Value '\+' is not a valid floating point number/,
 ok( $t->float(1.23e99), 'float to 1.23e99.');
 
 # Test OBJECT with default specifying object type.
-ok( my $io = $t->io_handle, 'io_handle' );
-isa_ok($io, 'IO::Handle');
-eval { $t->io_handle('foo') };
-ok( $err = $@, 'io_handle to "foo" croaks' );
-like( $err, qr/^Value 'foo' is not a valid IO Handle/,
+ok( my $simpson = $t->simpson, 'simpson' );
+isa_ok($simpson, 'Simpson');
+eval { $t->simpson('foo') };
+ok( $err = $@, 'simpson to "foo" croaks' );
+like( $err, qr/^Value 'foo' is not a valid Simpson/,
      'correct object exception' );
 
 # Try a wrong object.
-eval { $t->io_handle($t) };
-ok( $err = $@, 'io_handle to \$fh croaks' );
-like( $err, qr/^Value '.*' is not a valid IO Handle/,
+eval { $t->simpson($t) };
+ok( $err = $@, 'simpson to \$fh croaks' );
+like( $err, qr/^Value '.*' is not a valid Simpson/,
      'correct object exception' );
-ok( $t->io_handle($io), 'io_handle to \$io.');
+ok( $t->simpson($simpson), 'simpson to \$simpson.');
 
 # Try a subclass.
-my $sock = IO::Socket->new;
-ok( $t->io_handle($sock), "Set io_handle to a subclass." );
-isa_ok($t->io_handle, 'IO::Socket', "Check subclass" );
-ok( $t->io_handle($io), 'io_handle to \$io.');
+my $bart = bless {}, 'Bart';
+ok( $t->simpson($bart), "Set simpson to a subclass." );
+isa_ok($t->simpson, 'Bart', "Check subclass" );
+ok( $t->simpson($simpson), 'simpson to \$simpson.');
 
 # Test SCALAR.
 eval { $t->scalar('foo') };

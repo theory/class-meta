@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.15 2004/01/07 07:12:03 david Exp $
+# $Id: base.t,v 1.16 2004/01/08 00:19:48 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -15,7 +15,6 @@ use Test::More tests => 94;
 
 package Class::Meta::TestPerson;
 use strict;
-use IO::Socket;
 use Carp;
 
 BEGIN {

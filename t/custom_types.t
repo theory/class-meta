@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_types.t,v 1.6 2003/11/22 00:33:27 david Exp $
+# $Id: custom_types.t,v 1.7 2004/01/08 00:19:48 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -15,7 +15,6 @@ use Test::More tests => 7;
 
 package Class::Meta::TestIP;
 use strict;
-use Socket;
 use Carp;
 
 BEGIN {
@@ -67,7 +66,6 @@ BEGIN {
 }
 
 package main;
-use Socket;
 
 # Instantiate an object and test its accessors.
 ok( my $t = Class::Meta::TestIP->new, 'Class::Meta::TestIP->new');
