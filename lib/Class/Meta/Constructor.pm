@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.10 2003/11/22 02:55:14 david Exp $
+# $Id: Constructor.pm,v 1.11 2003/11/24 01:47:40 david Exp $
 
 use strict;
 
@@ -224,17 +224,25 @@ sub build {
         no strict 'refs';
         *{"$spec->{package}::" . $self->my_name } = sub {
             my $class = shift;
-            my $init = {@_};
+            # Just grab the attributes and let an error be thrown by Perl
+            # if there aren't the right number of them.
+            my %p = @_;
             my $new = bless {}, ref $class || $class;
 
             # Assign all of the attribute values.
             foreach my $attr (values %{ $spec->{attrs} }) {
-                next unless $attr->my_authz >= Class::Meta::SET;
-                $attr->call_set($new, exists $init->{$attr->my_name}
-                                ? $init->{$attr->my_name}
-                                : $attr->my_default);
+                my $key = $attr->my_name;
+                if ($attr->my_authz >= Class::Meta::SET) {
+                    # Let them set the value.
+                    $attr->call_set($new, exists $p{$key}
+                                    ? $p{$key}
+                                    : $attr->my_default);
+                } else {
+                    # Use the default value.
+                    $new->{$key} = $attr->my_default;
+                }
             }
-            if (my @attrs = keys %$init) {
+            if (my @attrs = keys %p) {
                 # Attempts to assign to non-existent attributes fail.
                 my $c = $#attrs > 0 ? 'attributes' : 'attribute';
                 local $" = "', '";
