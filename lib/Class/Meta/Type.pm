@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.13 2004/01/07 07:12:03 david Exp $
+# $Id: Type.pm,v 1.14 2004/01/07 23:42:49 david Exp $
 
 =head1 NAME
 
@@ -370,6 +370,15 @@ before creating your own.
 
         # Okay, add the new type to the cache and construct it.
         $types{$params{key}} = \%params;
+
+        # Grab any aliases.
+        if (my $alias = delete $params{alias}) {
+            if (ref $alias) {
+                $types{$_} = \%params for @$alias;
+            } else {
+                $types{$alias} = \%params;
+            }
+        }
         return $pkg->new($params{key});
     }
 }
@@ -478,16 +487,6 @@ sub make_attr_get {
     my $code = $self->{attr_get};
     $code->(@_);
 }
-
-##############################################################################
-# Add the default data types.
-
-__PACKAGE__->add(
-    key            => "scalar",
-    name           => "Scalar",
-    desc           => "Scalar",
-    check          => undef,
-);
 
 1;
 __END__

@@ -63,6 +63,7 @@ sub build {
         key     => "boolean",
         name    => "Boolean",
         desc    => "Boolean",
+        alias   => 'bool',
         builder => __PACKAGE__
     );
 }

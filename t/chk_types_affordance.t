@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: chk_types.t,v 1.6 2004/01/07 23:42:50 david Exp $
+# $Id: chk_types_affordance.t,v 1.1 2004/01/07 23:42:50 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -9,15 +9,15 @@
 package Class::Meta::Testing;
 
 use strict;
-use Test::More tests => 183;
+use Test::More tests => 196;
 BEGIN {
     $SIG{__DIE__} = \&Carp::confess;
     use_ok( 'Class::Meta');
     use_ok( 'Class::Meta::Type');
-    use_ok( 'Class::Meta::Types::Numeric');
-    use_ok( 'Class::Meta::Types::Perl');
-    use_ok( 'Class::Meta::Types::String');
-    use_ok( 'Class::Meta::Types::Boolean');
+    use_ok( 'Class::Meta::Types::Numeric', 'affordance');
+    use_ok( 'Class::Meta::Types::Perl', 'affordance');
+    use_ok( 'Class::Meta::Types::String', 'affordance');
+    use_ok( 'Class::Meta::Types::Boolean', 'affordance');
     our @ISA = qw(Class::Meta::Attribute);
 }
 
@@ -41,15 +41,17 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple string set" );
-ok( my $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "String accessor exists");
+ok( my $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "String mutator exists");
+ok( my $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "String getter exists");
 
 # Test it.
-ok( $obj->$acc('test'), "Set string value" );
+ok( $obj->$mut('test'), "Set string value" );
 is( $obj->$acc, 'test', "Check string value" );
 
 # Make it fail the checks.
-eval { $obj->$acc([]) };
+eval { $obj->$mut([]) };
 ok( my $err = $@, "Got invalid string error" );
 like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
@@ -76,12 +78,18 @@ ok( ! defined $type->check, "Check boolean check" );
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple boolean set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Boolean accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i\_on"),
+    "Boolean on mutator exists");
+ok( my $off = UNIVERSAL::can(__PACKAGE__, "set_$attr$i\_off"),
+    "Boolean off mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "is_$attr$i"),
+    "Boolean mutator exists");
 
 # Test it.
-ok( $obj->$acc('test'), "Set boolean value" );
-is( $obj->$acc, 1, "Check boolean value" );
+ok( $obj->$mut, "Set boolean value on" );
+is( $obj->$acc, 1, "Check boolean value on" );
+$obj->$off; # Set boolean value off.
+is( $obj->$acc, 0, "Check boolean value off" );
 
 # And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
@@ -89,9 +97,9 @@ ok( $set = $type->make_attr_set($attr . $i), "Check boolean attr_set" );
 ok( $get = $type->make_attr_get($attr . $i), "Check boolean attr_get" );
 
 # Make sure they get and set values correctly.
-is( $get->($obj), 1, "Check boolean getter" );
-$set->($obj, '');
-is( $get->($obj), 0, "Check boolean getter again" );
+is( $get->($obj), 0, "Check boolean getter" );
+$set->($obj, 12);
+is( $get->($obj), 1, "Check boolean getter again" );
 
 ##############################################################################
 # Check whole data type.
@@ -107,14 +115,17 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple whole set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i), "Whole accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Whole mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Whole getter exists");
 
 # Test it.
-ok( $obj->$acc(12), "Set whole value" );
+ok( $obj->$mut(12), "Set whole value" );
 is( $obj->$acc, 12, "Check whole value" );
 
 # Make it fail the checks.
-eval { $obj->$acc(-12) };
+eval { $obj->$mut(-12) };
 ok( $err = $@, "Got invalid whole error" );
 like( $err, qr/^Value .* is not a valid whole number/,
       'correct whole exception' );
@@ -144,15 +155,17 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple integer set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Integer accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Integer mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Integer getter exists");
 
 # Test it.
-ok( $obj->$acc(12), "Set integer value" );
+ok( $obj->$mut(12), "Set integer value" );
 is( $obj->$acc, 12, "Check integer value" );
 
 # Make it fail the checks.
-eval { $obj->$acc(12.2) };
+eval { $obj->$mut(12.2) };
 ok( $err = $@, "Got invalid integer error" );
 like( $err, qr/^Value .* is not a valid integer/,
       'correct integer exception' );
@@ -182,15 +195,17 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple decimal set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Decimal accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Decimal mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Decimal getter exists");
 
 # Test it.
-ok( $obj->$acc(12.2), "Set decimal value" );
+ok( $obj->$mut(12.2), "Set decimal value" );
 is( $obj->$acc, 12.2, "Check decimal value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid decimal error" );
 like( $err, qr/^Value .* is not a valid decimal/,
       'correct decimal exception' );
@@ -219,15 +234,17 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple float set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Float accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Float mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Float getter exists");
 
 # Test it.
-ok( $obj->$acc(1.23e99), "Set float value" );
+ok( $obj->$mut(1.23e99), "Set float value" );
 is( $obj->$acc, 1.23e99, "Check float value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid float error" );
 like( $err, qr/^Value .* is not a valid float/,
       'correct float exception' );
@@ -254,11 +271,13 @@ ok( ! defined $type->check, "Check scalar check" );
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple scalar set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Scalar accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Scalar mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Scalar getter exists");
 
 # Test it.
-ok( $obj->$acc('foo'), "Set scalar value" );
+ok( $obj->$mut('foo'), "Set scalar value" );
 is( $obj->$acc, 'foo', "Check scalar value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
@@ -285,16 +304,18 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple scalarref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Scalarref accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Scalarref mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Scalarref getter exists");
 
 # Test it.
 my $sref = \"foo";
-ok( $obj->$acc($sref), "Set scalarref value" );
+ok( $obj->$mut($sref), "Set scalarref value" );
 is( $obj->$acc, $sref, "Check scalarref value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid scalarref error" );
 like( $err, qr/^Value .* is not a valid Scalar Reference/,
       'correct scalarref exception' );
@@ -325,16 +346,18 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple arrayref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Arrayref accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Arrayref mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Arrayref getter exists");
 
 # Test it.
 my $aref = [1,2,3];
-ok( $obj->$acc($aref), "Set arrayref value" );
+ok( $obj->$mut($aref), "Set arrayref value" );
 is( $obj->$acc, $aref, "Check arrayref value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid arrayref error" );
 like( $err, qr/^Value .* is not a valid Array Reference/,
       'correct arrayref exception' );
@@ -365,16 +388,18 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple hashref set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Hashref accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Hashref mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Hashref getter exists");
 
 # Test it.
 my $href = {};
-ok( $obj->$acc($href), "Set hashref value" );
+ok( $obj->$mut($href), "Set hashref value" );
 is( $obj->$acc, $href, "Check hashref value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid hashref error" );
 like( $err, qr/^Value .* is not a valid Hash Reference/,
       'correct hashref exception' );
@@ -406,16 +431,18 @@ foreach my $chk (@{ $type->check }) {
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
     "Make simple coderef set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "Coderef accessor exists");
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Coderef mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Coderef getter exists");
 
 # Test it.
 my $cref = sub {};
-ok( $obj->$acc($cref), "Set coderef value" );
+ok( $obj->$mut($cref), "Set coderef value" );
 is( $obj->$acc, $cref, "Check coderef value" );
 
 # Make it fail the checks.
-eval { $obj->$acc('foo') };
+eval { $obj->$mut('foo') };
 ok( $err = $@, "Got invalid coderef error" );
 like( $err, qr/^Value .* is not a valid Code Reference/,
       'correct coderef exception' );

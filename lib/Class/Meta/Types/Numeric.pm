@@ -40,6 +40,7 @@ sub import {
         key     => "integer",
         name    => "Integer",
         desc    => "Integer",
+        alias   => 'int',
         builder => $builder,
         check   => $mk_chk->(\&Data::Types::is_int, 'integer'),
     );
@@ -48,6 +49,7 @@ sub import {
         key     => "decimal",
         name    => "Decimal Number",
         desc    => "Decimal number",
+        alias   => 'dec',
         builder => $builder,
         check   => $mk_chk->(\&Data::Types::is_decimal, 'decimal number'),
     );
