@@ -1,6 +1,6 @@
 package Class::Meta::Types::String;
 
-# $Id: String.pm,v 1.5 2004/01/09 04:14:46 david Exp $
+# $Id: String.pm,v 1.6 2004/01/10 01:58:11 david Exp $
 
 =head1 NAME
 
@@ -61,14 +61,18 @@ sub import {
 1;
 __END__
 
-=head1 AUTHOR
+=head1 DISTRIBUTION INFORMATION
 
-David Wheeler <david@kineticode.com>
+This file was packaged with the Class-Meta-0.11 distribution.
 
 =head1 BUGS
 
 Please report all bugs via the CPAN Request Tracker at
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+
+=head1 AUTHOR
+
+David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.55 2004/01/09 17:06:16 david Exp $
+# $Id: Meta.pm,v 1.56 2004/01/10 01:58:11 david Exp $
 
 =head1 NAME
 
@@ -899,14 +899,18 @@ Add errors for calling protected and private methods where one shouldn't.
 
 =back
 
-=head1 AUTHOR
+=head1 DISTRIBUTION INFORMATION
 
-David Wheeler <david@kineticode.com>
+This file was packaged with the Class-Meta-0.11 distribution.
 
 =head1 BUGS
 
 Please report all bugs via the CPAN Request Tracker at
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+
+=head1 AUTHOR
+
+David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
