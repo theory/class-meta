@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.13 2004/01/20 21:34:48 david Exp $
+# $Id: AccessorBuilder.pm,v 1.14 2004/01/20 22:36:44 david Exp $
 
 =head1 NAME
 
@@ -127,7 +127,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.13";
+our $VERSION = "0.14";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -250,7 +250,7 @@ sub build {
         }
     }
 
-    # Add public an private checks, if required.
+    # Add public and private checks, if required.
     if ($attr->view == Class::Meta::PROTECTED) {
         my $real_sub = $sub;
          $sub = sub {
@@ -259,7 +259,7 @@ sub build {
              for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                  $caller = caller($i);
              }
-             $croak->("$name is a protected attribute of $pkg!")
+             $croak->("$name is a protected attribute of $pkg")
                unless UNIVERSAL::isa($caller, $pkg);
              goto &$real_sub;
         };
@@ -271,7 +271,7 @@ sub build {
              for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                  $caller = caller($i);
              }
-             $croak->("$name is a private attribute of $pkg!")
+             $croak->("$name is a private attribute of $pkg")
                unless $caller eq $pkg;
              goto &$real_sub;
          };
@@ -287,7 +287,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.13 distribution.
+This file was packaged with the Class-Meta-0.14 distribution.
 
 =head1 BUGS
 

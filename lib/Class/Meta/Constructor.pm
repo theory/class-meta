@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.32 2004/01/20 21:34:48 david Exp $
+# $Id: Constructor.pm,v 1.33 2004/01/20 22:36:44 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.13";
+our $VERSION = "0.14";
 
 ##############################################################################
 # Private Package Globals
@@ -99,11 +99,8 @@ sub new {
     if ($p{caller}) {
         my $ref = ref $p{caller};
         $croak->("Parameter caller must be a code reference")
-          unless $ref && $ref eq 'CODE'
-      } else {
-          $p{caller} = eval "sub { shift->$p{name}(\@_) }"
-            if $p{view} > Class::Meta::PRIVATE;
-      }
+          unless $ref && $ref eq 'CODE';
+    }
 
     # Create and cache the constructor object.
     $p{package} = $spec->{package};
@@ -210,8 +207,9 @@ sub build {
 
     # Build a construtor that takes a parameter list and assigns the
     # the values to the appropriate attributes.
-    no strict 'refs';
-    *{"$self->{package}::" . $self->name } = sub {
+    my $name = $self->name;
+
+    my $sub = sub {
         my $class = ref $_[0] ? ref shift : shift;
         my $spec = $specs->{$class};
 
@@ -245,6 +243,30 @@ sub build {
         }
         return $new;
     };
+
+    # Add public and private checks, if required.
+    if ($self->view == Class::Meta::PROTECTED) {
+        my $real_sub = $sub;
+        my $pkg = $self->package;
+         $sub = sub {
+             $croak->("$name is a protected constrctor of $pkg")
+               unless caller->isa($pkg);
+             goto &$real_sub;
+        };
+    } elsif ($self->view == Class::Meta::PRIVATE) {
+        my $real_sub = $sub;
+        my $pkg = $self->package;
+        $sub = sub {
+             $croak->("$name is a private constructor of $pkg")
+               unless caller eq $pkg;
+             goto &$real_sub;
+         };
+    }
+
+    # Install the constructor.
+    $self->{caller} ||= $sub;
+    no strict 'refs';
+    *{"$self->{package}::$name"} = $sub;
 }
 
 1;
@@ -252,7 +274,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.13 distribution.
+This file was packaged with the Class-Meta-0.14 distribution.
 
 =head1 BUGS
 

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.34 2004/01/20 21:34:48 david Exp $
+# $Id: Attribute.pm,v 1.35 2004/01/20 22:36:44 david Exp $
 
 =head1 NAME
 
@@ -366,7 +366,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.13 distribution.
+This file was packaged with the Class-Meta-0.14 distribution.
 
 =head1 BUGS
 

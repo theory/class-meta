@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: view.t,v 1.1 2004/01/20 21:15:01 david Exp $
+# $Id: view.t,v 1.2 2004/01/20 22:36:44 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 116;
+use Test::More tests => 214;
 
 ##############################################################################
 # Create a simple class.
@@ -35,6 +35,18 @@ BEGIN {
     ok( $c->add_constructor( name => 'new',
                              create  => 1 ),
         "Add new constructor" );
+
+    # Add a protected constructor.
+    ok( $c->add_constructor( name    => 'prot_new',
+                             view    => Class::Meta::PROTECTED,
+                             create  => 1 ),
+        "Add protected constructor" );
+
+    # Add a private constructor.
+    ok( $c->add_constructor( name    => 'priv_new',
+                             view    => Class::Meta::PRIVATE,
+                             create  => 1 ),
+        "Add private constructor" );
 
     # Add a couple of attributes with created methods.
     ok( $c->add_attribute( name     => 'id',
@@ -121,6 +133,52 @@ is( $obj->id, 10, 'Check 10 ID' );
 is( $obj->name, 'Damian', 'Check Damian name' );
 is( $obj->age, 35, 'Check 35 age' );
 
+# Make sure that we can set all of the attributes via prot_new().
+ok( $obj = __PACKAGE__->prot_new( id   => 10,
+                                  name => 'Damian',
+                                  age  => 35),
+    "Create another prot_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+is( $obj->age, 35, 'Check 35 age' );
+
+# Do the same with the constructor object.
+ok( $ctor = $class->constructors('prot_new'),
+    'Get "prot_new" constructor object' );
+ok( $obj = $ctor->call(__PACKAGE__,
+                       id   => 10,
+                       name => 'Damian',
+                       age  => 35),
+    "Create another prot_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+is( $obj->age, 35, 'Check 35 age' );
+
+# Make sure that we can set all of the attributes via priv_new().
+ok( $obj = __PACKAGE__->priv_new( id   => 10,
+                                  name => 'Damian',
+                                  age  => 35),
+    "Create another priv_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+is( $obj->age, 35, 'Check 35 age' );
+
+# Do the same with the constructor object.
+ok( $ctor = $class->constructors('priv_new'),
+    'Get "priv_new" constructor object' );
+ok( $obj = $ctor->call(__PACKAGE__,
+                       id   => 10,
+                       name => 'Damian',
+                       age  => 35),
+    "Create another priv_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+is( $obj->age, 35, 'Check 35 age' );
+
 ##############################################################################
 # Set up an inherited package.
 ##############################################################################
@@ -156,24 +214,20 @@ is( $attr->call_get($obj), 'Chip', 'Check indirect "chip" name' );
 
 # Check age private attribute
 eval { $obj->age(12) };
-ok( my $err = $@, 'Catch private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private exception');
+main::chk( 'private exception',
+           qr/age is a private attribute of Class::Meta::Test/);
 eval { $obj->age };
-ok( $err = $@, 'Catch another private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private exception again');
+main::chk( 'private exception again',
+           qr/age is a private attribute of Class::Meta::Test/);
 
 # Check that age fails when accessed indirectly, too.
 ok( $attr = $class->attributes('age'), 'Get "age" attribute object' );
 eval { $attr->call_set($obj, 12) };
-ok( $err = $@, 'Catch indirect private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirectprivate exception');
+main::chk('indirect private exception',
+          qr/age is a private attribute of Class::Meta::Test/);
 eval { $attr->call_get($obj) };
-ok( $err = $@, 'Catch another indirect private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirect private exception again');
+main::chk('another indirect private exception',
+          qr/age is a private attribute of Class::Meta::Test/);
 
 # Make sure that we can set protected attributes via new().
 ok( $obj = __PACKAGE__->new( id   => 10,
@@ -185,11 +239,10 @@ is( $obj->name, 'Damian', 'Check Damian name' );
 
 # Make sure that the private attribute fails.
 eval { __PACKAGE__->new( age => 44 ) };
-ok( $err = $@, 'Catch constructor private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private constructor exception');
+main::chk('constructor private exception',
+          qr/age is a private attribute of Class::Meta::Test/);
 
-# Do the same with the constructor object.
+# Do the same with the new constructor object.
 ok( $ctor = $class->constructors('new'), 'Get "new" constructor object' );
 ok( $obj = $ctor->call(__PACKAGE__,
                        id   => 10,
@@ -201,10 +254,49 @@ is( $obj->name, 'Damian', 'Check Damian name' );
 
 # Make sure that the private attribute fails.
 eval { $ctor->call(__PACKAGE__, age => 44 ) };
-ok( $err = $@, 'Catch indirect constructor private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirect private constructor exception');
+main::chk('indirect constructor private exception',
+      qr/age is a private attribute of Class::Meta::Test/);
 
+# Make sure that we can set protected attributes via prot_new().
+ok( $obj = __PACKAGE__->prot_new( id   => 10,
+                             name => 'Damian'),
+    "Create another prot_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+
+# Make sure that the private attribute fails.
+eval { __PACKAGE__->prot_new( age => 44 ) };
+main::chk('constructor private exception',
+      qr/age is a private attribute of Class::Meta::Test/);
+
+# Do the same with the prot_new constructor object.
+ok( $ctor = $class->constructors('prot_new'),
+    'Get "prot_new" constructor object' );
+ok( $obj = $ctor->call(__PACKAGE__,
+                       id   => 10,
+                       name => 'Damian'),
+    "Create another prot_new object" );
+
+is( $obj->id, 10, 'Check 10 ID' );
+is( $obj->name, 'Damian', 'Check Damian name' );
+
+# Make sure that the private attribute fails.
+eval { $ctor->call(__PACKAGE__, age => 44 ) };
+main::chk('indirect constructor private exception',
+          qr/age is a private attribute of Class::Meta::Test/);
+
+# Make sure that the private constructor fails.
+eval { __PACKAGE__->priv_new };
+main::chk('priv_new exeption',
+          qr/priv_new is a private constructor of Class::Meta::Test/);
+
+# Make sure the same is true of the priv_new constructor object.
+ok( $ctor = $class->constructors('priv_new'),
+    'Get "priv_new" constructor object' );
+eval { $ctor->call(__PACKAGE__) };
+main::chk('indirect priv_new exeption',
+          qr/priv_new is a private constructor of Class::Meta::Test/);
 
 ##############################################################################
 # Now do test in a completely independent package.
@@ -225,45 +317,37 @@ is( $attr->call_get($obj), 15, "Check indirect 15 ID" );
 
 # Check name protected attribute
 eval { $obj->name('foo') };
-ok( $err = $@, 'Catch protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct protected exception');
+chk('protected exception',
+    qr/name is a protected attribute of Class::Meta::Test/);
 eval { $obj->name };
-ok( $err = $@, 'Catch another protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct protected exception again');
+chk('another protected exception',
+    qr/name is a protected attribute of Class::Meta::Test/);
 
 # Check that name fails when accessed indirectly, too.
 ok( $attr = $class->attributes('name'), 'Get "name" attribute object' );
 eval { $attr->call_set($obj, 'foo') };
-ok( $err = $@, 'Catch indirect protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct indirectprotected exception');
+chk('indirect protected exception',
+    qr/name is a protected attribute of Class::Meta::Test/);
 eval { $attr->call_get($obj) };
-ok( $err = $@, 'Catch another indirect protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct indirect protected exception again');
+chk('another indirect protected exception',
+    qr/name is a protected attribute of Class::Meta::Test/);
 
 # Check age private attribute
 eval { $obj->age(12) };
-ok( $err = $@, 'Catch private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private exception');
+chk( 'private exception',
+     qr/age is a private attribute of Class::Meta::Test/ );
 eval { $obj->age };
-ok( $err = $@, 'Catch another private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private exception again');
+chk( 'another private exception',
+ qr/age is a private attribute of Class::Meta::Test/);
 
 # Check that age fails when accessed indirectly, too.
 ok( $attr = $class->attributes('age'), 'Get "age" attribute object' );
 eval { $attr->call_set($obj, 12) };
-ok( $err = $@, 'Catch indirect private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirectprivate exception');
+chk( 'indirect private exception',
+     qr/age is a private attribute of Class::Meta::Test/);
 eval { $attr->call_get($obj) };
-ok( $err = $@, 'Catch another indirect private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirect private exception again');
+chk( 'another indirect private exception',
+     qr/age is a private attribute of Class::Meta::Test/);
 
 # Try the constructor with parameters.
 ok( $obj = Class::Meta::Test->new( id => 1 ), "Create new object with id" );
@@ -275,21 +359,52 @@ is( $obj->id, 52, 'Check 52 ID' );
 
 # Make sure that the protected attribute fails.
 eval { Class::Meta::Test->new( name => 'foo' ) };
-ok( $err = $@, 'Catch constructor protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct protected constructor exception');
+chk( 'constructor protected exception',
+     qr/name is a protected attribute of Class::Meta::Test/ );
 eval { $ctor->call('Class::Meta::Test', name => 'foo' ) };
-ok( $err = $@, 'Catch indirect constructor protected exception');
-like( $err, qr/name is a protected attribute of Class::Meta::Test/,
-      'Correct indirect protected constructor exception');
+chk( 'indirect constructor protected exception',
+     qr/name is a protected attribute of Class::Meta::Test/);
 
 # Make sure that the private attribute fails.
 eval { Class::Meta::Test->new( age => 44 ) };
-ok( $err = $@, 'Catch constructor private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct private constructor exception');
+chk('constructor private exception',
+    qr/age is a private attribute of Class::Meta::Test/);
 eval { $ctor->call('Class::Meta::Test', age => 44 ) };
-ok( $err = $@, 'Catch indirect constructor private exception');
-like( $err, qr/age is a private attribute of Class::Meta::Test/,
-      'Correct indirect private constructor exception');
+chk( 'indirect constructor private exception',
+     qr/age is a private attribute of Class::Meta::Test/);
 
+# Make sure that the protected constructor fails.
+eval { Class::Meta::Test->prot_new };
+chk( 'prot_new exeption',
+     qr/prot_new is a protected constrctor of Class::Meta::Test/ );
+
+# Make sure the same is true of the prot_new constructor object.
+ok( $ctor = $class->constructors('prot_new'),
+    'Get "prot_new" constructor object' );
+eval { $ctor->call(__PACKAGE__) };
+chk( 'indirect prot_new exeption',
+     qr/prot_new is a protected constrctor of Class::Meta::Test/ );
+
+# Make sure that the private constructor fails.
+eval { Class::Meta::Test->priv_new };
+chk( 'priv_new exeption',
+     qr/priv_new is a private constructor of Class::Meta::Test/ );
+
+# Make sure the same is true of the priv_new constructor object.
+ok( $ctor = $class->constructors('priv_new'),
+    'Get "priv_new" constructor object' );
+eval { $ctor->call(__PACKAGE__) };
+chk( 'indirect priv_new exeption',
+     qr/priv_new is a private constructor of Class::Meta::Test/ );
+
+sub chk {
+    my ($name, $qr) = @_;
+    # Catch the exception.
+    ok( my $err = $@, "Caught $name error" );
+    # Check its message.
+    like( $err, $qr, "Correct error" );
+    # Make sure it refers to this file.
+    like( $err, qr|at t/view.t line|, 'Correct context' );
+    # Make sure it doesn't refer to other Class::Meta files.
+    unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
+}
