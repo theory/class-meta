@@ -1,5 +1,7 @@
 package Class::Meta;
 
+# $Id: Meta.pm,v 1.6 2002/05/10 22:49:10 david Exp $
+
 =head1 NAME
 
 Class::Meta - Class Automation and Introspection

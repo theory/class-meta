@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+# $Id: Makefile.PL,v 1.3 2002/05/10 22:49:10 david Exp $
+
 use strict;
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence

@@ -1,5 +1,7 @@
 package Class::Meta::Class;
 
+# $Id: Class.pm,v 1.4 2002/05/10 22:49:10 david Exp $
+
 use strict;
 use Carp ();
 use Class::Meta;

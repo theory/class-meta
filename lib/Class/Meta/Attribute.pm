@@ -1,5 +1,7 @@
 package Class::Meta::Property;
 
+# $Id: Attribute.pm,v 1.3 2002/05/10 22:49:10 david Exp $
+
 =head1 NAME
 
 Kinet::Meta::Prop - Objects describing Kinet object properties.
