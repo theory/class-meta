@@ -208,7 +208,7 @@ describes the class, and provides the complete introspection API.
 
 Thus, the class the above code creates has this interface:
 
-  sub class;
+  sub my_class;
   sub new;
   sub tail;
   sub wag;
@@ -225,7 +225,7 @@ appropriate module. The modules are:
 
 =over 4
 
-=item L<Class::Meta::Type::Perl|Class::Meta::Type::Perl>
+=item L<Class::Meta::Types::Perl|Class::Meta::Types::Perl>
 
 Typical Perl data types.
 
@@ -261,7 +261,7 @@ A code reference.
 
 =back
 
-=item L<Class::Meta::Type::String|Class::Meta::Type::String>
+=item L<Class::Meta::Types::String|Class::Meta::Types::String>
 
 =over 4
 
@@ -272,18 +272,20 @@ anything other than a reference.
 
 =back
 
-=item L<Class::Meta::Type::Boolean|Class::Meta::Type::Boolean>
+=item L<Class::Meta::Types::Boolean|Class::Meta::Types::Boolean>
 
 =over 4
 
 =item boolean
+
+=item bool
 
 Attributes of this type store a boolean value. Implementation-wise, this means
 either a 1 or a 0.
 
 =back
 
-=item L<Class::Meta::Type::Numeric|Class::Meta::Type::Numeric>
+=item L<Class::Meta::Types::Numeric|Class::Meta::Types::Numeric>
 
 These data types are validated by the functions provided by
 L<Data::Types|Data::Types>.
@@ -1113,13 +1115,13 @@ Other classes of interest within the Class::Meta distribution include:
 
 =item L<Class::Meta::Type|Class::Meta::Type>
 
-=item L<Class::Meta::Types::Perl|Class::Meta::Type::Perl>
+=item L<Class::Meta::Types::Perl|Class::Meta::Types::Perl>
 
-=item L<Class::Meta::Types::String|Class::Meta::Type::String>
+=item L<Class::Meta::Types::String|Class::Meta::Types::String>
 
-=item L<Class::Meta::Types::Boolean|Class::Meta::Type::Boolean>
+=item L<Class::Meta::Types::Boolean|Class::Meta::Types::Boolean>
 
-=item L<Class::Meta::Types::Numeric|Class::Meta::Type::Numeric>
+=item L<Class::Meta::Types::Numeric|Class::Meta::Types::Numeric>
 
 =back
 
