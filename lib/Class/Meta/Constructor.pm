@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.12 2003/11/24 01:48:57 david Exp $
+# $Id: Constructor.pm,v 1.13 2003/11/24 01:59:45 david Exp $
 
 use strict;
 
@@ -133,6 +133,8 @@ sub new {
           $p{caller} = eval "sub { shift->$p{name}(\@_) }";
       }
 
+    $p{package} = $spec->{package};
+
     # Create and cache the constructor object.
     $spec->{ctors}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
@@ -196,6 +198,8 @@ C<Class::Meta>.
 
 sub my_view { $_[0]->{view} }
 
+sub my_package { $_[0]->{package} }
+
 =head2 call
 
   my $ret = $ctor->call($obj);
@@ -210,7 +214,7 @@ sub call {
 }
 
 sub build {
-    my ($self, $spec) = @_;
+    my ($self, $specs) = @_;
 
     # Check to make sure that only Class::Meta or a subclass is building
     # constructors.
@@ -218,47 +222,43 @@ sub build {
     Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
-    if ($spec->{attrs}) {
-        # Build a construtor that takes a parameter list and assigns the
-        # the values to the appropriate attributes.
-        no strict 'refs';
-        *{"$spec->{package}::" . $self->my_name } = sub {
-            my $class = shift;
-            # Just grab the attributes and let an error be thrown by Perl
-            # if there aren't the right number of them.
-            my %p = @_;
-            my $new = bless {}, ref $class || $class;
+    # XXX Ack! This won't work, because it could be called from a subclass, and
+    # XXX we really need the list of attributes for the subclass. Fix this!
 
-            # Assign all of the attribute values.
-            foreach my $attr (values %{ $spec->{attrs} }) {
-                my $key = $attr->my_name;
-                if ($attr->my_authz >= Class::Meta::SET) {
-                    # Let them set the value.
-                    $attr->call_set($new, exists $p{$key}
-                                    ? delete $p{$key}
+    # Build a construtor that takes a parameter list and assigns the
+    # the values to the appropriate attributes.
+    no strict 'refs';
+    *{"$self->{package}::" . $self->my_name } = sub {
+        my $class = ref $_[0] ? ref shift : shift;
+        my $spec = $specs->{$class};
+
+        # Just grab the parameters and let an error be thrown by Perl
+        # if there aren't the right number of them.
+        my %p = @_;
+        my $new = bless {}, ref $class || $class;
+
+        # Assign all of the attribute values.
+        foreach my $attr (values %{ $spec->{attrs} } || ()) {
+            my $key = $attr->my_name;
+            if ($attr->my_authz >= Class::Meta::SET) {
+                # Let them set the value.
+                $attr->call_set($new, exists $p{$key}
+                                  ? delete $p{$key}
                                     : $attr->my_default);
-                } else {
+            } else {
                     # Use the default value.
-                    $new->{$key} = $attr->my_default;
-                }
+                $new->{$key} = $attr->my_default;
             }
-            if (my @attrs = keys %p) {
-                # Attempts to assign to non-existent attributes fail.
-                my $c = $#attrs > 0 ? 'attributes' : 'attribute';
-                local $" = "', '";
-                Carp::croak("No such $c '@attrs' in $self->{package} "
-                              . "objects");
-            }
-            return $new;
-        };
-    } else {
-        # Simple constructor.
-        no strict 'refs';
-        *{"$spec->{package}::" . $self->my_name } = sub {
-            my $class = shift;
-            bless {}, ref $class || $class;
         }
-    }
+        if (my @attrs = keys %p) {
+            # Attempts to assign to non-existent attributes fail.
+            my $c = $#attrs > 0 ? 'attributes' : 'attribute';
+            local $" = "', '";
+            Carp::croak("No such $c '@attrs' in $self->{package} "
+                          . "objects");
+        }
+        return $new;
+    };
 }
 
 1;
