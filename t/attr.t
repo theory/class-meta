@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: attr.t,v 1.2 2004/01/08 22:00:19 david Exp $
+# $Id: attr.t,v 1.3 2004/01/15 02:48:43 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -27,8 +27,7 @@ BEGIN {
     Test::More->import;
 
     # Create a new Class::Meta object.
-    ok( my $c = Class::Meta->new(package => __PACKAGE__,
-                                 key     => 'person'),
+    ok( my $c = Class::Meta->new(key => 'person'),
         "Create CM object" );
     isa_ok($c, 'Class::Meta');
 

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.56 2004/01/10 01:58:11 david Exp $
+# $Id: Meta.pm,v 1.57 2004/01/15 02:48:43 david Exp $
 
 =head1 NAME
 
@@ -556,7 +556,8 @@ my $croak = sub { require Carp; Carp::croak(@_) };
         my %p = @_;
 
         # Class defaults to caller. Key defaults to class.
-        $p{key} ||= $p{package} ||= caller;
+        $p{package} ||= caller;
+        $p{key} ||= $p{package};
 
         $p{class_class}       ||= 'Class::Meta::Class';
         $p{constructor_class} ||= 'Class::Meta::Constructor';
