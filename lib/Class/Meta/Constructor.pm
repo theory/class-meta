@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.13 2003/11/24 01:59:45 david Exp $
+# $Id: Constructor.pm,v 1.14 2003/11/24 02:05:02 david Exp $
 
 use strict;
 
@@ -222,9 +222,6 @@ sub build {
     Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
 
-    # XXX Ack! This won't work, because it could be called from a subclass, and
-    # XXX we really need the list of attributes for the subclass. Fix this!
-
     # Build a construtor that takes a parameter list and assigns the
     # the values to the appropriate attributes.
     no strict 'refs';
@@ -238,18 +235,22 @@ sub build {
         my $new = bless {}, ref $class || $class;
 
         # Assign all of the attribute values.
-        foreach my $attr (values %{ $spec->{attrs} } || ()) {
-            my $key = $attr->my_name;
-            if ($attr->my_authz >= Class::Meta::SET) {
-                # Let them set the value.
-                $attr->call_set($new, exists $p{$key}
-                                  ? delete $p{$key}
-                                    : $attr->my_default);
-            } else {
+        if ($spec->{attrs}) {
+            foreach my $attr (values %{ $spec->{attrs} }) {
+                my $key = $attr->my_name;
+                if ($attr->my_authz >= Class::Meta::SET) {
+                    # Let them set the value.
+                    $attr->call_set($new, exists $p{$key}
+                                      ? delete $p{$key}
+                                        : $attr->my_default);
+                } else {
                     # Use the default value.
-                $new->{$key} = $attr->my_default;
+                    $new->{$key} = $attr->my_default;
+                }
             }
         }
+
+        # Check for parameters for which attributes that don't exist.
         if (my @attrs = keys %p) {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attrs > 0 ? 'attributes' : 'attribute';
