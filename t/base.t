@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.10 2003/11/22 01:45:47 david Exp $
+# $Id: base.t,v 1.11 2003/11/22 01:47:44 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -105,7 +105,7 @@ ok( $t->set_name('David'), 'set_name to "David"' );
 is( $t->get_name, 'David', 'get_name is "David"' );
 eval { $t->set_name([]) };
 ok( $err = $@, 'set_name to array ref croaks' );
-like( $err, qr/^Value .* is not a string/, 'correct string exception' );
+like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Grab its metadata object.
 ok( my $class = $t->my_class, "Get Class::Meta::Class object" );
