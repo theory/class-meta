@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::Meta.
 
+0.31  2004-05-25T17:09:39
+      - Fixed the MANIFEST so that the new semi-affordance accessor generation
+        actually works. Reported by Mark Jaroski.
+
 0.31  2004-04-20T18:25:25
       - Moved extra code to prevent AccessorBuilder from pointing to
         Constructor in the default (croak) error handler from AccessorBuilder
