@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.13 2003/11/23 03:24:11 david Exp $
+# $Id: Class.pm,v 1.14 2003/11/24 01:38:28 david Exp $
 
 use strict;
 use Carp ();
@@ -109,11 +109,14 @@ use Class::Meta::Method;
         for my $key (qw(attr ctor meth)) {
             my (@things, @ord, @prot, %sord, %sprot);
             for my $super (@classes) {
-                push @things, %{ $specs{$super}{$key . 's'} };
+                push @things, %{ $specs{$super}{$key . 's'} }
+                  if $specs{$super}{$key . 's'};
                 push @ord, grep { not $sord{$_}++ }
-                  @{ $specs{$super}{"$key\_ord"} };
+                  @{ $specs{$super}{"$key\_ord"} }
+                  if $specs{$super}{"$key\_ord"};
                 push @prot, grep { not $sprot{$_}++ }
-                  @{ $specs{$super}{"prot_$key\_ord"} };
+                  @{ $specs{$super}{"prot_$key\_ord"} }
+                  if $specs{$super}{"prot_$key\_ord"};
             }
 
             $spec->{$key} = { @things };
