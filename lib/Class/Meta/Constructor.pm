@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.20 2004/01/08 17:56:31 david Exp $
+# $Id: Constructor.pm,v 1.21 2004/01/08 18:37:51 david Exp $
 
 use strict;
 
@@ -10,7 +10,7 @@ Class::Meta::Construtor - Constructor introspection objects
 
 =head1 SYNOPSIS
 
-  my $ctor = $c->ctors('new');
+  my $ctor = $c->constructors('new');
   print "Constructor Name: ", $ctor->name, "()\n";
   print "Description: ", $ctor->desc, "\n";
   print "Label:       ", $ctor->label, "\n";
@@ -24,7 +24,7 @@ This class provides an interface to the C<Class::Meta> objects that describe
 class constructors. It supports a simple description of the constructor, a
 label, and the constructor visibility (private, protected, or public).
 Construction is performed internally by C<Class::Meta>, and objects of this
-class may be retreived by calling the C<ctors()> method on a
+class may be retreived by calling the C<constructors()> method on a
 C<Class::Meta::Class> object.
 
 =cut
@@ -47,7 +47,7 @@ our @CARP_NOT = qw(Class::Meta);
 my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
-# Constructors                                                               #
+# Construconstructors                                                               #
 ##############################################################################
 
 =head1 CONSTRUCTORS
@@ -58,7 +58,7 @@ my $croak = sub { require Carp; Carp::croak(@_) };
 
 Creates a new C<Class::Meta::Constructor> object. This is a protected
 constructor, callable only from C<Class::Meta> or its subclasses. Use the
-C<Class::Meta> C<add_ctor()> object constructor to add a new constructor to a
+C<Class::Meta> C<add_constructor()> object constructor to add a new constructor to a
 class. Supported keys are:
 
 =over 4
@@ -254,11 +254,11 @@ sub build {
         }
 
         # Check for parameters for which attributes that don't exist.
-        if (my @attrs = keys %p) {
+        if (my @attributes = keys %p) {
             # Attempts to assign to non-existent attributes fail.
-            my $c = $#attrs > 0 ? 'attributes' : 'attribute';
+            my $c = $#attributes > 0 ? 'attributes' : 'attribute';
             local $" = "', '";
-            $croak->("No such $c '@attrs' in $self->{package} objects");
+            $croak->("No such $c '@attributes' in $self->{package} objects");
         }
         return $new;
     };

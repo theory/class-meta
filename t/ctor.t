@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.4 2004/01/08 17:56:32 david Exp $
+# $Id: ctor.t,v 1.5 2004/01/08 18:37:52 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -31,7 +31,7 @@ BEGIN {
 
     # Create a constructor.
     sub inst { bless {} }
-    ok( my $ctor = $c->add_ctor( name    => 'inst',
+    ok( my $ctor = $c->add_constructor( name    => 'inst',
                                  desc    => 'The inst constructor',
                                  label   => 'inst Constructor',
                                  view     => Class::Meta::PUBLIC ),
@@ -53,31 +53,31 @@ BEGIN {
         "Caught proper exception");
 
     # Now try it without a name.
-    eval{ $c->add_ctor() };
+    eval{ $c->add_constructor() };
     ok( $err = $@, "Caught no name exception");
     like( $err, qr/Parameter 'name' is required in call to new/,
         "Caught proper no name exception");
 
     # Try a duplicately-named constructor.
-    eval{ $c->add_ctor(name => 'inst') };
+    eval{ $c->add_constructor(name => 'inst') };
     ok( $err = $@, "Caught dupe name exception");
     like( $err, qr/Method 'inst' already exists in class/,
         "Caught proper dupe name exception");
 
     # Try a couple of bogus visibilities.
-    eval { $c->add_ctor( name => 'new_ctor',
+    eval { $c->add_constructor( name => 'new_ctor',
                          view  => 25) };
     ok( $err = $@, "Caught bogus view exception");
     like( $err, qr/Not a valid view parameter: '25'/,
         "Caught proper bogus view exception");
-    eval { $c->add_ctor( name => 'new_ctor',
+    eval { $c->add_constructor( name => 'new_ctor',
                          view  => 10) };
     ok( $err = $@, "Caught another bogus view exception");
     like( $err, qr/Not a valid view parameter: '10'/,
         "Caught another proper bogus view exception");
 
     # Try a bogus caller.
-    eval { $c->add_meth( name => 'new_inst',
+    eval { $c->add_method( name => 'new_inst',
                          caller => 'foo' ) };
     ok( $err = $@, "Caught bogus caller exception");
     like( $err, qr/Parameter caller must be a code reference/,
@@ -85,7 +85,7 @@ BEGIN {
 
     # Now test all of the defaults.
     sub new_ctor { 22 }
-    ok( $ctor = $c->add_ctor( name => 'new_ctor' ), "Create 'new_ctor'" );
+    ok( $ctor = $c->add_constructor( name => 'new_ctor' ), "Create 'new_ctor'" );
     isa_ok($ctor, 'Class::Meta::Constructor');
 
     # Test its accessors.
@@ -100,7 +100,7 @@ BEGIN {
 
 package Class::Meta::SubClass;
 BEGIN { @Class::Meta::SubClass::ISA = qw(Class::Meta) }
-sub add_ctor {
+sub add_constructor {
     Class::Meta::Constructor->new( shift->SUPER::class, @_);
 }
 
@@ -118,7 +118,7 @@ BEGIN {
     isa_ok($c, 'Class::Meta::SubClass');
 
     sub foo_ctor { bless {} }
-    ok( my $ctor = $c->add_ctor( name => 'foo_ctor'),
+    ok( my $ctor = $c->add_constructor( name => 'foo_ctor'),
         'Create subclassed foo_ctor' );
 
     isa_ok($ctor, 'Class::Meta::Constructor');

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.6 2004/01/08 17:56:32 david Exp $
+# $Id: meth.t,v 1.7 2004/01/08 18:37:52 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -32,7 +32,7 @@ BEGIN {
 
     # Create a new method with all of the parameters set.
     sub foo_meth { 'foo' }
-    ok( my $meth = $c->add_meth( name    => 'foo_meth',
+    ok( my $meth = $c->add_method( name    => 'foo_meth',
                                  desc    => 'The foo method',
                                  label   => 'Foo method',
                                  context => Class::Meta::CLASS,
@@ -57,33 +57,33 @@ BEGIN {
         "Caught proper exception");
 
     # Now try it without a name.
-    eval{ $c->add_meth() };
+    eval{ $c->add_method() };
     ok( $err = $@, "Caught no name exception");
     like( $err, qr/Parameter 'name' is required in call to new/,
         "Caught proper no name exception");
 
     # Try a duplicately-named method.
-    eval{ $c->add_meth(name => 'foo_meth') };
+    eval{ $c->add_method(name => 'foo_meth') };
     ok( $err = $@, "Caught dupe name exception");
     like( $err, qr/Method 'foo_meth' already exists in class/,
         "Caught proper dupe name exception");
 
     # Try a of bogus visibility.
-    eval { $c->add_meth( name => 'new_meth',
+    eval { $c->add_method( name => 'new_meth',
                          view  => 10) };
     ok( $err = $@, "Caught another bogus view exception");
     like( $err, qr/Not a valid view parameter: '10'/,
         "Caught another proper bogus view exception");
 
     # Try a of bogus context.
-    eval { $c->add_meth( name => 'new_meth',
+    eval { $c->add_method( name => 'new_meth',
                          context  => 10) };
     ok( $err = $@, "Caught another bogus context exception");
     like( $err, qr/Not a valid context parameter: '10'/,
         "Caught another proper bogus context exception");
 
     # Try a bogus caller.
-    eval { $c->add_meth( name => 'new_meth',
+    eval { $c->add_method( name => 'new_meth',
                          caller => 'foo' ) };
     ok( $err = $@, "Caught bogus caller exception");
     like( $err, qr/Parameter caller must be a code reference/,
@@ -91,7 +91,7 @@ BEGIN {
 
     # Now test all of the defaults.
     sub new_meth { 22 }
-    ok( $meth = $c->add_meth( name => 'new_meth' ), "Create 'new_meth'" );
+    ok( $meth = $c->add_method( name => 'new_meth' ), "Create 'new_meth'" );
     isa_ok($meth, 'Class::Meta::Method');
 
     # Test its accessors.
@@ -107,7 +107,7 @@ BEGIN {
 
 package Class::Meta::SubClass;
 BEGIN { @Class::Meta::SubClass::ISA = qw(Class::Meta) }
-sub add_meth {
+sub add_method {
     Class::Meta::Method->new( shift->SUPER::class, @_);
 }
 
@@ -127,7 +127,7 @@ BEGIN {
     isa_ok($c, 'Class::Meta');
     isa_ok($c, 'Class::Meta::SubClass');
     sub foo_meth { 100 }
-    ok( my $meth = $c->add_meth( name => 'foo_meth'),
+    ok( my $meth = $c->add_method( name => 'foo_meth'),
         'Create subclassed foo_meth' );
 
     isa_ok($meth, 'Class::Meta::Method');

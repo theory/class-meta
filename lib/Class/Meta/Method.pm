@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.15 2004/01/08 17:56:31 david Exp $
+# $Id: Method.pm,v 1.16 2004/01/08 18:37:51 david Exp $
 
 =head1 NAME
 
@@ -8,7 +8,7 @@ Class::Meta::Method - Method introspection objects
 
 =head1 SYNOPSIS
 
-  my $meth = $c->meths('chk_passwd');
+  my $meth = $c->methods('chk_passwd');
   print "Method Name: ", $meth->name, "()\n";
   print "Description: ", $meth->desc, "\n";
   print "Label:       ", $meth->label, "\n";
@@ -25,7 +25,7 @@ class methods. It supports a simple description of the method, a label, the
 method context (class or object), and the method visibility (private,
 protected, or public). Construction is performed internally by
 C<Class::Meta>, and objects of this class may be retreived by calling the
-C<meths()> method on a C<Class::Meta::Class> object.
+C<methods()> method on a C<Class::Meta::Class> object.
 
 =cut
 
@@ -46,7 +46,7 @@ our @CARP_NOT = qw(Class::Meta);
 my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
-# Constructors                                                               #
+# Construconstructors                                                               #
 ##############################################################################
 
 =head1 CONSTRUCTORS
@@ -57,7 +57,7 @@ my $croak = sub { require Carp; Carp::croak(@_) };
 xc
 Creates a new C<Class::Meta::Method> object. This is a protected method,
 callable only from C<Class::Meta> or its subclasses. Use the C<Class::Meta>
-C<add_meth()> object method to add a new method to a class. Supported keys
+C<add_method()> object method to add a new method to a class. Supported keys
 are:
 
 =over 4

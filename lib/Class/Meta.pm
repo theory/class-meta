@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.42 2004/01/08 18:03:19 david Exp $
+# $Id: Meta.pm,v 1.43 2004/01/08 18:37:51 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -75,27 +75,27 @@ Class::Meta - Class automation, introspection, and data validation
       my $cm = Class::Meta->new( key => 'thingy' );
 
       # Add a constructor.
-      $cm->add_ctor( name   => 'new',
-                     create => 1 );
+      $cm->add_constructor( name   => 'new',
+                            create => 1 );
 
       # Add a couple of attributes with generated methods.
-      $cm->add_attr( name     => 'id',
-                     authz    => Class::Meta::READ,
-                     type     => 'integer',
-                     required => 1,
-                     default  => sub { ... } );
-      $cm->add_attr( name     => 'name',
-                     type     => 'string',
-                     required => 1,
-                     default  => undef );
-      $cm->add_attr( name     => 'age',
-                     type     => 'inteter',
-                     required => 0,
-                     default  => undef );
+      $cm->add_attribute( name     => 'id',
+                          authz    => Class::Meta::READ,
+                          type     => 'integer',
+                          required => 1,
+                          default  => sub { ... } );
+      $cm->add_attribute( name     => 'name',
+                          type     => 'string',
+                          required => 1,
+                          default  => undef );
+      $cm->add_attribute( name     => 'age',
+                          type     => 'inteter',
+                          required => 0,
+                          default  => undef );
 
       # Add a custom method.
-      $cm->add_meth( name => 'chk_pass',
-                     view => Class::Meta::PUBLIC );
+      $cm->add_method( name => 'chk_pass',
+                       view => Class::Meta::PUBLIC );
       $cm->build;
   }
 
@@ -154,15 +154,15 @@ class:
       my $c = Class::Meta->new( key => 'dog' );
 
       # Add a constructor.
-      $cm->add_ctor( name   => 'new',
-                     create => 1 );
+      $cm->add_constructor( name   => 'new',
+                            create => 1 );
 
       # Add an attribute.
-      $cm->add_attr( name   => 'tail',
-                     type   => 'scalar' );
+      $cm->add_attribute( name   => 'tail',
+                          type   => 'scalar' );
 
       # Add a custom method.
-      $cm->add_meth( name   => 'wag' );
+      $cm->add_method( name => 'wag' );
       $cm->build;
   }
 
@@ -193,12 +193,12 @@ provided, the class name will be used, instead.
 =item *
 
 Next, we create a Class::Meta::Constructor object to describe a constructor
-method for the class. The C<create> parameter to the C<add_ctor()> method
+method for the class. The C<create> parameter to the C<add_constructor()> method
 tells Class::Meta to create the constructor named "C<new()>".
 
 =item *
 
-Then we call C<add_attr()> to create a single attribute, "tail". This is a
+Then we call C<add_attribute()> to create a single attribute, "tail". This is a
 simple scalar attribute, meaning that any scalar value can be stored in
 it. Class::Meta will create a Class::Meta::Attribute object that describes
 this attribute, and will also shortly create accessor methods for the
@@ -206,7 +206,7 @@ attribute.
 
 =item *
 
-The C<add_meth()> method constructs a Class::Meta::Method object to descibe
+The C<add_method()> method constructs a Class::Meta::Method object to descibe
 any methods written for the class. In this case, we've told Class::Meta that
 there will be a C<wag()> method.
 
@@ -397,18 +397,18 @@ other objects that describe the class. The relevant methods are:
 
 =over 4
 
-=item ctors
+=item constructors
 
 Provides access to all of the Class::Meta::Constructor objects that describe
 the class' constructors, and provide indirect access to those constructors.
 
-=item attrs
+=item attributes
 
 Provides access to all of the Class::Meta::Attribute objects that describe the
 class' attributes, and provide methods for indirectly getting and setting
 their values.
 
-=item meths
+=item methods
 
 Provides access to all of the Class::Meta::Method objects that describe the
 class' methods, and provide indirect execution of those constructors.
@@ -494,12 +494,12 @@ of their interfaces.
 =cut
 
 ##############################################################################
-# Constructors                                                               #
+# Construconstructors                                                               #
 ##############################################################################
 
 =head1 INTERFACE
 
-=head2 Constructors
+=head2 Construconstructors
 
 =head3 new
 
@@ -583,12 +583,12 @@ Class::Meta::Method.
 
 
 ##############################################################################
-# add_ctor()
+# add_constructor()
 
-=head3 add_ctor
+=head3 add_constructor
 
-  $cm->add_ctor( name   => 'new',
-                 create => 1 );
+  $cm->add_constructor( name   => 'new',
+                        create => 1 );
 
 Creates and returns a Class::Meta::Constructor object that describes a
 constructor for the class. The supported parameters are:
@@ -637,20 +637,19 @@ being defined.
 
 =cut
 
-    sub add_ctor {
+    sub add_constructor {
         my $spec = $classes{ shift->{package} };
         push @{$spec->{build_ctor_ord}}, $spec->{ctor_class}->new($spec, @_);
         return $spec->{build_ctor_ord}[-1];
     }
 
 ##############################################################################
-# add_attr()
+# add_attribute()
 
-=head3 add_attr
+=head3 add_attribute
 
-  $cm->add_attr( name   => 'tail',
-                 type   => 'scalar',
-               );
+  $cm->add_attribute( name => 'tail',
+                      type => 'scalar' );
 
 Creates and returns a Class::Meta::Attribute object that describes an
 attribute of the class. The supported parameters are:
@@ -680,7 +679,7 @@ user interface. Optional.
 =item view
 
 The visibility of the attribute. See the description of the C<view> parameter
-to C<add_ctor> for a description of its value.
+to C<add_constructor> for a description of its value.
 
 =item authz
 
@@ -743,11 +742,10 @@ Class::Meta to do so. For example, if you were using standard Perl-style
 accessors, and needed to do something a little different by coding your own
 accessor, you'd specify it like this:
 
-  $cm->add_attr( name   => $name,
-                 type   => $type,
-                 authz  => Class::Meta::RDWR,
-                 create => Class::Meta::NONE,
-  );
+  $cm->add_attribute( name   => $name,
+                      type   => $type,
+                      authz  => Class::Meta::RDWR,
+                      create => Class::Meta::NONE );
 
 =item context
 
@@ -772,18 +770,18 @@ value or a code reference that will be executed to generate a default value.
 
 =cut
 
-    sub add_attr {
+    sub add_attribute {
         my $spec = $classes{ shift->{package} };
         push @{$spec->{build_attr_ord}}, $spec->{attr_class}->new($spec, @_);
         return $spec->{build_attr_ord}[-1];
     }
 
 ##############################################################################
-# add_meth()
+# add_method()
 
-=head3 add_meth
+=head3 add_method
 
-  $cm->add_meth( name => 'wag' );
+  $cm->add_method( name => 'wag' );
 
 Creates and returns a Class::Meta::Method object that describes a method of
 the class. The supported parameters are:
@@ -808,12 +806,12 @@ user interface. Optional.
 =item view
 
 The visibility of the method. See the description of the C<view> parameter to
-C<add_ctor> for a description of its value.
+C<add_constructor> for a description of its value.
 
 =item context
 
 The context of the method. This indicates whether it's a class method or an
-object method. See the description of the C<context> parameter to C<add_attr>
+object method. See the description of the C<context> parameter to C<add_attribute>
 for a description of its value.
 
 =item caller
@@ -826,7 +824,7 @@ being defined.
 
 =cut
 
-    sub add_meth {
+    sub add_method {
         my $spec = $classes{ shift->{package} };
         $spec->{meth_class}->new($spec, @_);
     }

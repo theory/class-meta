@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.19 2004/01/08 17:57:23 david Exp $
+# $Id: Attribute.pm,v 1.20 2004/01/08 18:37:51 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -33,7 +33,7 @@ Kinet::Meta::Attribute - Objects describing Class::Meta-generated class attribut
   my $thingy = MyApp::Thingy->new;
 
   print "\nAttributes:\n";
-  for my $attr ($class->attrs) {
+  for my $attr ($class->attributes) {
       print "  o ", $attr->name, " => ", $attr->call_get($thingy) $/;
       if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
           $attr->call_get($thingy, 'hey there!');
@@ -52,7 +52,7 @@ instance of the class.
 Class::Meta::Attribute objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the attribute objects for a
 Class::Meta-generated class, simply call its C<class> method to retreive
-its Class::Meta::Class object, and then call the C<attrs()> method on
+its Class::Meta::Class object, and then call the C<attributes()> method on
 the Class::Meta::Class object.
 
 =head1 INTERFACE
@@ -60,7 +60,7 @@ the Class::Meta::Class object.
 =cut
 
 ##############################################################################
-# Constructors                                                               #
+# Construconstructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really.
 
@@ -260,11 +260,11 @@ sub name     { $_[0]->{name}     }
 sub type     { $_[0]->{type}     }
 sub desc     { $_[0]->{desc}     }
 sub label    { $_[0]->{label}    }
-sub is_required { $_[0]->{required} }
 sub package  { $_[0]->{package}  }
 sub view     { $_[0]->{view}     }
 sub context  { $_[0]->{context}  }
 sub authz    { $_[0]->{authz}    }
+sub is_required { $_[0]->{required} }
 
 ##############################################################################
 
@@ -275,7 +275,7 @@ sub authz    { $_[0]->{authz}    }
 Returns the default value for a new instance of this attribute. Since the
 default value can be determined dynamically, the value returned by
 C<default()> may change on subsequent calls. It all depends on what was
-passed for the C<default> parameter in the call to C<add_attr()> on the
+passed for the C<default> parameter in the call to C<add_attribute()> on the
 Class::Meta object that generated the class.
 
 =cut

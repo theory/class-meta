@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.19 2004/01/08 17:56:32 david Exp $
+# $Id: base.t,v 1.20 2004/01/08 18:37:52 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -32,11 +32,11 @@ BEGIN {
     );
 
     # Add a constructor.
-    $c->add_ctor( name => 'new',
+    $c->add_constructor( name => 'new',
                   create  => 1 );
 
     # Add a couple of attributes with created methods.
-    $c->add_attr( name     => 'id',
+    $c->add_attribute( name     => 'id',
                   view     => Class::Meta::PUBLIC,
                   authz    => Class::Meta::READ,
                   create   => Class::Meta::GET,
@@ -46,7 +46,7 @@ BEGIN {
                   required => 1,
                   default  => undef,
                 );
-    $c->add_attr( name     => 'name',
+    $c->add_attribute( name     => 'name',
                   view     => Class::Meta::PUBLIC,
                   authz    => Class::Meta::RDWR,
                   create   => Class::Meta::GETSET,
@@ -57,7 +57,7 @@ BEGIN {
                   required => 1,
                   default  => '',
                 );
-    $c->add_attr( name     => 'age',
+    $c->add_attribute( name     => 'age',
                   view     => Class::Meta::PUBLIC,
                   authz    => Class::Meta::RDWR,
                   create   => Class::Meta::GETSET,
@@ -70,11 +70,11 @@ BEGIN {
                 );
 
     # Add a couple of custom methods.
-    $c->add_meth( name  => 'chk_pass',
+    $c->add_method( name  => 'chk_pass',
                   view   => Class::Meta::PUBLIC,
                 );
 
-    $c->add_meth( name  => 'shame',
+    $c->add_method( name  => 'shame',
                   view   => Class::Meta::PUBLIC,
                 );
 
@@ -124,26 +124,26 @@ is( $class->name, 'Class::Meta::TestPerson Class', "Name is correct");
 is( $class->desc, 'Special person class just for testing Class::Meta.',
     "Description is correct");
 
-# Test attrs().
-ok(my @attrs = $class->attrs, "Get attrs from attrs()" );
-is( scalar @attrs, 3, "Three attrs from attrs()" );
-isa_ok($attrs[0], 'Class::Meta::Attribute',
+# Test attributes().
+ok(my @attributes = $class->attributes, "Get attributes from attributes()" );
+is( scalar @attributes, 3, "Three attributes from attributes()" );
+isa_ok($attributes[0], 'Class::Meta::Attribute',
        "First object is a attribute object" );
-isa_ok($attrs[1], 'Class::Meta::Attribute',
+isa_ok($attributes[1], 'Class::Meta::Attribute',
        "Second object is a attribute object" );
-isa_ok($attrs[2], 'Class::Meta::Attribute',
+isa_ok($attributes[2], 'Class::Meta::Attribute',
        "Third object is a attribute object" );
 
 # Get specific attributes.
-ok( @attrs = $class->attrs(qw(age name)), 'Get specific attrs' );
-is( scalar @attrs, 2, "Two specific attrs from attrs()" );
-isa_ok($attrs[0], 'Class::Meta::Attribute', "Attribute object type" );
+ok( @attributes = $class->attributes(qw(age name)), 'Get specific attributes' );
+is( scalar @attributes, 2, "Two specific attributes from attributes()" );
+isa_ok($attributes[0], 'Class::Meta::Attribute', "Attribute object type" );
 
-is( $attrs[0]->name, 'age', 'First attr name' );
-is( $attrs[1]->name, 'name', 'Second attr name' );
+is( $attributes[0]->name, 'age', 'First attr name' );
+is( $attributes[1]->name, 'name', 'Second attr name' );
 
 # Check the attributes of the "ID" attribute object.
-ok( my $p = $class->attrs('id'), "Get ID attribute object" );
+ok( my $p = $class->attributes('id'), "Get ID attribute object" );
 is( $p->name, 'id', 'ID name' );
 is( $p->desc, "The person object's ID.", 'ID description' );
 is( $p->view, Class::Meta::PUBLIC, 'ID view' );
@@ -161,7 +161,7 @@ ok( $err = $@, "Set val failure" );
 like( $err, qr/Cannot set attribute 'id/, 'set val exception' );
 
 # Check the attributes of the "Name" attribute object.
-ok( $p = $class->attrs('name'), "Get name attribute" );
+ok( $p = $class->attributes('name'), "Get name attribute" );
 is( $p->name, 'name', 'Name name' );
 is( $p->desc, "The person's name.", 'Name description' );
 is( $p->view, Class::Meta::PUBLIC, 'Name view' );
@@ -180,7 +180,7 @@ ok( $t->name('Damian'), 'Object name' );
 is( $p->call_get($t), 'Damian', 'Final Name call_get' );
 
 # Check the attributes of the "Age" attribute object.
-ok( $p = $class->attrs('age'), "Get age attribute" );
+ok( $p = $class->attributes('age'), "Get age attribute" );
 is( $p->name, 'age', 'Age name' );
 is( $p->desc, "The person's age.", 'Age description' );
 is( $p->view, Class::Meta::PUBLIC, 'Age view' );
@@ -198,27 +198,27 @@ ok( $t->age == 10, 'Object age');
 ok( $t->age(22), 'Object age' );
 is( $p->call_get($t), 22, 'Final Age call_get' );
 
-# Test meths().
-ok( my @meths = $class->meths, "Get method objects" );
-is( scalar @meths, 2, 'Number of methods from meths()' );
-isa_ok($meths[0], 'Class::Meta::Method',
+# Test methods().
+ok( my @methods = $class->methods, "Get method objects" );
+is( scalar @methods, 2, 'Number of methods from methods()' );
+isa_ok($methods[0], 'Class::Meta::Method',
        "First object is a method object" );
-isa_ok($meths[1], 'Class::Meta::Method',
+isa_ok($methods[1], 'Class::Meta::Method',
        "Second object is a method object" );
 
 # Check the order in which they're returned.
-is( $meths[0]->name, 'chk_pass', 'First method' );
-is( $meths[1]->name, 'shame', 'Second method' );
+is( $methods[0]->name, 'chk_pass', 'First method' );
+is( $methods[1]->name, 'shame', 'Second method' );
 
 # Get a few specific methods.
-ok( @meths = $class->meths(qw(shame chk_pass)),
+ok( @methods = $class->methods(qw(shame chk_pass)),
     'Grab specific methods.');
-is( scalar @meths, 2, 'Two methods from meths()' );
-is( $meths[0]->name, 'shame', 'First specific method' );
-is( $meths[1]->name, 'chk_pass', 'Second specific method' );
+is( scalar @methods, 2, 'Two methods from methods()' );
+is( $methods[0]->name, 'shame', 'First specific method' );
+is( $methods[1]->name, 'chk_pass', 'Second specific method' );
 
 # Check out the chk_pass method.
-ok( my $m = $class->meths('chk_pass'), "Get chk_pass method object" );
+ok( my $m = $class->methods('chk_pass'), "Get chk_pass method object" );
 is( $m->name, 'chk_pass', 'chk_pass name' );
 ok( $m->call($t, 'larry', 'yrral') == 1, 'Call chk_pass returns true' );
 ok( $m->call($t, 'larry', 'foo') == 0, 'Call chk_pass returns false' );

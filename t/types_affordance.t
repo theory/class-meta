@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types_affordance.t,v 1.3 2004/01/08 17:56:32 david Exp $
+# $Id: types_affordance.t,v 1.4 2004/01/08 18:37:52 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -41,9 +41,9 @@ BEGIN {
                              name    => 'Class::Meta::TestTypes Class',
                              desc    => 'Just for testing Class::Meta.'
                          );
-    $c->add_ctor(name => 'new');
+    $c->add_constructor(name => 'new');
 
-    $c->add_attr( name  => 'name',
+    $c->add_attribute( name  => 'name',
                   view   => Class::Meta::PUBLIC,
                   type  => 'string',
                   length   => 256,
@@ -54,7 +54,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'age',
+    $c->add_attribute( name  => 'age',
                   view   => Class::Meta::PUBLIC,
                   type  => 'integer',
                   label => 'Age',
@@ -64,7 +64,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'alive',
+    $c->add_attribute( name  => 'alive',
                   view   => Class::Meta::PUBLIC,
                   type  => 'boolean',
                   label => 'Living',
@@ -73,7 +73,7 @@ BEGIN {
                   required   => 0,
                   default   => 1,
               );
-    $c->add_attr( name  => 'whole',
+    $c->add_attribute( name  => 'whole',
                   view   => Class::Meta::PUBLIC,
                   type  => 'whole',
                   label => 'A whole number.',
@@ -83,7 +83,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'dec',
+    $c->add_attribute( name  => 'dec',
                   view   => Class::Meta::PUBLIC,
                   type  => 'decimal',
                   label => 'A decimal number.',
@@ -93,7 +93,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'real',
+    $c->add_attribute( name  => 'real',
                   view   => Class::Meta::PUBLIC,
                   type  => 'real',
                   label => 'A real number.',
@@ -103,7 +103,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'float',
+    $c->add_attribute( name  => 'float',
                   view   => Class::Meta::PUBLIC,
                   type  => 'float',
                   label => 'A float.',
@@ -113,7 +113,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'scalar',
+    $c->add_attribute( name  => 'scalar',
                   view   => Class::Meta::PUBLIC,
                   type  => 'scalarref',
                   label => 'A scalar.',
@@ -123,7 +123,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'array',
+    $c->add_attribute( name  => 'array',
                   view   => Class::Meta::PUBLIC,
                   type  => 'array',
                   label => 'A array.',
@@ -133,7 +133,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'hash',
+    $c->add_attribute( name  => 'hash',
                   view   => Class::Meta::PUBLIC,
                   type  => 'hash',
                   label => 'A hash.',
@@ -143,7 +143,7 @@ BEGIN {
                   default   => undef,
                   create   => Class::Meta::GETSET
               );
-    $c->add_attr( name  => 'simpson',
+    $c->add_attribute( name  => 'simpson',
                   view   => Class::Meta::PUBLIC,
                   type  => 'simpson',
                   label => 'A Simpson Object',

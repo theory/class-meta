@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.19 2004/01/08 17:56:31 david Exp $
+# $Id: Class.pm,v 1.20 2004/01/08 18:37:51 david Exp $
 
 use strict;
 use Class::ISA ();
@@ -31,18 +31,18 @@ Class::Meta::Class - Objects describing Class::Meta-generated classes.
 
   print "Examing object of class ", $class->package, $/;
 
-  print "\nConstructors:\n";
-  for my $ctor ($class->ctors) {
+  print "\nConstruconstructors:\n";
+  for my $ctor ($class->constructors) {
       print "  o ", $ctor->name, $/;
   }
 
   print "\nAttributes:\n";
-  for my $attr ($class->attrs) {
+  for my $attr ($class->attributes) {
       print "  o ", $attr->name, " => ", $attr->call_get($thingy) $/;
   }
 
   print "\nMethods:\n";
-  for my $meth ($class->meths) {
+  for my $meth ($class->methods) {
       print "  o ", $meth->name, $/;
   }
 
@@ -64,7 +64,7 @@ Class::Meta-generated class, simply call its C<class> method.
 =cut
 
 ##############################################################################
-# Constructors                                                               #
+# Construconstructors                                                               #
 ##############################################################################
 # We don't document new(), since it's a protected method, really.
 {
@@ -156,11 +156,11 @@ C<< $class->package->isa($pkg) >>, but more efficient.
 # Accessors to get at the constructor, attribute, and method objects.
 ##############################################################################
 
-=head3 ctors
+=head3 constructors
 
-  my @ctors = $class->ctors;
-  my $ctor = $class->ctors($ctor_name);
-  @ctors = $class->ctors(@ctor_names);
+  my @constructors = $class->constructors;
+  my $ctor = $class->constructors($ctor_name);
+  @constructors = $class->constructors(@ctor_names);
 
 Provides access to the Class::Meta::Constructor objects that describe the
 constructors for the class. When called with no arguments, it returns all of
@@ -171,10 +171,10 @@ specified names.
 
 =cut
 
-    sub ctors {
+    sub constructors {
         my $self = shift;
         my $spec = $specs{$self->{package}};
-        my $objs = $spec->{ctors};
+        my $objs = $spec->{constructors};
         # Explicit list requested.
         my $list = @_ ? \@_
           # List of protected interface objects.
@@ -187,11 +187,11 @@ specified names.
 
 ##############################################################################
 
-=head3 attrs
+=head3 attributes
 
-  my @attrs = $class->attrs;
-  my $attr = $class->attrs($attr_name);
-  @attrs = $class->attrs(@attr_names);
+  my @attributes = $class->attributes;
+  my $attr = $class->attributes($attr_name);
+  @attributes = $class->attributes(@attr_names);
 
 Provides access to the Class::Meta::Attribute objects that describe the
 attributes for the class. When called with no arguments, it returns all of the
@@ -202,7 +202,7 @@ names.
 
 =cut
 
-    sub attrs {
+    sub attributes {
         my $self = shift;
         my $spec = $specs{$self->{package}};
         my $objs = $spec->{attrs};
@@ -218,11 +218,11 @@ names.
 
 ##############################################################################
 
-=head3 meths
+=head3 methods
 
-  my @meths = $class->meths;
-  my $meth = $class->meths($meth_name);
-  @meths = $class->meths(@meth_names);
+  my @methods = $class->methods;
+  my $meth = $class->methods($meth_name);
+  @methods = $class->methods(@meth_names);
 
 Provides access to the Class::Meta::Method objects that describe the methods
 for the class. When called with no arguments, it returns all of the method
@@ -232,7 +232,7 @@ returns all of the method objects with the specified names.
 
 =cut
 
-    sub meths {
+    sub methods {
         my $self = shift;
         my $spec = $specs{$self->{package}};
         my $objs = $spec->{meths};
