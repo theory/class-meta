@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.19 2004/01/09 01:14:46 david Exp $
+# $Id: Method.pm,v 1.20 2004/01/09 03:35:53 david Exp $
 
 =head1 NAME
 
@@ -26,7 +26,7 @@ visibility (private, protected, or public).
 
 Class::Meta::Method objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the method objects for a
-Class::Meta-generated class, simply call its C<class> method to retreive its
+Class::Meta-generated class, simply call its C<class> method to retrieve its
 Class::Meta::Class object, and then call the C<methods()> method on the
 Class::Meta::Class object.
 
@@ -251,7 +251,3 @@ This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
-
-1;
-__END__

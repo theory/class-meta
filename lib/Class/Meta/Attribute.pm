@@ -1,8 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.27 2004/01/09 01:14:46 david Exp $
-
-use strict;
+# $Id: Attribute.pm,v 1.28 2004/01/09 03:35:53 david Exp $
 
 =head1 NAME
 
@@ -25,24 +23,24 @@ Class::Meta::Attribute - Class::Meta class attribute introspection
 
 =head1 DESCRIPTION
 
-An object of this class describes an attribute of a classe created by
+An object of this class describes an attribute of a class created by
 Class::Meta. It includes metadata such as the name of the attribute, its data
-type, its accessability, and whether or not a value is required. It also
+type, its accessibility, and whether or not a value is required. It also
 provides methods to easily get and set the value of the attribute for a given
 instance of the class.
 
 Class::Meta::Attribute objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the attribute objects for a
-Class::Meta-generated class, simply call its C<class> method to retreive
+Class::Meta-generated class, simply call its C<class> method to retrieve
 its Class::Meta::Class object, and then call the C<attributes()> method on
 the Class::Meta::Class object.
 
 =cut
 
 ##############################################################################
-# Constants                                                                  #
+# Dependencies                                                               #
 ##############################################################################
-use constant DEBUG => 0;
+use strict;
 
 ##############################################################################
 # Package Globals                                                            #
@@ -239,7 +237,7 @@ object attribute. The possible values are defined by the following constants:
 
   my $authz = $attr->authz;
 
-Returns the authorization for the attribute, which determines whethe it can be
+Returns the authorization for the attribute, which determines whether it can be
 read or changed. The possible values are defined by the following constants:
 
 =over 4
@@ -253,7 +251,6 @@ read or changed. The possible values are defined by the following constants:
 =item Class::Meta::NONE
 
 =back
-
 
 =cut
 
@@ -313,7 +310,7 @@ sub call_get   {
   $attr->call_set($thingy, $new_value);
 
 This method calls the accessor method on the object passed as the first
-argument and passes any remaining arguments to assign a new value to teh
+argument and passes any remaining arguments to assign a new value to the
 attribute for that object.
 
 =cut
@@ -390,7 +387,3 @@ This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
-
-1;
-__END__

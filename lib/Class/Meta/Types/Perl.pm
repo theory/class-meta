@@ -1,6 +1,78 @@
 package Class::Meta::Types::Perl;
 
-# $Id: Perl.pm,v 1.3 2004/01/08 05:14:42 david Exp $
+# $Id: Perl.pm,v 1.4 2004/01/09 03:35:54 david Exp $
+
+=head1 NAME
+
+Class::Meta::Types::Perl - Perl data types
+
+=head1 SYNOPSIS
+
+  package MyApp::Thingy;
+  use strict;
+  use Class::Meta;
+  use Class::Meta::Types::Perl;
+  # OR...
+  # use Class::Meta::Types::Perl 'affordance';
+
+  BEGIN {
+      # Create a Class::Meta object for this class.
+      my $cm = Class::Meta->new( key => 'thingy' );
+
+      # Add an integer attribute.
+      $cm->add_attribute( name => 'my_hash',
+                          type => 'hash' );
+      $cm->build;
+  }
+
+=head1 DESCRIPTION
+
+This module provides Perl data types for use with Class::Meta attributes.
+Simply load it, then pass the name of one of its types to the
+C<add_attribute()> method of a Class::Meta object. See
+L<Class::Meta::Type|Class::Meta::Type> for more information on using and
+creating data types.
+
+The validation checks for Class::Meta::Types::Perl are provided by the
+Class::Meta::Type's support for object type validation, since Perl data types
+are understood by C<UNIVERSAL::isa()>.
+
+The data types created by Class::Meta::Types::Perl are:
+
+=over
+
+=item scalar
+
+A simple scalar value. This can be anything, and has no validation checks.
+
+=item scalarref
+
+A scalar reference. C<UNIVERSAL::isa()> must return 'SCALAR'.
+
+=item array
+
+=item arrayref
+
+A array reference. C<UNIVERSAL::isa()> must return 'ARRAY'.
+
+=item hash
+
+=item hashref
+
+A hash reference. C<UNIVERSAL::isa()> must return 'HASH'.
+
+=item code
+
+=item coderef
+
+=item closure
+
+A code reference. Also known as a closure. C<UNIVERSAL::isa()> must return
+'CODE'.
+
+=back
+
+=cut
 
 use strict;
 use Class::Meta::Type;
@@ -55,3 +127,50 @@ sub import {
 
 1;
 __END__
+
+=head1 AUTHOR
+
+David Wheeler <david@kineticode.com>
+
+=head1 SEE ALSO
+
+Other classes of interest within the Class::Meta distribution include:
+
+=over 4
+
+=item L<Class::Meta|Class::Meta>
+
+This class contains most of the documentation you need to get started with
+Class::Meta.
+
+=item L<Class::Meta::Type|Class::Meta::Type>
+
+This class manages the creation of data types.
+
+=item L<Class::Meta::Attribute|Class::Meta::Attribute>
+
+This class manages Class::Meta class attributes, all of which are based on
+data types.
+
+=back
+
+Other data type modules:
+
+=over 4
+
+=item L<Class::Meta::Types::String|Class::Meta::Types::String>
+
+=item L<Class::Meta::Types::Boolean|Class::Meta::Types::Boolean>
+
+=item L<Class::Meta::Types::Numeric|Class::Meta::Types::Numeric>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2002-2004, David Wheeler. All Rights Reserved.
+
+This module is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut

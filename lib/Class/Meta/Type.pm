@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.19 2004/01/09 00:04:42 david Exp $
+# $Id: Type.pm,v 1.20 2004/01/09 03:35:53 david Exp $
 
 =head1 NAME
 
@@ -12,7 +12,7 @@ Class::Meta::Type - Data type validation and accessor building.
 
   use strict;
   use Class::Meta::Type;
-  use Socket;
+  use IO::Socket;
 
   my $type = Class::Meta::Type->add( key  => 'io_socket',
                                      desc => 'IO::Socket object',
@@ -146,7 +146,8 @@ following modules:
 
 =back
 
-Read the docs for the individual modules for details on their data types.
+Read the documentation for the individual modules for details on their data
+types.
 
 =cut
 
@@ -172,7 +173,7 @@ parameter arguments are:
 
 =item key
 
-Required. The key with which the datatype can be looked up in the future via a
+Required. The key with which the data type can be looked up in the future via a
 call to C<new()>. Note that the key will be used case-insensitively, so "foo",
 "Foo", and "FOO" are equivalent, and the key must be unique.
 
@@ -258,56 +259,11 @@ for more information.
 
 Pass in the name of a package that contains the functions C<build()>,
 C<build_attr_get()>, and C<build_attr_set()>. These functions will be used to
-create the necessary accessors for an attribute.
-
-The C<build()> function creates and installs the actual accessor methods in a
-class. It should expect the following arguments:
-
-  sub build {
-      my ($class, $attribute, $create, @checks) = @_;
-      # ...
-  }
-
-These are:
-
-=over 4
-
-=item C<$class>
-
-The name of the class into which the accessors are to be installed.
-
-=item C<$attribute>
-
-A Class::Meta::Attribute object representing the attribute for which accessors
-are to be created.
-
-=item C<$create>
-
-The value of the C<create> paramter passed to Class::Meta::Attribute when the
-attribute object was created.. Use this argument to determine what type of
-accessor(s) to create. See L<Class::Meta::Attribute|Class::Meta::Attribute>
-for the possible values for this argument.
-
-=item <@checks>
-
-A list of one or more data type validation code references. Use these in any
-accessors that set attribute values to check that the new value has a valid
-value.
+create the necessary accessors for an attribute. See L<Custom Accessor
+Building|"Custom Accessor Building"> for details on creating your own
+accessor builders.
 
 =back
-
-See L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for example
-attribute creation functions.
-
-=back
-
-The C<build_attr_get()> and C<build_attr_set()> functions take a single
-argument, the name of an attribute, and return code references that call the
-appropriate accessor methods to get and set an attribute, respectively. The
-code references will be used by Class::Meta::Attribute's C<call_get()> and
-C<call_set()> methods to get and set attribute values. Again, see
-L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for examples
-before creating your own.
 
 =back
 
@@ -390,33 +346,23 @@ before creating your own.
 # Instance methods.
 ##############################################################################
 
-=head1 INSTANCE METHODS
+=head1 INTERFACE
 
-=head2 key
+=head2 Instance Methods
+
+=head3 key
 
   my $key = $type->key;
 
 Returns the key name for the type.
 
-=cut
-
-sub key  { $_[0]->{key}  }
-
-##############################################################################
-
-=head2 name
+=head3 name
 
   my $name = $type->name;
 
 Returns the type name.
 
-=cut
-
-sub name { $_[0]->{name} }
-
-##############################################################################
-
-=head2 check
+=head3 check
 
   my $checks = $type->check;
   my @checks = $type->check;
@@ -426,19 +372,16 @@ for the data type.
 
 =cut
 
+sub key  { $_[0]->{key}  }
+sub name { $_[0]->{name} }
 sub check  {
     return unless $_[0]->{check};
     wantarray ? @{$_[0]->{check}} : $_[0]->{check}
 }
 
 ##############################################################################
-
-=head2 build
-
-Builds the accessors for an attribute of the data type. This method can only
-be called by Class::Meta::Attribute or a subclass of Class::Meta::Attribute.
-
-=cut
+# Private methods.
+##############################################################################
 
 sub build {
     # Check to make sure that only Class::Meta or a subclass is building
@@ -455,17 +398,6 @@ sub build {
 
 ##############################################################################
 
-=head2 make_attr_set
-
-  my $attr_name = 'foo';
-  my $code = $type->make_attr_set($attr_name);
-
-Returns a code reference that will be used by the
-C<Class::Meta::Attribute::call_set()> method to set the value of an object.
-Called by Class::Meta::Attribute, and otherwise should not be used.
-
-=cut
-
 sub make_attr_set {
     my $self = shift;
     my $code = $self->{attr_set};
@@ -473,17 +405,6 @@ sub make_attr_set {
 }
 
 ##############################################################################
-
-=head2 make_attr_get
-
-  my $attr_name = 'foo';
-  my $code = $type->make_attr_get_builder($attr_name);
-
-Returns a code reference that will be used by the
-C<Class::Meta::Attribute::call_get()> method to retrieve the value of an
-object. Called by Class::Meta::Attribute, and otherwise should not be used.
-
-=cut
 
 sub make_attr_get {
     my $self = shift;
@@ -494,14 +415,178 @@ sub make_attr_get {
 1;
 __END__
 
+=head1 CUSTOM DATA TYPES
+
+Creating custom data types can be as simple as calling C<add()> and passing in
+the name of a class for the C<check> parameter. This is especially useful when
+you just need to create attributes that contain objects of a particular type,
+and you're happy with the accessors that Class::Meta will create for you. For
+example, if you needed a data type for a DateTime object, you can set it
+up--complete with validation of the data type, like this:
+
+  my $type = Class::Meta::Type->add( key   => 'datetime',
+                                     check => 'DateTime',
+                                     desc  => 'DateTime object',
+                                     name  => 'DateTime Object' );
+
+From then on, you can create attributes of the type "datetime" without any
+further work. If you wanted to use affordance accessors, you'd simply
+add the requisite C<builder> attribute:
+
+  my $type = Class::Meta::Type->add( key     => 'datetime',
+                                     check   => 'DateTime',
+                                     builder => 'affordance',
+                                     desc    => 'DateTime object',
+                                     name    => 'DateTime Object' );
+
+Other than that, adding other data types is really a matter of the judicious
+use of the C<check> parameter. Ultimately, all attributes are scalar
+values. Whether they adhere to a particular data type depends entirely on the
+validation code references passed via C<check>. For example, if you wanted to
+create a "range" attribute with only the allowed values 1-5, you could do it
+like this:
+
+  my $range_chk = sub {
+      my $value = shift;
+      die "Value is not a number" unless $value =~ /^[1..5]$/;
+  };
+
+  my $type = Class::Meta::Type->add( key   => 'range',
+                                     check => $range_chk,
+                                     desc  => 'Pick a number between 1 and 5',
+                                     name  => 'Range (1-5)' );
+
+Of course, the above value validator will throw an exception with the
+line number from which C<die> is called. Even better is to use L<Carp|Carp>
+to throw an error with the file and line number of the client code:
+
+  my $range_chk = sub {
+      my $value = shift;
+      return if $value =~ /^[1..5]$/;
+      require Carp;
+      our @CARP_NOT = qw(Class::Meta::Attribute);
+      Carp::croak("Value is not a number");
+  };
+
+The C<our @CARP_NOT> line prevents the context from being thrown from within
+Class::Meta::Attribute, which is useful if you make use of that class'
+C<call_set()> method.
+
+=head2 Custom Accessor Building
+
+Class::Meta also allows you to craft your own accessors. Perhaps you'd prefer
+a semi-affordance accessor standard, where the get accessor has the same name
+as your attribute, and the set accessor is preceded by C<set_>. In that case,
+you'll need to create your own module that builds accessors. I recommend that
+you study L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> and
+LLClass::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
+before taking on creating your own.
+
+Custom accessor building modules must have three functions.
+
+=head3 build
+
+The C<build()> function creates and installs the actual accessor methods in a
+class. It should expect the following arguments:
+
+  sub build {
+      my ($class, $attribute, $create, @checks) = @_;
+      # ...
+  }
+
+These are:
+
+=over 4
+
+=item C<$class>
+
+The name of the class into which the accessors are to be installed.
+
+=item C<$attribute>
+
+A Class::Meta::Attribute object representing the attribute for which accessors
+are to be created. Use it to determine what types of accessors to create
+(read-only, write-only, or read/write, class or object), and to add checks for
+requiredness and accessibility (if the attribute is private or protected).
+
+=item C<$create>
+
+The value of the C<create> paramter passed to Class::Meta::Attribute when the
+attribute object was created. Use this argument to determine what type of
+accessor(s) to create. See L<Class::Meta::Attribute|Class::Meta::Attribute>
+for the possible values for this argument.
+
+=item <@checks>
+
+A list of one or more data type validation code references. Use these in any
+accessors that set attribute values to check that the new value has a valid
+value.
+
+=back
+
+See L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for example
+attribute creation functions.
+
+=head3 build_attr_get and build_attr_set
+
+The C<build_attr_get()> and C<build_attr_set()> functions take a single
+argument, a Class::Meta::Attribute object, and return code references that
+either represent the corresponding methods, or that call the appropriate
+accessor methods to get and set an attribute, respectively. The code
+references will be used by Class::Meta::Attribute's C<call_get()> and
+C<call_set()> methods to get and set attribute values. Again, see
+L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for examples
+before creating your own.
+
 =head1 AUTHOR
 
 David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
-L<Class::Meta|Class::Meta>, L<Class::Meta::Attribute|Class::Meta::Attribute>,
-L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder>.
+Other classes of interest within the Class::Meta distribution include:
+
+=over 4
+
+=item L<Class::Meta|Class::Meta>
+
+This class contains most of the documentation you need to get started with
+Class::Meta.
+
+=item L<Class::Meta::Attribute|Class::Meta::Attribute>
+
+This class manages Class::Meta class attributes, all of which are based on
+data types.
+
+=back
+
+These modules provide some data types to get you started:
+
+=over 4
+
+=item L<Class::Meta::Types::Perl|Class::Meta::Types::Perl>
+
+=item L<Class::Meta::Types::String|Class::Meta::Types::String>
+
+=item L<Class::Meta::Types::Boolean|Class::Meta::Types::Boolean>
+
+=item L<Class::Meta::Types::Numeric|Class::Meta::Types::Numeric>
+
+=back
+
+The modules that Class::Meta comes with for creating accessors are:
+
+=over 4
+
+=item L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder>
+
+Standard Perl-style accessors.
+
+=item L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
+
+Affordance accessors--that is, explicit and independent get and set accessors.
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -1,23 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.23 2004/01/09 01:14:46 david Exp $
-
-use strict;
-use Class::ISA ();
-use Class::Meta;
-use Class::Meta::Attribute;
-use Class::Meta::Method;
-
-##############################################################################
-# Package Globals                                                            #
-##############################################################################
-our $VERSION = "0.01";
-our @CARP_NOT = qw(Class::Meta);
-
-##############################################################################
-# Private Package Globals
-##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+# $Id: Class.pm,v 1.24 2004/01/09 03:35:53 david Exp $
 
 =head1 NAME
 
@@ -29,7 +12,7 @@ Class::Meta::Class - Class::Meta class introspection
   my $class = MyApp::Thingy->class;
   my $thingy = MyApp::Thingy->new;
 
-  print "Examing object of class ", $class->package, $/;
+  print "Examining object of class ", $class->package, $/;
 
   print "\nConstructors:\n";
   for my $ctor ($class->constructors) {
@@ -50,8 +33,8 @@ Class::Meta::Class - Class::Meta class introspection
 
 Object of this class describe classes created by Class::Meta. They contain
 everything you need to know about a class to be able to put objects of that
-class to good use. In addition to retreiveing metadata about the class itself,
-you can retreive objects that describe the constructors, attributes, and
+class to good use. In addition to retrieving metadata about the class itself,
+you can retrieve objects that describe the constructors, attributes, and
 methods of the class. See C<Class::Meta|Class::Meta> for a fuller description
 of the utility of the Class::Meta suite of modules.
 
@@ -59,9 +42,27 @@ Class::Meta::Class objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the class object for a
 Class::Meta-generated class, simply call its C<class> method.
 
-=head1 INTERFACE
-
 =cut
+
+##############################################################################
+# Dependencies                                                               #
+##############################################################################
+use strict;
+use Class::ISA ();
+use Class::Meta;
+use Class::Meta::Attribute;
+use Class::Meta::Method;
+
+##############################################################################
+# Package Globals                                                            #
+##############################################################################
+our $VERSION = "0.01";
+our @CARP_NOT = qw(Class::Meta);
+
+##############################################################################
+# Private Package Globals
+##############################################################################
+my $croak = sub { require Carp; Carp::croak(@_) };
 
 ##############################################################################
 # Constructors                                                               #
@@ -98,6 +99,8 @@ Class::Meta-generated class, simply call its C<class> method.
 ##############################################################################
 # Instance Methods
 ##############################################################################
+
+=head1 INTERFACE
 
 =head2 Instance Methods
 

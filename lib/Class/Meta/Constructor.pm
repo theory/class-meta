@@ -1,8 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.24 2004/01/09 01:14:46 david Exp $
-
-use strict;
+# $Id: Constructor.pm,v 1.25 2004/01/09 03:35:53 david Exp $
 
 =head1 NAME
 
@@ -27,7 +25,7 @@ label, and the constructor visibility (private, protected, or public).
 
 Class::Meta::Constructor objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the constructor objects for a
-Class::Meta-generated class, simply call its C<class> method to retreive its
+Class::Meta-generated class, simply call its C<class> method to retrieve its
 Class::Meta::Class object, and then call the C<constructors()> method on the
 Class::Meta::Class object.
 
@@ -278,7 +276,3 @@ This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
 =cut
-
-
-1;
-__END__
