@@ -1,9 +1,10 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.10 2003/11/21 23:03:16 david Exp $
+# $Id: Class.pm,v 1.11 2003/11/22 03:14:14 david Exp $
 
 use strict;
 use Carp ();
+use Class::ISA ();
 use Class::Meta;
 use Class::Meta::Attribute;
 use Class::Meta::Method;
@@ -29,8 +30,25 @@ use Class::Meta::Method;
         # Save a reference to the spec hash ref.
         $specs{$spec->{class}} = $spec;
 
-        # Okay, create the object.
-        return bless { package => $spec->{class} }, ref $pkg || $pkg;
+        # Okay, create the class object.
+        my $class = bless { package => $spec->{class} }, ref $pkg || $pkg;
+
+        # XXX Is there a way to make this any better, so it's not storing
+        # XXX copies of what's in ever parent class?
+        # Copy any attributes, constructors, or methods from its parents.
+        if (my @classes = Class::ISA::super_path($spec->{class})) {
+            for my $key (qw(attr ctor meth)) {
+                for my $super (@classes) {
+                    $spec->{$key} = { %{ $specs{$super}{$key} } };
+                    $spec->{"$key\_ord"} =
+                      [ @{ $specs{$super}{"$key\_ord"} } ];
+                    $spec->{"prot_$key\_ord"} =
+                      [ @{ $specs{$super}{"prot_$key\_ord"} } ];
+                }
+            }
+        }
+
+        return $class;
     }
 
     ##########################################################################
