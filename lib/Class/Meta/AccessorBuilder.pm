@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.6 2004/01/09 03:35:53 david Exp $
+# $Id: AccessorBuilder.pm,v 1.7 2004/01/09 03:50:21 david Exp $
 
 =head1 NAME
 
@@ -64,6 +64,7 @@ so in a future release.
 
 use strict;
 use Class::Meta;
+our $VERSION = "0.10";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);

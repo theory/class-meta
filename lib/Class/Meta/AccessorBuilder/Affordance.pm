@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.7 2004/01/09 03:35:54 david Exp $
+# $Id: Affordance.pm,v 1.8 2004/01/09 03:50:22 david Exp $
 
 =head1 NAME
 
@@ -65,6 +65,7 @@ contexts, but may do so in a future release.
 
 use strict;
 use Class::Meta;
+our $VERSION = "0.10";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, 'get_' . $_[0]->name);

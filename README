@@ -1,4 +1,4 @@
-Class/Meta version 0.01
+Class/Meta version 0.10
 =======================
 
 Class::Meta provides an interface for automating the creation of Perl classes
@@ -11,10 +11,9 @@ JUSTIFICATION
 
 One might argue that there are already too many class automation and parameter
 validation modules on CPAN. And one would be right. They range from simple
-accessor generators, such as L<Class::Accessor|Class::Accessor>, to simple
-parameter validators, such as L<Params::Validate|Params::Validate>, to more
-comprehensive systems, such as L<Class::Contract|Class::Contract> and
-L<Class::Tangram|Class::Tangram>. But, naturally, none of them could do
+accessor generators, such as Class::Accessor, to simple parameter validators,
+such as Params::Validate, to more comprehensive systems, such as
+Class::Contract and Class::Tangram. But, naturally, none of them could do
 exactly what I needed.
 
 What I needed was an implementation of the "Facade" design pattern. Okay, this
