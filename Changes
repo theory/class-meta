@@ -1,5 +1,18 @@
 Revision history for Perl extension Class::Meta.
 
+0.13  
+      - For default accessors, object and class attribute accessors were
+        reversed.
+      - Private and protected attributes now are truly private and protected
+        if they're constructed by the accessor builder packages that come with
+        Class::Meta.
+      - The call_get() and call_set() methods of Class::Meta::Attribute and
+        the call() methods of Class::Meta::Constructor and
+        Class::Meta::::Method now use goto to execute the true methods. This
+        removes the call to call_get() or call_set() or call() from the call
+        stack trace, and makes it possible for the private and protected
+        checks to always work properly.
+
 0.12  2004-01-17T20:25:58
       - The class "name" attribute now defaults to be the same as the key
         if it is not explicitly set.

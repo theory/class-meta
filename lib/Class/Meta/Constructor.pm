@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.30 2004/01/16 19:13:33 david Exp $
+# $Id: Constructor.pm,v 1.31 2004/01/20 21:15:01 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 ##############################################################################
 # Private Package Globals
@@ -182,7 +182,9 @@ sub view    { $_[0]->{view}    }
 
   my $obj = $ctor->call(@params);
 
-Executes the constructor for the class, passing the parameters to it.
+Executes the constructor for the class, passing the parameters to it. Note
+that it uses a C<goto> to execute the constructor, so the call to C<call()>
+itself will not appear in a call stack trace.
 
 =cut
 
@@ -190,7 +192,7 @@ sub call {
     my $self = shift;
     my $code = $self->{caller}
       or $croak->("Cannot call constructor '", $self->name, "'");
-    $code->(@_);
+    goto &$code;
 }
 
 ##############################################################################
@@ -224,11 +226,9 @@ sub build {
                 # Skip class attributes.
                 next if $attr->context == Class::Meta::CLASS;
                 my $key = $attr->name;
-                if ($attr->authz >= Class::Meta::SET) {
+                if (exists $p{$key} && $attr->authz >= Class::Meta::SET) {
                     # Let them set the value.
-                    $attr->call_set($new, exists $p{$key}
-                                      ? delete $p{$key}
-                                      : $attr->default);
+                    $attr->call_set($new, delete $p{$key});
                 } else {
                     # Use the default value.
                     $new->{$key} = $attr->default;

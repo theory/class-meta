@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.24 2004/01/17 19:50:24 david Exp $
+# $Id: base.t,v 1.25 2004/01/20 21:15:01 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -70,6 +70,7 @@ BEGIN {
     $c->add_attribute( name     => 'count',
                        type     => 'integer',
                        label    => 'Count',
+                       context  => Class::Meta::CLASS,
                        default  => 0,
                    );
 

@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.10 2004/01/17 19:50:24 david Exp $
+# $Id: AccessorBuilder.pm,v 1.11 2004/01/20 21:15:01 david Exp $
 
 =head1 NAME
 
@@ -94,7 +94,7 @@ the vast majority of circumstances.
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -104,7 +104,7 @@ sub build_attr_get {
 
 my $croak = sub {
     require Carp;
-    our @CARP_NOT = qw(Class::Meta::Attribute);
+    our @CARP_NOT = qw(Class::Meta::Attribute Class::Meta::Constructor);
     Carp::croak(@_);
 };
 
@@ -114,26 +114,25 @@ my $req_chk = sub {
 
 sub build {
     my ($pkg, $attr, $create, @checks) = @_;
-    unshift @checks, $req_chk if $attr->required;
     my $name = $attr->name;
 
-    # XXX Do I need to add code to check the caller and throw an exception for
-    # private and protected methods?
+    # Add the required check, if needed.
+    unshift @checks, $req_chk if $attr->required;
 
-    no strict 'refs';
-    if ($attr->context == Class::Meta::OBJECT) {
+    my $sub;
+    if ($attr->context == Class::Meta::CLASS) {
         # Create class attribute accessors by creating a closure tha
         # references this variable.
         my $data = $attr->default;
 
         if ($create == Class::Meta::GET) {
             # Create GET accessor.
-            *{"${pkg}::$name"} = sub { $data };
+            $sub = sub { $data };
 
         } elsif ($create == Class::Meta::SET) {
             # Create SET accessor.
             if (@checks) {
-                *{"${pkg}::$name"} = sub {
+                $sub = sub {
                     # Check the value passed in.
                     $_->($_[1]) for @checks;
                     # Assign the value.
@@ -141,7 +140,7 @@ sub build {
                     return;
                 };
             } else {
-                *{"${pkg}::$name"} = sub {
+                $sub = sub {
                     # Assign the value.
                     $data = $_[1];
                     return;
@@ -151,7 +150,7 @@ sub build {
         } elsif ($create == Class::Meta::GETSET) {
             # Create GETSET accessor(s).
             if (@checks) {
-                *{"${pkg}::$name"} = sub {
+                $sub = sub {
                     my $self = shift;
                     return $data unless @_;
                     # Check the value passed in.
@@ -160,7 +159,7 @@ sub build {
                     return $data = $_[0];
                 };
             } else {
-                *{"${pkg}::$name"} = sub {
+                $sub = sub {
                     my $self = shift;
                     return $data unless @_;
                     # Assign the value.
@@ -170,54 +169,84 @@ sub build {
         } else {
             # Well, nothing I guess.
         }
-        return
-    }
-
-    # Create object attribute accessors.
-    if ($create == Class::Meta::GET) {
-        # Create GET accessor.
-        *{"${pkg}::$name"} = sub { $_[0]->{$name} };
-
-    } elsif ($create == Class::Meta::SET) {
-        # Create SET accessor.
-        if (@checks) {
-            *{"${pkg}::$name"} = sub {
-                # Check the value passed in.
-                $_->($_[1]) for @checks;
-                # Assign the value.
-                $_[0]->{$name} = $_[1];
-                return;
-            };
-        } else {
-            *{"${pkg}::$name"} = sub {
-                # Assign the value.
-                $_[0]->{$name} = $_[1];
-                return;
-            };
-        }
-
-    } elsif ($create == Class::Meta::GETSET) {
-        # Create GETSET accessor(s).
-        if (@checks) {
-            *{"${pkg}::$name"} = sub {
-                my $self = shift;
-                return $self->{$name} unless @_;
-                # Check the value passed in.
-                $_->($_[0]) for @checks;
-                # Assign the value.
-                return $self->{$name} = $_[0];
-            };
-        } else {
-            *{"${pkg}::$name"} = sub {
-                my $self = shift;
-                return $self->{$name} unless @_;
-                # Assign the value.
-                return $self->{$name} = shift;
-            };
-        }
     } else {
-        # Well, nothing I guess.
+        # Create object attribute accessors.
+        if ($create == Class::Meta::GET) {
+            # Create GET accessor.
+            $sub = sub { $_[0]->{$name} };
+
+        } elsif ($create == Class::Meta::SET) {
+            # Create SET accessor.
+            if (@checks) {
+                $sub = sub {
+                    # Check the value passed in.
+                    $_->($_[1]) for @checks;
+                    # Assign the value.
+                    $_[0]->{$name} = $_[1];
+                    return;
+                };
+            } else {
+                $sub = sub {
+                    # Assign the value.
+                    $_[0]->{$name} = $_[1];
+                    return;
+                };
+            }
+
+        } elsif ($create == Class::Meta::GETSET) {
+            # Create GETSET accessor(s).
+            if (@checks) {
+                $sub = sub {
+                    my $self = shift;
+                    return $self->{$name} unless @_;
+                    # Check the value passed in.
+                    $_->($_[0]) for @checks;
+                    # Assign the value.
+                    return $self->{$name} = $_[0];
+                };
+            } else {
+                $sub = sub {
+                    my $self = shift;
+                    return $self->{$name} unless @_;
+                    # Assign the value.
+                    return $self->{$name} = shift;
+                };
+            }
+        } else {
+            # Well, nothing I guess.
+        }
     }
+
+    # Add public an private checks, if required.
+    if ($attr->view == Class::Meta::PROTECTED) {
+        my $real_sub = $sub;
+         $sub = sub {
+             my $caller = caller;
+             # Circumvent generated constructors.
+             for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
+                 $caller = caller($i);
+             }
+             $croak->("$name is a protected attribute of $pkg!")
+               unless UNIVERSAL::isa($caller, $pkg);
+             goto &$real_sub;
+        };
+    } elsif ($attr->view == Class::Meta::PRIVATE) {
+        my $real_sub = $sub;
+        $sub = sub {
+             my $caller = caller;
+             # Circumvent generated constructors.
+             for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
+                 $caller = caller($i);
+             }
+             $croak->("$name is a private attribute of $pkg!")
+               unless $caller eq $pkg;
+             goto &$real_sub;
+         };
+    }
+
+    # Install the accessor.
+    no strict 'refs';
+    *{"${pkg}::$name"} = $sub;
 }
 
 1;

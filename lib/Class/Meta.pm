@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.60 2004/01/17 20:29:15 david Exp $
+# $Id: Meta.pm,v 1.61 2004/01/20 21:15:00 david Exp $
 
 =head1 NAME
 
@@ -886,10 +886,6 @@ __END__
 =item *
 
 Allow attributes to get a new value once and only once.
-
-=item *
-
-Add errors for calling protected and private methods where one shouldn't.
 
 =back
 

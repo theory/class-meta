@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.32 2004/01/17 19:50:24 david Exp $
+# $Id: Attribute.pm,v 1.33 2004/01/20 21:15:01 david Exp $
 
 =head1 NAME
 
@@ -45,7 +45,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 ##############################################################################
 # Private Package Globals
@@ -294,8 +294,10 @@ sub default {
 
   my $value = $attr->call_get($thingy);
 
-This method calls the accessor method on the object passed as the sole
-argument and returns the value of the attribute for that object.
+This method calls the "get" accessor method on the object passed as the sole
+argument and returns the value of the attribute for that object. Note that it
+uses a C<goto> to execute the accessor, so the call to C<call_set()> itself
+will not appear in a call stack trace.
 
 =cut
 
@@ -303,7 +305,7 @@ sub call_get   {
     my $self = shift;
     my $code = $self->{_get}
       or $croak->("Cannot get attribute '", $self->name, "'");
-    $code->(@_);
+    goto &$code;
 }
 
 ##############################################################################
@@ -312,9 +314,11 @@ sub call_get   {
 
   $attr->call_set($thingy, $new_value);
 
-This method calls the accessor method on the object passed as the first
+This method calls the "set" accessor method on the object passed as the first
 argument and passes any remaining arguments to assign a new value to the
-attribute for that object.
+attribute for that object. Note that it uses a C<goto> to execute the
+accessor, so the call to C<call_set()> itself will not appear in a call stack
+trace.
 
 =cut
 
@@ -322,7 +326,7 @@ sub call_set   {
     my $self = shift;
     my $code = $self->{_set}
       or $croak->("Cannot set attribute '", $self->name, "'");
-    $code->(@_);
+    goto &$code;
 }
 
 ##############################################################################
