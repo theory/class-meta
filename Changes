@@ -8,6 +8,9 @@ Revision history for Perl extension Class::Meta.
         attribute are passed. If the attribute is a class attribute, then the
         second argument is a hash reference containing the existing value and
         the name of the package.
+      - Thanks the the presence of the attribute object as an argument to
+        check code references, the name of the attribute is now included in
+        exceptions thrown for "once" and "required" attributes.
 
 0.20  2004-01-28T22:03:09
       - Added more documentation to the Class::Meta synopsis that highlights

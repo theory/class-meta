@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.21 2004/04/18 18:37:08 david Exp $
+# $Id: AccessorBuilder.pm,v 1.22 2004/04/18 18:43:26 david Exp $
 
 =head1 NAME
 
@@ -150,12 +150,13 @@ my $croak = sub {
 };
 
 my $req_chk = sub {
-    $croak->("Attribute must be defined") unless defined $_[0];
+    $croak->("Attribute ", $_[2]->name, " must be defined")
+      unless defined $_[0];
 };
 
 my $once_chk = sub {
-    $croak->("Attribute can only be set once")
-      if defined $_[1]->{$_[2]->{name}};
+    $croak->("Attribute ", $_[2]->name, " can only be set once")
+      if defined $_[1]->{$_[2]->name};
 };
 
 sub build {
