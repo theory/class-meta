@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.41 2004/01/08 17:57:23 david Exp $
+# $Id: Meta.pm,v 1.42 2004/01/08 18:03:19 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -83,26 +83,21 @@ Class::Meta - Class automation, introspection, and data validation
                      authz    => Class::Meta::READ,
                      type     => 'integer',
                      required => 1,
-                     default  => sub { ... }
-                  );
+                     default  => sub { ... } );
       $cm->add_attr( name     => 'name',
                      type     => 'string',
                      required => 1,
-                     default  => undef,
-                  );
+                     default  => undef );
       $cm->add_attr( name     => 'age',
                      type     => 'inteter',
                      required => 0,
-                     default  => undef,
-                  );
+                     default  => undef );
 
       # Add a custom method.
-      $cm->add_meth( name  => 'chk_pass',
-                     view   => Class::Meta::PUBLIC,
-                  );
+      $cm->add_meth( name => 'chk_pass',
+                     view => Class::Meta::PUBLIC );
       $cm->build;
   }
-
 
 =head1 DESCRIPTION
 
@@ -164,8 +159,7 @@ class:
 
       # Add an attribute.
       $cm->add_attr( name   => 'tail',
-                     type   => 'scalar',
-                  );
+                     type   => 'scalar' );
 
       # Add a custom method.
       $cm->add_meth( name   => 'wag' );
@@ -376,8 +370,12 @@ the string "affordance" to them when you load them:
 
 The boolean data type is the only one that uses a slightly different approach
 to the creation of affordance accessors: It creates three of them. Assuming
-you're creating a boolean attribute named "alive", it will create the
-accessors C<is_alive>, C<set_alive_on>, and C<set_alive_off>.
+you're creating a boolean attribute named "alive", it will create these
+accessors:
+
+  sub is_alive      { shift->{alive} }
+  sub set_alive_on  { shift->{alive} = 1 }
+  sub set_alive_off { shift->{alive} = 0 }
 
 Incidentally, I stole the term "affordance" from Damian Conway's "Object
 Oriented Perl," pp 83-84, where he borrows it from Donald Norman.
