@@ -1,13 +1,12 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.46 2004/01/08 19:06:04 david Exp $
+# $Id: Meta.pm,v 1.47 2004/01/08 21:32:19 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
 ##############################################################################
 use 5.008;
 use strict;
-use warnings;
 
 ##############################################################################
 # Constants                                                                  #
@@ -65,7 +64,6 @@ Class::Meta - Class automation, introspection, and data validation
 
   package MyApp::Thingy;
   use strict;
-  use warnings;
   use Class::Meta;
   use Class::Meta::Types::String;
   use Class::Meta::Types::Numeric;
@@ -145,7 +143,6 @@ class:
 
   package MyApp::Dog;
   use strict;
-  use warnings;
   use Class::Meta;
   use Class::Meta::Types::Perl;
 
@@ -562,10 +559,6 @@ Class::Meta::Method.
         # Class defaults to caller. Key defaults to class.
         $p{key} ||= $p{package} ||= caller;
 
-        # Make sure we haven't been here before.
-        $croak->("Class '$p{package}' already created")
-          if exists $classes{$p{package}};
-
         $p{class_class} ||= 'Class::Meta::Class';
         $p{ctor_class} ||= 'Class::Meta::Constructor';
         $p{attr_class} ||= 'Class::Meta::Attribute';
@@ -894,7 +887,7 @@ Add ability to create object attribute accessors.
 
 =item *
 
-Add tests for all errors.
+Allow attributes to get a new value once and only once.
 
 =item *
 

@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.22 2004/01/08 18:41:55 david Exp $
+# $Id: Constructor.pm,v 1.23 2004/01/08 21:32:19 david Exp $
 
 use strict;
 
@@ -33,18 +33,20 @@ C<Class::Meta::Class> object.
 # Dependencies                                                               #
 ##############################################################################
 use strict;
-use warnings;
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
 our $VERSION = "0.01";
-our @CARP_NOT = qw(Class::Meta);
 
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+my $croak = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta);
+    Carp::croak(@_);
+};
 
 ##############################################################################
 # Constructors                                                               #
@@ -107,7 +109,7 @@ sub new {
     # Validate the name.
     $croak->("Parameter 'name' is required in call to new()")
       unless $p{name};
-    $croak->("Method '$p{name}' is not a valid method name "
+    $croak->("Constructor '$p{name}' is not a valid constructor name "
              . "-- only alphanumeric and '_' characters allowed")
       if $p{name} =~ /\W/;
 
@@ -134,7 +136,8 @@ sub new {
         $croak->("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE'
       } else {
-          $p{caller} = eval "sub { shift->$p{name}(\@_) }";
+          $p{caller} = eval "sub { shift->$p{name}(\@_) }"
+            if $p{view} > Class::Meta::PRIVATE;
       }
 
     # Create and cache the constructor object.
@@ -205,15 +208,17 @@ sub package { $_[0]->{package} }
 
 =head2 call
 
-  my $ret = $ctor->call($obj);
+  my $obj = $ctor->call(@params);
 
-Executes the constructor on the $obj object.
+Executes the constructor for the class, passing the parameters to it.
 
 =cut
 
 sub call {
-    my $code = shift->{caller};
-    $code->(@_);
+    my $self = shift;
+    my $code = $self->{caller}
+      or $croak->("Cannot call constructor '", $self->name, "'");
+    $code->($self->{package}, @_);
 }
 
 sub build {

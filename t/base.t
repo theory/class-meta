@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.21 2004/01/08 19:06:04 david Exp $
+# $Id: base.t,v 1.22 2004/01/08 21:32:19 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -15,10 +15,9 @@ use Test::More tests => 81;
 
 package Class::Meta::TestPerson;
 use strict;
-use Carp;
 
 BEGIN {
-    main::use_ok( 'Class::Meta');
+    main::use_ok('Class::Meta');
     main::use_ok('Class::Meta::Types::Numeric');
     main::use_ok('Class::Meta::Types::String');
 }
@@ -33,49 +32,49 @@ BEGIN {
 
     # Add a constructor.
     $c->add_constructor( name => 'new',
-                  create  => 1 );
+                         create  => 1 );
 
     # Add a couple of attributes with created methods.
     $c->add_attribute( name     => 'id',
-                  view     => Class::Meta::PUBLIC,
-                  authz    => Class::Meta::READ,
-                  create   => Class::Meta::GET,
-                  type     => 'integer',
-                  label    => 'ID',
-                  desc     => "The person object's ID.",
-                  required => 1,
-                  default  => undef,
-                );
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::READ,
+                       create   => Class::Meta::GET,
+                       type     => 'integer',
+                       label    => 'ID',
+                       desc     => "The person object's ID.",
+                       required => 1,
+                       default  => undef,
+                   );
     $c->add_attribute( name     => 'name',
-                  view     => Class::Meta::PUBLIC,
-                  authz    => Class::Meta::RDWR,
-                  create   => Class::Meta::GETSET,
-                  type     => 'string',
-                  label    => 'Name',
-                  field    => 'text',
-                  desc     => "The person's name.",
-                  required => 1,
-                  default  => '',
-                );
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::RDWR,
+                       create   => Class::Meta::GETSET,
+                       type     => 'string',
+                       label    => 'Name',
+                       field    => 'text',
+                       desc     => "The person's name.",
+                       required => 1,
+                       default  => '',
+                   );
     $c->add_attribute( name     => 'age',
-                  view     => Class::Meta::PUBLIC,
-                  authz    => Class::Meta::RDWR,
-                  create   => Class::Meta::GETSET,
-                  type     => 'integer',
-                  label    => 'Age',
-                  field    => 'text',
-                  desc     => "The person's age.",
-                  required => 0,
-                  default  => undef,
-                );
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::RDWR,
+                       create   => Class::Meta::GETSET,
+                       type     => 'integer',
+                       label    => 'Age',
+                       field    => 'text',
+                       desc     => "The person's age.",
+                       required => 0,
+                       default  => undef,
+                   );
 
     # Add a couple of custom methods.
     $c->add_method( name  => 'chk_pass',
-                  view   => Class::Meta::PUBLIC,
+                    view   => Class::Meta::PUBLIC,
                 );
 
     $c->add_method( name  => 'shame',
-                  view   => Class::Meta::PUBLIC,
+                    view   => Class::Meta::PUBLIC,
                 );
 
     $c->build;

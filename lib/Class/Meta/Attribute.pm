@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.23 2004/01/08 19:06:04 david Exp $
+# $Id: Attribute.pm,v 1.24 2004/01/08 21:32:19 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -20,7 +20,11 @@ our $VERSION = "0.01";
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+my $croak = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta);
+    Carp::croak(@_);
+};
 
 =head1 NAME
 

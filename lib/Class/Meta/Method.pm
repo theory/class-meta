@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.17 2004/01/08 18:41:55 david Exp $
+# $Id: Method.pm,v 1.18 2004/01/08 21:32:19 david Exp $
 
 =head1 NAME
 
@@ -38,12 +38,15 @@ use strict;
 # Package Globals                                                            #
 ##############################################################################
 our $VERSION = "0.01";
-our @CARP_NOT = qw(Class::Meta);
 
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-my $croak = sub { require Carp; Carp::croak(@_) };
+my $croak = sub {
+    require Carp;
+    our @CARP_NOT = qw(Class::Meta);
+    Carp::croak(@_);
+};
 
 ##############################################################################
 # Constructors                                                               #
@@ -149,7 +152,8 @@ sub new {
         $croak->("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE'
       } else {
-          $p{caller} = eval "sub { shift->$p{name}(\@_) }";
+          $p{caller} = eval "sub { shift->$p{name}(\@_) }"
+            if $p{view} > Class::Meta::PRIVATE;
       }
 
     # Create and cache the method object.
@@ -245,7 +249,9 @@ Executes the method on the $obj object.
 =cut
 
 sub call {
-    my $code = shift->{caller};
+    my $self = shift;
+    my $code = $self->{caller}
+      or $croak->("Cannot call method '", $self->name, "'");
     $code->(@_);
 }
 
