@@ -23,6 +23,7 @@ use Carp;
 use Class::Meta::Class;
 use Class::Meta::Property;
 use Class::Meta::Method;
+use Params::Validate ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -108,29 +109,106 @@ my $add_memb;
 ##############################################################################
 # Instance Methods                                                           #
 ##############################################################################
+# Simple accessors.
     sub my_class { $classes{ $_[0]->{pkg} }->{class} }
     sub set_name { $classes{ $_[0]->{pkg} }->{class}{name} = $_[1] }
     sub set_desc { $classes{ $_[0]->{pkg} }->{class}{desc} = $_[1] }
 
+##############################################################################
+# add_prop()
+    my $pvscalar = Params::Validate::SCALAR;
+    my $chkname = { 'valid name' => sub { $_[0] !~ /\W/ } };
+
+    # Set up Params::Validate spec for Property objects.
+    my $prop_defs = { name  => { type => $pvscalar, callbacks => $chkname },
+		      vis   => { type => $pvscalar, default => PUBLIC },
+		      auth  => { type => $pvscalar, default => RDWR },
+		      gen   => { type => $pvscalar, default => undef },
+		      type  => { type => $pvscalar, default => 'string' },
+		      label => { type => $pvscalar, default => '' },
+		      desc  => { type => $pvscalar, default => '' },
+		      req   => { type => $pvscalar, default => 0 },
+		      def   => { default => undef }
+		    };
+
     sub add_prop {
-	my ($self, %spec) = @_;
-	# NOTE: Add spec testing using Params::Validate;
+	my $self = shift;
+	my %spec = Params::Validate::validate(@_, $prop_defs);
+	$spec{vis} ||= $spec{auth}
 	return $add_memb->(PROP, $classes{ $self->{pkg} }, \%spec);
     }
 
+##############################################################################
+# add_meth()
+    # Set up Params::Validate spec for Method objects.
+    my $meth_defs =  { name  => { type => $pvscalar, callbacks => $chkname },
+		       vis   => { type => $pvscalar, default => PUBLIC },
+		       label => { type => $pvscalar, default => '' },
+		       desc  => { type => $pvscalar, default => '' }
+		    };
+
     sub add_meth {
-	my ($self, %spec) = @_;
-	# NOTE: Add spec testing using Params::Validate;
+	my $self = shift;
+	my %spec = Params::Validate::validate(@_, $meth_defs);
 	return $add_memb->(METH, $classes{ $self->{pkg} }, \%spec);
     }
 
+##############################################################################
+# add_const()
+    # Set up Params::Validate spec for Constructor objects.
+    my $const_defs = { name  => { type => $pvscalar, callbacks => $chkname },
+		       vis   => { type => $pvscalar, default => PUBLIC },
+		       gen   => { type => $pvscalar, default => 0 },
+		       label => { type => $pvscalar, default => '' },
+		       desc  => { type => $pvscalar, default => '' }
+		     };
+
     sub add_const {
-	my ($self, %spec) = @_;
-	# NOTE: Add spec testing using Params::Validate;
+	my $self = shift;
+	my %spec = Params::Validate::validate(@_, $const_defs);
 	return $add_memb->(CONST, $classes{ $self->{pkg} }, \%spec);
     }
 
+##############################################################################
+# build()
     sub build {
+	my $self = shift;
+	my $def = $classes{ $self->{pkg} };
+	no strict 'refs';
+
+	# Build the property methods.
+	foreach my $prop (@{$def->{build_prop_ord}}) {
+	}
+
+	# Build the constructors.
+	foreach my $const (@{$def->{build_const_ord}}) {
+	    # Create a constructor.
+	    *{$def->{pkg} . '::' . $const->my_name } = sub {
+		my $init = $_[1] || {};
+		my $new = bless({}, ref $_[0] || $_[0]);
+
+		foreach my $pobj (@{ $def->{props} }) {
+		    my $p = $pobj->my_name;
+		    if (exists $init->{$p}) {
+			# Assign the value passed in.
+			Carp::croak("Write access to property '$p' denied")
+			    unless $pobj->my_vis > READ;
+			$pobj->set($new, delete $init->{$p});
+		    } else {
+			# NOTE: Might have to construct a new object here.
+			$new->{$p} = $pobj->my_def;
+		    }
+		}
+		if (my @props = keys %$init) {
+		    # Attempts to assign to non-existent properties fail.
+		    my $c = $#props > 0 ? 'properties' : 'property';
+		    local $" = "', '";
+		    Carp::croak("No such $c '@props' in $def->{pkg} "
+				. "objects");
+		}
+		return $new;
+	    };
+	}
 
     }
 }
@@ -141,7 +219,7 @@ my $add_memb;
 
 {
     my %types = ( &PROP  => { label => 'Property',
-			      class => 'Class::Meta::Property' },
+			      class  => 'Class::Meta::Property' },
 		  &METH  => { label => 'Method',
 			      class => 'Class::Meta::Method' },
 		  &CONST => { label => 'Constructor',
@@ -150,6 +228,10 @@ my $add_memb;
 
     $add_memb = sub {
 	my ($type, $def, $spec) = @_;
+	# Make sure that the name hasn't already been used.
+	Carp::croak("Property '$p->{name}' is not a valid property name "
+		    . "-- only alphanumeric and '_' characters allowed")
+	  if $p->{name} =~ /\W/;
 	# Check to see if this member has been created already.
 	Carp::croak("$types{$type}->{label} '$spec->{name}' already exists in "
 		    . "class '$def->{class}'")
@@ -174,7 +256,8 @@ my $add_memb;
 
 	# Save the object if it needs accessors built. This will be cleaned
 	# out when build() is called.
-	push @{ $def->{build_ord} }, $memb;
+	push @{ $def->{'build_' . $type . '_ord'} }, $mem
+	  unless $spec->{gen} == NONE;
 
 	# Just return the object if it's private.
 	return $memb if $spec->{vis} == PRIVATE;
@@ -192,6 +275,17 @@ my $add_memb;
 	# Return the new property object.
 	return $memb;
     };
+
+    my %prop_defs = ( vis => GETSET,
+		      
+
+		    );
+
+    $set_prop = sub {
+	my $spec = shift;
+	$spec->{vis} ||= $spec->{auth} || GETSET if $type ne METH;
+
+    };
 }
 
 1;
@@ -205,6 +299,10 @@ __END__
 
 Make it possible to subclass all of the member classes, as well as
 Class::Meta::Class, of course.
+
+=item *
+
+Add localization using Locale::Maketext.
 
 =back
 
