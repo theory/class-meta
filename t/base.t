@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.11 2003/11/22 01:47:44 david Exp $
+# $Id: base.t,v 1.12 2003/11/22 02:38:22 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 93;
+use Test::More tests => 94;
 
 ##############################################################################
 # Create a simple class.
@@ -109,6 +109,9 @@ like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Grab its metadata object.
 ok( my $class = $t->my_class, "Get Class::Meta::Class object" );
+
+# Check that its key is the same as for the class' my_key shortcut.
+is( $class->my_key, $t->my_key, "Check keys" );
 
 # Test the is_a() method.
 ok( $class->is_a('Class::Meta::TestPerson'), 'Class is_a TestPerson');
