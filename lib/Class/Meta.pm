@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.24 2003/11/23 03:23:16 david Exp $
+# $Id: Meta.pm,v 1.25 2003/11/24 02:00:09 david Exp $
 
 =head1 NAME
 
@@ -215,7 +215,7 @@ our $VERSION = "0.01";
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
         *{"$spec->{package}::my_key"} = sub { $spec->{key} };
 
-        $spec->{class}->build;
+        $spec->{class}->build(\%classes);
     }
 }
 
