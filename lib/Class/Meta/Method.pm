@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.8 2003/11/21 23:03:16 david Exp $
+# $Id: Method.pm,v 1.9 2003/11/22 00:48:10 david Exp $
 
 =head1 NAME
 
@@ -160,7 +160,7 @@ sub new {
     }
 
     # Let 'em have it.
-    return $spec->{ctors}{$p{name}};
+    return $spec->{meths}{$p{name}};
 }
 
 ##############################################################################
