@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id $
+# $Id: Type.pm,v 1.5 2002/05/10 22:46:04 david Exp $
 
 =head1 NAME
 
