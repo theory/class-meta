@@ -3,6 +3,10 @@ Revision history for Perl extension Class::Meta.
 0.46
       - Fixed documentation to reflect that the "class()" method in the
         Constructor class requires the package name as its first argument.
+      - Modified "add_method()" so that methods can optionally be
+        automatically created by "build()". Patch from Tim Canfield.
+      - A call to "build()" now deletes unneeded references to objects,
+        freeing up a bit of memory.
 
 0.45  2005-01-07T19:41:41
       - Added "parents()" method to Class::Meta::Class to return the class

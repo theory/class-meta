@@ -1005,7 +1005,9 @@ being defined.
 
     sub add_method {
         my $class = $classes{ shift->{package} };
-        $class->{method_class}->new($class, @_);
+        push @{$class->{build_meth_ord}},
+          $class->{method_class}->new($class, @_);
+        return $class->{build_meth_ord}[-1];
     }
 
 ##############################################################################
@@ -1043,17 +1045,17 @@ C<my_class()> class method, and all requisite constructors and accessors.
         my $class = $classes{ $self->{package} };
 
         # Build the attribute accessors.
-        if (my $attrs = $class->{build_attr_ord}) {
+        if (my $attrs = delete $class->{build_attr_ord}) {
             $_->build($class) for @$attrs;
         }
 
         # Build the constructors.
-        if (my $ctors = $class->{build_ctor_ord}) {
+        if (my $ctors = delete $class->{build_ctor_ord}) {
             $_->build(\%classes) for @$ctors;
         }
 
         # Build the methods.
-        if (my $meths = $class->{build_meth_ord}) {
+        if (my $meths = delete $class->{build_meth_ord}) {
             $_->build(\%classes) for @$meths;
         }
 
