@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_type_maker.t,v 1.7 2004/01/08 00:19:48 david Exp $
+# $Id: custom_type_maker.t,v 1.8 2004/01/08 00:33:36 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -9,7 +9,7 @@
 package Class::Meta::Testing;
 
 use strict;
-use Test::More tests => 64;
+use Test::More tests => 96;
 
 BEGIN {
     use_ok('Class::Meta');
@@ -19,7 +19,7 @@ BEGIN {
 
 my $attr = 'foo';
 my $i = 0;
-my ($set, $get, $acc, $err, $type);
+my ($set, $get, $acc, $mut, $err, $type);
 my $obj = bless {};
 
 ##############################################################################
@@ -56,6 +56,43 @@ is( $get->($obj), $homer, "Check homer getter" );
 $homer = bless {}, 'Homer';
 ok( $set->($obj, $homer), "Check homer setter" );
 is( $get->($obj), $homer, "Check homer getter again" );
+
+##############################################################################
+# Try the same thing with undefs.
+ok( $type = Class::Meta::Type->add( name    => 'Bart Object',
+                                    key     => 'bart',
+                                    check   => undef,
+                                    builder => undef,
+                                ),
+    "Create Bart data type" );
+
+is( $type, Class::Meta::Type->new('Bart'), 'Check lc conversion on key' );
+is( $type->key, 'bart', "Check bart key" );
+is( $type->name, 'Bart Object', "Check bart name" );
+ok( ! defined $type->check, "Check bart checker" );
+
+# Check to make sure that the accessor is created properly. Start with a
+# simple set_ method.
+ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+    "Make simple bart set" );
+ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
+    "bart accessor exists");
+
+# Test it.
+my $bart = bless {}, 'Bart';
+ok( $obj->$acc($bart), "Set bart value" );
+is( $obj->$acc, $bart, "Check bart value" );
+
+# Check to make sure that the Attribute class accessor coderefs are getting
+# created.
+ok( $set = $type->make_attr_set($attr . $i), "Check bart attr_set" );
+ok( $get = $type->make_attr_get($attr . $i), "Check bart attr_get" );
+
+# Make sure they get and set values correctly.
+is( $get->($obj), $bart, "Check bart getter" );
+$bart = bless {}, 'Bart';
+ok( $set->($obj, $bart), "Check bart setter" );
+is( $get->($obj), $bart, "Check bart getter again" );
 
 ##############################################################################
 # Try creating a type with an object type validation check.
@@ -103,41 +140,92 @@ ok( $set->($obj, $marge), "Check marge setter" );
 is( $get->($obj), $marge, "Check marge getter again" );
 
 ##############################################################################
-# Try the same thing with undefs.
-ok( $type = Class::Meta::Type->add( name    => 'Bart Object',
-                                    key     => 'bart',
-                                    check   => undef,
-                                    builder => undef,
-                                ),
-    "Create Bart data type" );
+# Try creating a type with affordance accessors.
+ok( $type = Class::Meta::Type->add
+  ( name    => 'Lisa Object',
+    key     => 'lisa',
+    builder => 'affordance',
+  ), "Create Lisa data type" );
 
-is( $type, Class::Meta::Type->new('Bart'), 'Check lc conversion on key' );
-is( $type->key, 'bart', "Check bart key" );
-is( $type->name, 'Bart Object', "Check bart name" );
-ok( ! defined $type->check, "Check bart checker" );
+is( $type, Class::Meta::Type->new('Lisa'),
+    'Check lc conversion on key' );
+is( $type->key, 'lisa', "Check lisa key" );
+is( $type->name, 'Lisa Object', "Check lisa name" );
+ok( ! defined $type->check, "Check lisa checker" );
 
 # Check to make sure that the accessor is created properly. Start with a
 # simple set_ method.
 ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
-    "Make simple bart set" );
-ok( $acc = UNIVERSAL::can(__PACKAGE__, $attr . $i),
-    "bart accessor exists");
+    "Make simple lisa set" );
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Lisa mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Lisa getter exists");
 
 # Test it.
-my $bart = bless {}, 'Bart';
-ok( $obj->$acc($bart), "Set bart value" );
-is( $obj->$acc, $bart, "Check bart value" );
+my $lisa = bless {}, 'Lisa';
+ok( $obj->$mut($lisa), "Set lisa value" );
+is( $obj->$acc, $lisa, "Check lisa value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($attr . $i), "Check bart attr_set" );
-ok( $get = $type->make_attr_get($attr . $i), "Check bart attr_get" );
+ok( $set = $type->make_attr_set($attr . $i), "Check lisa attr_set" );
+ok( $get = $type->make_attr_get($attr . $i), "Check lisa attr_get" );
 
 # Make sure they get and set values correctly.
-is( $get->($obj), $bart, "Check bart getter" );
-$bart = bless {}, 'Bart';
-ok( $set->($obj, $bart), "Check bart setter" );
-is( $get->($obj), $bart, "Check bart getter again" );
+is( $get->($obj), $lisa, "Check lisa getter" );
+$lisa = bless {}, 'Lisa';
+ok( $set->($obj, $lisa), "Check lisa setter" );
+is( $get->($obj), $lisa, "Check lisa getter again" );
+
+##############################################################################
+# Try creating a type with affordance accessors and an object type validation
+# check.
+ok( $type = Class::Meta::Type->add
+  ( name    => 'Maggie Object',
+    key     => 'maggie',
+    check   => 'Maggie',
+    builder => 'affordance',
+  ), "Create Maggie data type" );
+
+is( $type, Class::Meta::Type->new('Maggie'),
+    'Check lc conversion on key' );
+is( $type->key, 'maggie', "Check maggie key" );
+is( $type->name, 'Maggie Object', "Check maggie name" );
+foreach my $chk (@{ $type->check }) {
+    is( ref $chk, 'CODE', 'Check maggie code');
+}
+
+# Check to make sure that the accessor is created properly. Start with a
+# simple set_ method.
+ok( $type->build(__PACKAGE__, $attr . ++$i, Class::Meta::GETSET),
+    "Make simple maggie set" );
+ok( $mut = UNIVERSAL::can(__PACKAGE__, "set_$attr$i"),
+    "Maggie mutator exists");
+ok( $acc = UNIVERSAL::can(__PACKAGE__, "get_$attr$i"),
+    "Maggie getter exists");
+
+# Test it.
+my $maggie = bless {}, 'Maggie';
+ok( $obj->$mut($maggie), "Set maggie value" );
+is( $obj->$acc, $maggie, "Check maggie value" );
+
+# Make it fail the checks.
+eval { $obj->$mut('foo') };
+ok( $err = $@, "Got invalid maggie error" );
+like( $err, qr/^Value .* is not a valid Maggie/,
+     'correct maggie exception' );
+
+# Check to make sure that the Attribute class accessor coderefs are getting
+# created.
+ok( $set = $type->make_attr_set($attr . $i), "Check maggie attr_set" );
+ok( $get = $type->make_attr_get($attr . $i), "Check maggie attr_get" );
+
+# Make sure they get and set values correctly.
+is( $get->($obj), $maggie, "Check maggie getter" );
+$maggie = bless {}, 'Maggie';
+ok( $set->($obj, $maggie), "Check maggie setter" );
+is( $get->($obj), $maggie, "Check maggie getter again" );
 
 ##############################################################################
 # Now try one with the checker doing an isa() call.

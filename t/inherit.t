@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.2 2003/11/25 01:21:31 david Exp $
+# $Id: inherit.t,v 1.3 2004/01/08 00:33:36 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 93;
+use Test::More tests => 95;
 
 ##############################################################################
 # Create a simple class.
@@ -18,6 +18,8 @@ package Test::One;
 BEGIN {
     Test::More->import;
     use_ok( 'Class::Meta');
+    use_ok( 'Class::Meta::Types::Numeric', 'affordance');
+    use_ok( 'Class::Meta::Types::String', 'affordance');
 }
 
 BEGIN {
