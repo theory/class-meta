@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.6 2002/05/17 23:32:56 david Exp $
+# $Id: Attribute.pm,v 1.7 2002/06/04 20:50:19 david Exp $
 
 =head1 NAME
 
@@ -37,7 +37,59 @@ $VERSION = "0.01";
 # Constructors                                                               #
 ##############################################################################
 
-sub new {}
+sub new {
+    my $pkg = shift;
+    my $def = shift;
+
+    # Check to make sure that only Class::Meta or a subclass is constructing a
+    # Class::Meta::Attribute object.
+    my $caller = caller;
+    Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
+      unless grep { $_ eq 'Class::Meta' }
+                  $caller, eval '@' . $caller . "::ISA";
+
+    # Make sure we can get all the arguments.
+    Carp::croak("Odd number of parameters in call to new() when named "
+                . "parameters were expected" ) if @_ % 2;
+    my %params = @_;
+
+    # Validate the name.
+    Carp::croak("Parameter 'name' is required in call to new()")
+      unless $params{name};
+    Carp::croak("Attribute '$params{name}' is not a valid attribute name "
+                . "-- only alphanumeric and '_' characters allowed")
+      if $params{name} =~ /\W/;
+
+    # Make sure the name hasn't already been used for another attribute
+    Carp::croak("Attribute '$params{name}' already exists in class "
+                . "'$def->{class}'")
+      if exists $def->{attrs}{$params{name}};
+
+    # Check the visibility.
+    if (exists $params{vis}) {
+        Carp::croak("Not a valid vis parameter: '$params{vis}'")
+          unless $params{vis} == Class::Meta::PUBLIC
+          ||     $params{vis} == Class::Meta::PROTECTED
+          ||     $params{vis} == Class::Meta::PRIVATE;
+    } else {
+        # Make it public by default.
+        $params{vis} = Class::Meta::PUBLIC;
+    }
+
+    # Check the context.
+    if (exists $params{context}) {
+        Carp::croak("Not a valid context parameter: '$params{context}'")
+          unless $params{context} == Class::Meta::OBJECT
+          ||     $params{context} == Class::Meta::CLASS;
+    } else {
+        # Make it public by default.
+        $params{context} = Class::Meta::OBJECT;
+    }
+
+    # Create and cache the object and return it.
+    $def->{attrs}{$params{name}} = bless \%params, ref $pkg || $pkg;
+    return $def->{attrs}{$params{name}};
+}
 
 ##############################################################################
 # Instance Methods                                                           #
