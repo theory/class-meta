@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.48 2004/09/20 06:30:03 david Exp $
+# $Id$
 
 =head1 NAME
 
@@ -40,7 +40,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.44";
+our $VERSION = "0.45";
 
 =head1 INTERFACE
 
