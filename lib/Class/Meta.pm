@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.12 2002/05/26 19:58:01 david Exp $
+# $Id: Meta.pm,v 1.13 2002/06/04 20:50:57 david Exp $
 
 =head1 NAME
 
@@ -22,6 +22,7 @@ Facade.
 ##############################################################################
 use strict;
 use Carp ();
+use Class::ISA;
 
 ##############################################################################
 # Constants                                                                  #
@@ -100,12 +101,8 @@ my $add_memb;
                     pkg => $class };
 
         # Record the class' inheritance.
-        my @isa;
-        foreach my $is ($class, eval '@' . $class . "::ISA") {
-            $def->{isa}{$is} = 1;
-            push @isa, $is;
-        }
-        $def->{isa_ord} = \@isa;
+        $def->{isa} = { Class::ISA::self_and_super_versions($class) };
+        $def->{isa_ord} = [ Class::ISA::self_and_super_path($class) ];
 
         # Instantiate a Class object.
         $def->{class} = Class::Meta::Class->new($def);

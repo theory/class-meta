@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: Makefile.PL,v 1.5 2002/05/16 18:12:47 david Exp $
+# $Id: Makefile.PL,v 1.6 2002/06/04 20:50:57 david Exp $
 
 use strict;
 use ExtUtils::MakeMaker;
@@ -11,6 +11,7 @@ WriteMakefile( NAME            => 'Class::Meta',
                PREREQ_PM       => { Data::Types => 0.02,
                                     Time::Piece => 1.01,
                                     Time::Piece::ISO => 0.03,
+                                    Class::ISA => 0.31,
                                   },
                LIBS            => [''], # e.g., '-lm'
                DEFINE          => '', # e.g., '-DHAVE_SOMETHING'
