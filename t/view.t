@@ -9,7 +9,7 @@
 use strict;
 use Test::More $] < 5.008
   ? (skip_all => 'Older Carp lacks @CARP_NOT support')
-  : (tests => 382);
+  : (tests => 390);
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'view.t');
 
@@ -446,6 +446,16 @@ main::chk('another indirect private exception',
           qr/age is a private attribute of Class::Meta::Test/);
 
 # Check sn trusted attribute succeeds.
+is( $obj->sn, '', 'Check empty sn' );
+ok( $obj->sn('123456789'), "Set sn" );
+is( $obj->sn, '123456789', 'Check "123456789" sn' );
+ok( $attr = $class->attributes('sn'), 'Get "sn" attribute object' );
+is( $attr->get($obj), '123456789', 'Check indirect "123456789" sn' );
+ok( $attr->set($obj, '987654321'), "Indirectly set sn" );
+is( $attr->get($obj), '987654321', 'Check indirect "987654321" sn' );
+
+# Make sure that sn trusted attribute works for subclasses, too.
+ok( $obj = Class::Meta::Testarama->new, "Create new Testarama object" );
 is( $obj->sn, '', 'Check empty sn' );
 ok( $obj->sn('123456789'), "Set sn" );
 is( $obj->sn, '123456789', 'Check "123456789" sn' );

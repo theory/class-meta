@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 200;
+use Test::More tests => 208;
 
 ##############################################################################
 # Create a simple class.
@@ -330,6 +330,16 @@ like( $err, qr/age is a private attribute of Class::Meta::Test/,
       'Correct indirect private exception again');
 
 # Check sn trusted attribute succeeds.
+is( $obj->get_sn, '', 'Check empty sn' );
+ok( $obj->set_sn('123456789'), "Set sn" );
+is( $obj->get_sn, '123456789', 'Check "123456789" sn' );
+ok( $attr = $class->attributes('sn'), 'Get "sn" attribute object' );
+is( $attr->get($obj), '123456789', 'Check indirect "123456789" sn' );
+ok( $attr->set($obj, '987654321'), "Indirectly set sn" );
+is( $attr->get($obj), '987654321', 'Check indirect "987654321" sn' );
+
+# Make sure that sn trusted attribute works for subclasses, too.
+ok( $obj = Class::Meta::Testarama->new, "Create new Testarama object" );
 is( $obj->get_sn, '', 'Check empty sn' );
 ok( $obj->set_sn('123456789'), "Set sn" );
 is( $obj->get_sn, '123456789', 'Check "123456789" sn' );
