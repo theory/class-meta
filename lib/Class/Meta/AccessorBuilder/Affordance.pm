@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.17 2004/01/28 02:09:03 david Exp $
+# $Id: Affordance.pm,v 1.18 2004/01/28 21:57:26 david Exp $
 
 =head1 NAME
 
@@ -90,6 +90,14 @@ Currently, class attribute accessors are not designed to be inheritable in the
 way designed by Class::Data::Inheritable, although this might be changed in a
 future release. For now, I expect that the current simple approach will cover
 the vast majority of circumstances.
+
+B<Note:> Class attribute accessors will not work accurately in multiprocess
+environments such as mod_perl. If you change a class attribute's value in one
+process, it will not be changed in any of the others. Furthermore, class
+attributes are not currently shared across threads. So if you're using
+Class::Meta class attributes in a multi-threaded environment (such as iThreads
+in Perl 5.8.0 and later) the changes to a class attribute in one thread will
+not be reflected in other threads.
 
 =head1 Private and Protected Attributes
 

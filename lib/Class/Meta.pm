@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.67 2004/01/28 16:51:13 david Exp $
+# $Id: Meta.pm,v 1.68 2004/01/28 21:57:26 david Exp $
 
 =head1 NAME
 
@@ -800,9 +800,9 @@ accessor, you'd specify it like this:
 
 =item context
 
-The context of the attribute. This indicates whether it's a class attribute
-or an object attribute. The possible values are
-defined by the following constants:
+The context of the attribute. This indicates whether it's a class attribute or
+an object attribute. The possible values are defined by the following
+constants:
 
 =over 4
 
@@ -935,6 +935,25 @@ C<my_class()> class method, and all requisite constructors and accessors.
 
 1;
 __END__
+
+=head1 TO DO
+
+=over 4
+
+=item *
+
+Make class attribute accessors behave as they do in Class::Data::Inheritable.
+
+=item *
+
+Modify class attribute accessors so that they are thread safe. This will
+involve sharing the attributes across threads, and locking them before
+changing their values. If they've also been made to behave as they do in
+Class::Data::Inheritable, we'll have to figure out a way to make it so that
+newly generated accessors for subclasses are shared between threads, too. This
+may not be easy.
+
+=back
 
 =head1 DISTRIBUTION INFORMATION
 
