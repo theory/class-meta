@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.31 2004/04/18 18:37:08 david Exp $
+# $Id: Method.pm,v 1.32 2004/04/18 21:11:00 david Exp $
 
 =head1 NAME
 
@@ -128,6 +128,9 @@ sub new {
           if $p{view} == Class::Meta::PUBLIC;
     }
 
+    # Store a reference to the class object.
+    $p{class} = $spec->{class};
+
     # Let 'em have it.
     return $spec->{meths}{$p{name}};
 }
@@ -196,6 +199,14 @@ object method. The possible values are defined by the following constants:
 
 =back
 
+=head3 class
+
+  my $class = $attr->class;
+
+Returns the Class::Meta::Class object that this method is associated
+with. Note that this object will always represent the class in which the
+method is defined, and I<not> any of its subclasses.
+
 =cut
 
 sub name    { $_[0]->{name}    }
@@ -204,14 +215,15 @@ sub desc    { $_[0]->{desc}    }
 sub label   { $_[0]->{label}   }
 sub view    { $_[0]->{view}    }
 sub context { $_[0]->{context} }
+sub class   { $_[0]->{class}   }
 
 =head3 call
 
   my $ret = $meth->call($obj, @args);
 
 Calls the method on the C<$obj> object, passing in any arguments. Note that it
-uses a C<goto> to execute the constructor, so the call to C<call()> itself
-will not appear in a call stack trace.
+uses a C<goto> to execute the method, so the call to C<call()> itself will not
+appear in a call stack trace.
 
 =cut
 

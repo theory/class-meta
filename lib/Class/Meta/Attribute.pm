@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.42 2004/04/18 18:37:08 david Exp $
+# $Id: Attribute.pm,v 1.43 2004/04/18 21:11:00 david Exp $
 
 =head1 NAME
 
@@ -167,6 +167,9 @@ sub new {
           if $p{view} == Class::Meta::PUBLIC;
     }
 
+    # Store a reference to the class object.
+    $p{class} = $spec->{class};
+
     # Let 'em have it.
     return $spec->{attrs}{$p{name}};
 }
@@ -276,6 +279,14 @@ read or changed. The possible values are defined by the following constants:
 
 =back
 
+=head3 class
+
+  my $class = $attr->class;
+
+Returns the Class::Meta::Class object that this attribute is associated
+with. Note that this object will always represent the class in which the
+attribute is defined, and I<not> any of its subclasses.
+
 =cut
 
 sub name     { $_[0]->{name}     }
@@ -288,6 +299,7 @@ sub package  { $_[0]->{package}  }
 sub view     { $_[0]->{view}     }
 sub context  { $_[0]->{context}  }
 sub authz    { $_[0]->{authz}    }
+sub class    { $_[0]->{class}    }
 
 ##############################################################################
 

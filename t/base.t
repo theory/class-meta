@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.26 2004/01/28 02:09:04 david Exp $
+# $Id: base.t,v 1.27 2004/04/18 21:11:00 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 109;
+use Test::More tests => 112;
 
 ##############################################################################
 # Create a simple class.
@@ -140,6 +140,7 @@ isa_ok($attributes[2], 'Class::Meta::Attribute',
        "Third object is a attribute object" );
 isa_ok($attributes[3], 'Class::Meta::Attribute',
        "Fourth object is a attribute object" );
+is( $attributes[0]->class, $class, "Check attribute class" );
 
 # Get specific attributes.
 ok( @attributes = $class->attributes(qw(age name)), 'Get specific attributes' );
@@ -242,6 +243,7 @@ isa_ok($methods[1], 'Class::Meta::Method',
 # Check the order in which they're returned.
 is( $methods[0]->name, 'chk_pass', 'First method' );
 is( $methods[1]->name, 'shame', 'Second method' );
+is( $methods[0]->class, $class, "Check method class" );
 
 # Get a few specific methods.
 ok( @methods = $class->methods(qw(shame chk_pass)),
@@ -264,6 +266,7 @@ isa_ok($constructors[0], 'Class::Meta::Constructor',
 
 # Check the order in which they're returned.
 is( $constructors[0]->name, 'new', 'Check new constructor name' );
+is( $constructors[0]->class, $class, "Check constructor class" );
 
 # Get a few specific constructors.
 ok( @constructors = $class->constructors(qw(new)),
