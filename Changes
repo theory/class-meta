@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.45
+0.45  2005-01-07T19:41:41
       - Added "parents()" method to Class::Meta::Class to return the class
         objects for any classes that the class inherits from.
       - Attributes that use an alias to set their types will now have the
