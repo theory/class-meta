@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.8 2004/01/16 19:13:33 david Exp $
+# $Id: ctor.t,v 1.9 2004/01/21 00:59:37 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -31,10 +31,11 @@ BEGIN {
 
     # Create a constructor.
     sub inst { bless {} }
-    ok( my $ctor = $c->add_constructor( name    => 'inst',
-                                        desc    => 'The inst constructor',
-                                        label   => 'inst Constructor',
-                                        view     => Class::Meta::PUBLIC ),
+    ok( my $ctor = $c->add_constructor( name   => 'inst',
+                                        desc   => 'The inst constructor',
+                                        label  => 'inst Constructor',
+                                        create => 0,
+                                        view   => Class::Meta::PUBLIC ),
         "Create 'inst' ctor");
     isa_ok($ctor, 'Class::Meta::Constructor');
 
@@ -85,7 +86,8 @@ BEGIN {
 
     # Now test all of the defaults.
     sub new_ctor { 22 }
-    ok( $ctor = $c->add_constructor( name => 'new_ctor' ), "Create 'new_ctor'" );
+    ok( $ctor = $c->add_constructor( name   => 'new_ctor',
+                                     create => 0 ), "Create 'new_ctor'" );
     isa_ok($ctor, 'Class::Meta::Constructor');
 
     # Test its accessors.
@@ -119,7 +121,8 @@ BEGIN {
     isa_ok($c, 'Class::Meta::SubClass');
 
     sub foo_ctor { bless {} }
-    ok( my $ctor = $c->add_constructor( name => 'foo_ctor'),
+    ok( my $ctor = $c->add_constructor( name => 'foo_ctor',
+                                        create => 0 ),
         'Create subclassed foo_ctor' );
 
     isa_ok($ctor, 'Class::Meta::Constructor');

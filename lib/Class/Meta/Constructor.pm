@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.33 2004/01/20 22:36:44 david Exp $
+# $Id: Constructor.pm,v 1.34 2004/01/21 00:59:36 david Exp $
 
 =head1 NAME
 
@@ -95,11 +95,17 @@ sub new {
         $p{view} = Class::Meta::PUBLIC;
     }
 
+    # Check the creation constant.
+    $p{create} = 1 unless defined $p{create};
+
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
         $croak->("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE';
+    } else {
+        $p{caller} = UNIVERSAL::can($spec->{package}, $p{name})
+          unless $p{create};
     }
 
     # Create and cache the constructor object.
@@ -204,6 +210,9 @@ sub build {
     my $caller = caller;
     $croak->("Package '$caller' cannot call " . __PACKAGE__ . "->build")
       unless UNIVERSAL::isa($caller, 'Class::Meta');
+
+    # Just bail if we're not creating the constructor.
+    return $self unless delete $self->{create};
 
     # Build a construtor that takes a parameter list and assigns the
     # the values to the appropriate attributes.
