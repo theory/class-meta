@@ -1,13 +1,15 @@
 #!perl -w
 
-# $Id: view.t,v 1.9 2004/08/26 23:50:15 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 214;
+use Test::More $] < 5.008
+  ? (skip_all => 'Older Carp lacks @CARP_NOT support')
+  : (tests => 214);
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'view.t');
 

@@ -6,7 +6,9 @@
 # Set up the tests.
 ##############################################################################
 use strict;
-use Test::More tests => 208;
+use Test::More $] < 5.008
+  ? (skip_all => 'Older Carp lacks @CARP_NOT support')
+  : (tests => 208);
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'errors.t');
 
