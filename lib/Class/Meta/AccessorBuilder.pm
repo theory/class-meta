@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.16 2004/01/28 02:09:03 david Exp $
+# $Id: AccessorBuilder.pm,v 1.17 2004/01/28 16:51:14 david Exp $
 
 =head1 NAME
 
@@ -130,7 +130,10 @@ use Class::Meta;
 our $VERSION = "0.20";
 
 sub build_attr_get {
-    UNIVERSAL::can($_[0]->package, $_[0]->name);
+    my $attr = shift;
+    return $attr->context == Class::Meta::CLASS
+      ? eval "sub { shift->$name }"
+      : UNIVERSAL::can($attr->package, $attr->name);
 }
 
 *build_attr_set = \&build_attr_get;

@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.66 2004/01/28 02:09:03 david Exp $
+# $Id: Meta.pm,v 1.67 2004/01/28 16:51:13 david Exp $
 
 =head1 NAME
 
@@ -935,16 +935,6 @@ C<my_class()> class method, and all requisite constructors and accessors.
 
 1;
 __END__
-
-=head1 TO DO
-
-=over 4
-
-=item *
-
-Allow attributes to get a new value once and only once.
-
-=back
 
 =head1 DISTRIBUTION INFORMATION
 
