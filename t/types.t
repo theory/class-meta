@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types.t,v 1.3 2002/05/11 22:18:17 david Exp $
+# $Id: types.t,v 1.4 2002/05/16 18:12:47 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -26,135 +26,135 @@ BEGIN {
     $c->set_desc('Special class just for testing Class::Meta.');
 
     $c->add_attr({ name  => 'name',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'string',
-		   len   => 256,
-		   label => 'Name',
-		   field => Class::Meta::TEXT,
-		   desc  => "The person's name.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'string',
+                   len   => 256,
+                   label => 'Name',
+                   field => Class::Meta::TEXT,
+                   desc  => "The person's name.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ name  => 'age',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'inteter',
-		   label => 'Age',
-		   field => Class::Meta::TEXT,
-		   desc  => "The person's age.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'inteter',
+                   label => 'Age',
+                   field => Class::Meta::TEXT,
+                   desc  => "The person's age.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'alive',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'bool',
-		   label => 'Living',
-		   field => Class::Meta::CHECKBOX,
-		   desc  => "Is the person alive?",
-		   req   => 0,
-		   def   => 1,
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'bool',
+                   label => 'Living',
+                   field => Class::Meta::CHECKBOX,
+                   desc  => "Is the person alive?",
+                   req   => 0,
+                   def   => 1,
+                 });
     $c->add_attr({ attr  => 'whole',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'whole',
-		   label => 'A whole number.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A whole number.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'whole',
+                   label => 'A whole number.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A whole number.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'dec',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'decimal',
-		   label => 'A decimal number.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A decimal number.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'decimal',
+                   label => 'A decimal number.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A decimal number.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'real',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'real',
-		   label => 'A real number.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A real number.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'real',
+                   label => 'A real number.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A real number.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'float',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'float',
-		   label => 'A float.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A floating point number.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'float',
+                   label => 'A float.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A floating point number.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'scalar',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'scalar',
-		   label => 'A scalar.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A scalar reference.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'scalar',
+                   label => 'A scalar.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A scalar reference.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'array',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'array',
-		   label => 'A array.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A array reference.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'array',
+                   label => 'A array.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A array reference.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'hash',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'hash',
-		   label => 'A hash.',
-		   field => Class::Meta::TEXT,
-		   desc  => "A hash reference.",
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'hash',
+                   label => 'A hash.',
+                   field => Class::Meta::TEXT,
+                   desc  => "A hash reference.",
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'datetime',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'datetime',
-		   label => 'date/time',
-		   field => Class::Meta::TEXT,
-		   desc  => 'A date/time attribute.',
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'datetime',
+                   label => 'date/time',
+                   field => Class::Meta::TEXT,
+                   desc  => 'A date/time attribute.',
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'io_socket',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'object',
-		   label => 'An IO::Socket Object',
-		   field => Class::Meta::TEXT,
-		   desc  => 'An IO::Socket object.',
-		   req   => 0,
-		   def   => 'IO::Socket',
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'object',
+                   label => 'An IO::Socket Object',
+                   field => Class::Meta::TEXT,
+                   desc  => 'An IO::Socket object.',
+                   req   => 0,
+                   def   => 'IO::Socket',
+                   gen   => Class::Meta::GETSET
+                 });
     $c->add_attr({ attr  => 'obj',
-		   vis   => Class::Meta::PUBLIC,
-		   type  => 'object',
-		   label => 'An Object',
-		   field => Class::Meta::TEXT,
-		   desc  => 'An object.',
-		   req   => 0,
-		   def   => undef,
-		   gen   => Class::Meta::GETSET
-		 });
+                   vis   => Class::Meta::PUBLIC,
+                   type  => 'object',
+                   label => 'An Object',
+                   field => Class::Meta::TEXT,
+                   desc  => 'An object.',
+                   req   => 0,
+                   def   => undef,
+                   gen   => Class::Meta::GETSET
+                 });
     $c->build;
 }
 
@@ -292,5 +292,3 @@ ok( $err = $@, 'set_hash to "foo" croaks' );
 like( $err, qr/^Value 'foo' is not a hash/,
      'correct hash exception' );
 ok( $k->set_hash({ foo => 1 }), 'set_hash to { foo => 1 }.');
-
-

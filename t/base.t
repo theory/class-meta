@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: base.t,v 1.6 2002/05/11 22:18:17 david Exp $
+# $Id: base.t,v 1.7 2002/05/16 18:12:47 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -28,47 +28,47 @@ BEGIN {
 
     # Add a constructor.
     $c->add_ctor( name => 'new',
-		   gen  => 1 );
+                   gen  => 1 );
 
     # Add a couple of attributes with generated methods.
     $c->add_attr( name => 'id',
-		  vis   => Class::Meta::PUBLIC,
-		  auth  => Class::Meta::READ,
-		  gen   => Class::Meta::GET,
-		  type  => 'integer',
-		  label => 'ID',
-		  desc  => "The person object's ID.",
-		  req   => 1,
-		  def   => undef,
-		);
+                  vis   => Class::Meta::PUBLIC,
+                  auth  => Class::Meta::READ,
+                  gen   => Class::Meta::GET,
+                  type  => 'integer',
+                  label => 'ID',
+                  desc  => "The person object's ID.",
+                  req   => 1,
+                  def   => undef,
+                );
     $c->add_attr( name  => 'name',
-		  vis   => Class::Meta::PUBLIC,
-		  auth  => Class::Meta::RDWR,
-		  gen   => Class::Meta::GETSET,
-		  type  => 'string',
-		  len   => 256,
-		  label => 'Name',
-		  field => 'text',
-		  desc  => "The person's name.",
-		  req   => 1,
-		  def   => undef,
-		);
+                  vis   => Class::Meta::PUBLIC,
+                  auth  => Class::Meta::RDWR,
+                  gen   => Class::Meta::GETSET,
+                  type  => 'string',
+                  len   => 256,
+                  label => 'Name',
+                  field => 'text',
+                  desc  => "The person's name.",
+                  req   => 1,
+                  def   => undef,
+                );
     $c->add_attr( name  => 'age',
-		  vis   => Class::Meta::PUBLIC,
-		  auth  => Class::Meta::RDWR,
-		  gen   => Class::Meta::GETSET,
-		  type  => 'inteter',
-		  label => 'Age',
-		  field => 'text',
-		  desc  => "The person's age.",
-		  req   => 0,
-		  def   => undef,
-		);
+                  vis   => Class::Meta::PUBLIC,
+                  auth  => Class::Meta::RDWR,
+                  gen   => Class::Meta::GETSET,
+                  type  => 'inteter',
+                  label => 'Age',
+                  field => 'text',
+                  desc  => "The person's age.",
+                  req   => 0,
+                  def   => undef,
+                );
 
     # Add a custom method.
     $c->add_meth( name  => 'chk_pass',
-		  vis   => Class::Meta::PUBLIC,
-		);
+                  vis   => Class::Meta::PUBLIC,
+                );
     $c->build;
 }
 

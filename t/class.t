@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.2 2002/05/10 22:49:10 david Exp $
+# $Id: class.t,v 1.3 2002/05/16 18:12:47 david Exp $
 
 use strict;
 use Test::More tests => 9;
@@ -20,11 +20,11 @@ package Class::Meta::FooSub;
 
 # Set up simple settings.
 my $spec = { name => 'Foo Class',
-	     desc => 'Foo Class description',
-	     key  => 'foo' };
+             desc => 'Foo Class description',
+             key  => 'foo' };
 # This should be okay.
 main::ok( $class = Class::Meta::Class->new('FooClass', $spec),
-	  'Subclass can create class objects' );
+          'Subclass can create class objects' );
 
 # Test the simple accessors.
 main::is( $class->my_name, $spec->{name}, 'my_name' );

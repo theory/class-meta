@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_type_maker.t,v 1.3 2002/05/11 22:18:17 david Exp $
+# $Id: custom_type_maker.t,v 1.4 2002/05/16 18:12:47 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -155,9 +155,9 @@ foreach my $chk (@{ $type->get_chk }) {
 eval {
     $type = Class::Meta::Type->add
       ( name => 'Bogus',
-	desc => 'Bogus',
-	key  => 'bogus',
-	chk  => { so => 'bogus' }
+        desc => 'Bogus',
+        key  => 'bogus',
+        chk  => { so => 'bogus' }
       )
 };
 ok(my $err = $@, "Error for bogus check");
@@ -198,9 +198,9 @@ is( ref $type->get_conv, 'CODE', "Check homer conv" );
 eval {
     $type = Class::Meta::Type->add
       ( name => 'Bogus',
-	desc => 'Bogus',
-	key  => 'bogus',
-	conv  => ['heh']
+        desc => 'Bogus',
+        key  => 'bogus',
+        conv  => ['heh']
       )
 };
 ok($err = $@, "Error for bogus conv");
@@ -212,8 +212,8 @@ like( $err, qr/Paremter 'conv' in call to add\(\) must be a code/,
 my $mk_set = sub {
     my ($attr, $chk) = @_;
     return { "foo_$attr" => sub {
-	# Assign the value.
-	$_[0]->{$attr} = $_[1];
+        # Assign the value.
+        $_[0]->{$attr} = $_[1];
     }};
 };
 
@@ -265,4 +265,3 @@ is( ref $get->{'bar_' . $attr . $i}, 'CODE', "Marge get coderef" );
 # are getting created.
 is( ref $type->mk_attr_set($attr . $i), 'CODE', "Check marge attr_set" );
 is( ref $type->mk_attr_get($attr . $i), 'CODE', "Check marge attr_get" );
-

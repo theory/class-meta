@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.4 2002/05/13 16:01:53 david Exp $
+# $Id: Method.pm,v 1.5 2002/05/16 18:12:47 david Exp $
 
 =head1 NAME
 
@@ -102,51 +102,51 @@ sub new {
 
     # Make sure we can get all the arguments.
     Carp::croak("Odd number of parameters in call to new() when named "
-		. "parameters were expected" ) if @_ % 2;
+                . "parameters were expected" ) if @_ % 2;
     my %params = @_;
 
     # Validate the name.
     Carp::croak("Parameter 'name' is required in call to new()")
       unless $params{name};
     Carp::croak("Method '$params{name}' is not a valid method name "
-		. "-- only alphanumeric and '_' characters allowed")
+                . "-- only alphanumeric and '_' characters allowed")
       if $params{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another method
     # or constructor.
     Carp::croak("Method '$params{name}' already exists in class "
-		. "'$def->{class}'")
+                . "'$def->{class}'")
       if exists $def->{meths}{$params{name}}
       || exists $def->{ctors}{$params{name}};
 
     # Check the visibility.
     if (exists $params{vis}) {
-	Carp::croak("Not a valid vis parameter: '$params{vis}'")
-	  unless $params{vis} == Class::Meta::PUBLIC
-	  ||     $params{vis} == Class::Meta::PROTECTED
-	  ||     $params{vis} == Class::Meta::PRIVATE;
+        Carp::croak("Not a valid vis parameter: '$params{vis}'")
+          unless $params{vis} == Class::Meta::PUBLIC
+          ||     $params{vis} == Class::Meta::PROTECTED
+          ||     $params{vis} == Class::Meta::PRIVATE;
     } else {
-	# Make it public by default.
-	$params{vis} = Class::Meta::PUBLIC;
+        # Make it public by default.
+        $params{vis} = Class::Meta::PUBLIC;
     }
 
     # Check the context.
     if (exists $params{context}) {
-	Carp::croak("Not a valid context parameter: '$params{context}'")
-	  unless $params{context} == Class::Meta::OBJECT
-	  ||     $params{context} == Class::Meta::CLASS;
+        Carp::croak("Not a valid context parameter: '$params{context}'")
+          unless $params{context} == Class::Meta::OBJECT
+          ||     $params{context} == Class::Meta::CLASS;
     } else {
-	# Make it public by default.
-	$params{context} = Class::Meta::OBJECT;
+        # Make it public by default.
+        $params{context} = Class::Meta::OBJECT;
     }
 
     # Validate or create the method caller if necessary.
     if ($params{caller}) {
-	my $ref = ref $params{caller};
-	Carp::croak("Parameter caller must be a code reference")
-	  unless $ref && $ref eq 'CODE'
+        my $ref = ref $params{caller};
+        Carp::croak("Parameter caller must be a code reference")
+          unless $ref && $ref eq 'CODE'
       } else {
-	  $params{caller} = eval "sub { shift->$params{name}(\@_) }";
+          $params{caller} = eval "sub { shift->$params{name}(\@_) }";
       }
 
     # Return the object!

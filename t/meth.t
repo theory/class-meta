@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.1 2002/05/13 16:01:53 david Exp $
+# $Id: meth.t,v 1.2 2002/05/16 18:12:47 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -30,11 +30,11 @@ BEGIN {
     # Create a new method with all of the parameters set.
     sub foo_meth { 'foo' }
     ok( my $meth = $c->add_meth( name    => 'foo_meth',
-				 desc    => 'The foo method',
-				 label   => 'Foo method',
-				 context => Class::Meta::CLASS,
-				 vis     => Class::Meta::PUBLIC ),
-	"Create foo_meth" );
+                                 desc    => 'The foo method',
+                                 label   => 'Foo method',
+                                 context => Class::Meta::CLASS,
+                                 vis     => Class::Meta::PUBLIC ),
+        "Create foo_meth" );
 
     isa_ok($meth, 'Class::Meta::Method');
 
@@ -46,5 +46,3 @@ BEGIN {
     ok( $meth->my_context == Class::Meta::CLASS, "Check foo_meth context" );
     is ($meth->call(__PACKAGE__), 'foo', 'Call the foo_meth method' );
 }
-
-

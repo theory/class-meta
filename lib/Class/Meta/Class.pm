@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.5 2002/05/11 22:18:17 david Exp $
+# $Id: Class.pm,v 1.6 2002/05/16 18:12:47 david Exp $
 
 use strict;
 use Carp ();
@@ -35,14 +35,14 @@ sub my_ctors {
     my $self = shift;
     my $ctors = $self->{def}{ctors};
     if ($_[0]) {
-	# Return the requested constructors.
-	return @{$ctors}{@_};
+        # Return the requested constructors.
+        return @{$ctors}{@_};
     } elsif ($self->{def}{isa}{caller()}) {
-	# Return the protected list of constructors.
-	return @{$ctors}{@{ $self->{def}{prot_ctor_ord} } };
+        # Return the protected list of constructors.
+        return @{$ctors}{@{ $self->{def}{prot_ctor_ord} } };
     } else {
-	# Return the private list of constructors.
-	return @{$ctors}{@{ $self->{def}{ctor_ord} } };
+        # Return the private list of constructors.
+        return @{$ctors}{@{ $self->{def}{ctor_ord} } };
     }
 }
 
@@ -51,14 +51,14 @@ sub my_attrs {
     my $self = shift;
     my $attrs = $self->{def}{attrs};
     if ($_[0]) {
-	# Return the requested attributes.
-	return @{$attrs}{@_};
+        # Return the requested attributes.
+        return @{$attrs}{@_};
     } elsif ($self->{def}{isa}{caller()}) {
-	# Return the protected list of attributes.
-	return @{$attrs}{@{ $self->{def}{prot_attr_ord} } };
+        # Return the protected list of attributes.
+        return @{$attrs}{@{ $self->{def}{prot_attr_ord} } };
     } else {
-	# Return the private list of attributes.
-	return @{$attrs}{@{ $self->{def}{attr_ord} } };
+        # Return the private list of attributes.
+        return @{$attrs}{@{ $self->{def}{attr_ord} } };
     }
 }
 
@@ -67,14 +67,14 @@ sub my_meths {
     my $self = shift;
     my $meths = $self->{def}{meths};
     if ($_[0]) {
-	# Return the requested methods.
-	return @{$meths}{@_};
+        # Return the requested methods.
+        return @{$meths}{@_};
     } elsif ($self->{def}{isa}{caller()}) {
-	# Return the protected list of methods.
-	return @{$meths}{@{ $self->{def}{prot_meth_ord} } };
+        # Return the protected list of methods.
+        return @{$meths}{@{ $self->{def}{prot_meth_ord} } };
     } else {
-	# Return the private list of methods.
-	return @{$meths}{@{ $self->{def}{meth_ord} } };
+        # Return the private list of methods.
+        return @{$meths}{@{ $self->{def}{meth_ord} } };
     }
 }
 

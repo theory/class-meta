@@ -1,25 +1,24 @@
 #!/usr/bin/perl -w
 
-# $Id: Makefile.PL,v 1.4 2002/05/11 22:18:17 david Exp $
+# $Id: Makefile.PL,v 1.5 2002/05/16 18:12:47 david Exp $
 
 use strict;
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
-WriteMakefile(
-    'NAME'		=> 'Class::Meta',
-    'VERSION_FROM'	=> 'lib/Class/Meta.pm', # finds $VERSION
-    'PREREQ_PM'		=> { Data::Types => 0.02,
-			     Time::Piece => 1.01,
-			     Time::Piece::ISO => 0.03,
-			   },
-    ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM => 'lib/Class/Meta.pm', # retrieve abstract from module
-       AUTHOR     => 'David Wheeler <david@wheeler.net') : ()),
-    'LIBS'		=> [''], # e.g., '-lm'
-    'DEFINE'		=> '', # e.g., '-DHAVE_SOMETHING'
-	# Insert -I. if you add *.h files later:
-    'INC'		=> '', # e.g., '-I/usr/include/other'
-	# Un-comment this if you add C files to link with later:
-    # 'OBJECT'		=> '$(O_FILES)', # link all the C files too
+WriteMakefile( NAME            => 'Class::Meta',
+               VERSION_FROM    => 'lib/Class/Meta.pm', # finds $VERSION
+               PREREQ_PM       => { Data::Types => 0.02,
+                                    Time::Piece => 1.01,
+                                    Time::Piece::ISO => 0.03,
+                                  },
+               LIBS            => [''], # e.g., '-lm'
+               DEFINE          => '', # e.g., '-DHAVE_SOMETHING'
+               # Insert -I. if you add *.h files later:
+               INC             => '', # e.g., '-I/usr/include/other'
+               ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
+                ( ABSTRACT_FROM => 'lib/Class/Meta.pm', # retrieve abstract from module
+                  AUTHOR        => 'David Wheeler <david@wheeler.net') : ()),
+               # Un-comment this if you add C files to link with later:
+               #OBJECT          => '$(O_FILES)', # link all the C files too
 );

@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.6 2002/05/11 22:18:17 david Exp $
+# $Id: Type.pm,v 1.7 2002/05/16 18:12:47 david Exp $
 
 =head1 NAME
 
@@ -53,8 +53,8 @@ $VERSION = "0.01";
 {
     # This code ref will be used to create most get_* methods.
     my $mk_getter = sub {
-	my ($attr) = @_;
-	return { "get_$attr" => sub { $_[0]->{$attr} } };
+        my ($attr) = @_;
+        return { "get_$attr" => sub { $_[0]->{$attr} } };
     };
 
     # This code ref will create Class::Meta::Attribute get code refs.
@@ -62,37 +62,37 @@ $VERSION = "0.01";
 
     # This code ref will be used to create most set_* methods.
     my $mk_setter = sub {
-	my ($attr, $conv, $chk) = @_;
-	if ($conv && $chk) {
-	    return { "set_$attr" => sub {
-		my $self = shift;
-		# Convert the value.
-		my $val = $conv->(shift());
-		# Check the value passed in.
-		for (@$chk) { $_->($val, @_) }
-		# Assign the value.
-		$self->{$attr} = $val;
-	    }};
-	} elsif ($conv) {
-	    return { "set_$attr" => sub {
-		my $self = shift;
-		# Convert and assign the value.
-		$self->{$attr} = $conv->(shift());
-	    }};
-	} elsif ($chk) {
-	     return { "set_$attr" => sub {
-		my $self = shift;
-		# Check the value passed in.
-		for (@$chk) { $_->(@_) }
-		# Assign the value.
-		$self->{$attr} = $_[1];
-	    }};
-	 } else {
-	     return { "set_$attr" => sub {
-		# Assign the value.
-		$_[0]->{$attr} = $_[1];
-	    }};
-	 }
+        my ($attr, $conv, $chk) = @_;
+        if ($conv && $chk) {
+            return { "set_$attr" => sub {
+                my $self = shift;
+                # Convert the value.
+                my $val = $conv->(shift());
+                # Check the value passed in.
+                for (@$chk) { $_->($val, @_) }
+                # Assign the value.
+                $self->{$attr} = $val;
+            }};
+        } elsif ($conv) {
+            return { "set_$attr" => sub {
+                my $self = shift;
+                # Convert and assign the value.
+                $self->{$attr} = $conv->(shift());
+            }};
+        } elsif ($chk) {
+             return { "set_$attr" => sub {
+                my $self = shift;
+                # Check the value passed in.
+                for (@$chk) { $_->(@_) }
+                # Assign the value.
+                $self->{$attr} = $_[1];
+            }};
+         } else {
+             return { "set_$attr" => sub {
+                # Assign the value.
+                $_[0]->{$attr} = $_[1];
+            }};
+         }
     };
 
     # This code ref will create Class::Meta::Attribute set code refs.
@@ -101,21 +101,21 @@ $VERSION = "0.01";
     # This code ref creates the boolean set methods. They never need
     # to do checks or conversions.
     my $bool_setter = sub {
-	my ($attr) = @_;
-	return { "set_${attr}_on" =>  sub { $_[0]->{$attr} = 1 },
-		 "set_${attr}_off" => sub { $_[0]->{$attr} = 0 } };
+        my ($attr) = @_;
+        return { "set_${attr}_on" =>  sub { $_[0]->{$attr} = 1 },
+                 "set_${attr}_off" => sub { $_[0]->{$attr} = 0 } };
     };
 
     # This code ref creates the Class::Meta::Attribute set method for boolean
     # data types.
     my $bool_psetter = sub {
-	eval "sub { \$_[1] ? \$_[0]->set_$_[0]_on : \$_[0]->set_$_[0]_off }";
+        eval "sub { \$_[1] ? \$_[0]->set_$_[0]_on : \$_[0]->set_$_[0]_off }";
     };
 
     # This code ref creats the boolean get method.
     my $bool_getter = sub {
-	my ($attr) = @_;
-	return { "is_$attr" => sub { $_[0]->{$attr} ? 1 : 0 } };
+        my ($attr) = @_;
+        return { "is_$attr" => sub { $_[0]->{$attr} ? 1 : 0 } };
     };
 
     # This code ref creates the Class::Meta::Attribute get method for boolean
@@ -124,30 +124,30 @@ $VERSION = "0.01";
 
     # This code ref builds value checkers.
     my $mk_chk = sub {
-	my ($code, $type) = @_;
-	return [ sub {
-	    $code->($_[0]) ||
-	      Carp::croak("Value '$_[0]' is not a valid $type")
-	} ];
+        my ($code, $type) = @_;
+        return [ sub {
+            $code->($_[0]) ||
+              Carp::croak("Value '$_[0]' is not a valid $type")
+        } ];
     };
 
     # This code ref builds reference value checkers.
     my $mk_refchk = sub {
-	my ($ref, $type) = @_;
-	return [ sub {
-	    ref $_[0] eq $ref ||
-	      Carp::croak("Value '$_[0]' is not a valid $type")
-	} ];
+        my ($ref, $type) = @_;
+        return [ sub {
+            ref $_[0] eq $ref ||
+              Carp::croak("Value '$_[0]' is not a valid $type")
+        } ];
     };
 
     # This will be the defult check for all custom types. It validates
     # object types.
     my $mk_isachk = sub {
-	my ($ref, $type);
-	return [ sub {
-	    UNIVERSAL::isa($_[0], $ref) ||
-		Carp::croak("Value '$_[0]' is not a $type object")
-	} ];
+        my ($ref, $type);
+        return [ sub {
+            UNIVERSAL::isa($_[0], $ref) ||
+                Carp::croak("Value '$_[0]' is not a $type object")
+        } ];
     };
 
 ##############################################################################
@@ -155,155 +155,155 @@ $VERSION = "0.01";
 ##############################################################################
     my %types =
       ( string   => { key      => "string",
-		      name     => "String",
-		      desc     => "String",
-		      chk      => $mk_chk->(\&Data::Types::is_string,
-					    'string'),
-		      conv     => sub { Data::Types::to_string(@_) },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+                      name     => "String",
+                      desc     => "String",
+                      chk      => $mk_chk->(\&Data::Types::is_string,
+                                            'string'),
+                      conv     => sub { Data::Types::to_string(@_) },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	boolean  => { key      => "boolean",
-		      name     => "Boolean",
-		      desc     => "Boolean",
-		      chk      => undef,
-		      conv     => undef,
-		      get      => $bool_getter,
-		      set      => $bool_setter,
-		      attr_set => $bool_psetter,
-		      attr_get => $bool_pgetter
-		    },
+        boolean  => { key      => "boolean",
+                      name     => "Boolean",
+                      desc     => "Boolean",
+                      chk      => undef,
+                      conv     => undef,
+                      get      => $bool_getter,
+                      set      => $bool_setter,
+                      attr_set => $bool_psetter,
+                      attr_get => $bool_pgetter
+                    },
 
-	whole    => { key      => "whole",
-		      name     => "Whole Number",
-		      desc     => "Whole number",
-		      chk      => $mk_chk->(\&Data::Types::is_whole,
-					'whole number'),
-		      conv     => sub { Data::Types::to_whole($_[0]) },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        whole    => { key      => "whole",
+                      name     => "Whole Number",
+                      desc     => "Whole number",
+                      chk      => $mk_chk->(\&Data::Types::is_whole,
+                                        'whole number'),
+                      conv     => sub { Data::Types::to_whole($_[0]) },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	integer  => { key      => "integer",
-		      name     => "Integer",
-		      desc     => "Integer",
-		      chk      => $mk_chk->(\&Data::Types::is_int, 'integer'),
-		      conv     => sub { Data::Types::to_int($_[0]) },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        integer  => { key      => "integer",
+                      name     => "Integer",
+                      desc     => "Integer",
+                      chk      => $mk_chk->(\&Data::Types::is_int, 'integer'),
+                      conv     => sub { Data::Types::to_int($_[0]) },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	decimal  => { key      => "decimal",
-		      name     => "Decimal Number",
-		      desc     => "Decimal number",
-		      chk      => $mk_chk->(\&Data::Types::is_decimal,
-					'decimal number'),
-		      conv     => sub {Data::Types::to_decimal($_[0])},
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        decimal  => { key      => "decimal",
+                      name     => "Decimal Number",
+                      desc     => "Decimal number",
+                      chk      => $mk_chk->(\&Data::Types::is_decimal,
+                                        'decimal number'),
+                      conv     => sub {Data::Types::to_decimal($_[0])},
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	real     => { key      => "real",
-		      name     => "Real Number",
-		      desc     => "Real number",
-		      chk      => $mk_chk->(\&Data::Types::is_real,
-					'real number'),
-		      conv     => sub { Data::Types::to_real($_[0]) },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        real     => { key      => "real",
+                      name     => "Real Number",
+                      desc     => "Real number",
+                      chk      => $mk_chk->(\&Data::Types::is_real,
+                                        'real number'),
+                      conv     => sub { Data::Types::to_real($_[0]) },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	float    => { key      => "float",
-		      name     => "Floating Point Number",
-		      desc     => "Floating point number",
-		      chk      => $mk_chk->(\&Data::Types::is_float,
-					'floating point number'),
-		      conv     => sub { Data::Types::to_float($_[0]) },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        float    => { key      => "float",
+                      name     => "Floating Point Number",
+                      desc     => "Floating point number",
+                      chk      => $mk_chk->(\&Data::Types::is_float,
+                                        'floating point number'),
+                      conv     => sub { Data::Types::to_float($_[0]) },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	scalar   => { key      => "scalar",
-		      name     => "Scalar",
-		      desc     => "Scalar",
-		      chk      => undef,
-		      conv     => undef,
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        scalar   => { key      => "scalar",
+                      name     => "Scalar",
+                      desc     => "Scalar",
+                      chk      => undef,
+                      conv     => undef,
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	scalarref => { key      => "scalarref",
-		      name     => "Scalar Reference",
-		      desc     => "Scalar reference",
-		      chk      => $mk_refchk->('SCALAR', 'scalar reference'),
-		      conv     => sub { \$_[0] },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        scalarref => { key      => "scalarref",
+                      name     => "Scalar Reference",
+                      desc     => "Scalar reference",
+                      chk      => $mk_refchk->('SCALAR', 'scalar reference'),
+                      conv     => sub { \$_[0] },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	array    => { key      => "array",
-		      name     => "Array Reference",
-		      desc     => "Array reference",
-		      chk      => $mk_refchk->('ARRAY', 'array reference'),
-		      conv     => sub { \@_ },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        array    => { key      => "array",
+                      name     => "Array Reference",
+                      desc     => "Array reference",
+                      chk      => $mk_refchk->('ARRAY', 'array reference'),
+                      conv     => sub { \@_ },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	hash     => { key      => "hash",
-		      name     => "Hash Reference",
-		      desc     => "Hash reference",
-		      chk      => $mk_refchk->('HASH', 'hash reference'),
-		      conv     => sub { { @_ } },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        hash     => { key      => "hash",
+                      name     => "Hash Reference",
+                      desc     => "Hash reference",
+                      chk      => $mk_refchk->('HASH', 'hash reference'),
+                      conv     => sub { { @_ } },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	code     => { key      => "code",
-		      name     => "Code Reference",
-		      desc     => "Code reference",
-		      chk      => $mk_refchk->('CODE', 'code reference'),
-		      conv     => sub { sub { @_ } },
-		      set      => $mk_setter,
-		      get      => $mk_getter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        code     => { key      => "code",
+                      name     => "Code Reference",
+                      desc     => "Code reference",
+                      chk      => $mk_refchk->('CODE', 'code reference'),
+                      conv     => sub { sub { @_ } },
+                      set      => $mk_setter,
+                      get      => $mk_getter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
 
-	datetime => { key      => "datetime",
-		      name     => "Date/Time",
-		      desc     => "Date/Time",
-		      chk      => $mk_refchk->('Time::Piece::ISO',
-					   'Time::Piece::ISO object'),
-		      conv     => sub { Time::Piece::ISO->strptime
-				      ($_[0], $_[1] || '%Y-%m-%dT%T'),
-				  },
-		      get     => $mk_getter,
-		      set     => $mk_setter,
-		      attr_set => $mk_psetter,
-		      attr_get => $mk_pgetter
-		    },
+        datetime => { key      => "datetime",
+                      name     => "Date/Time",
+                      desc     => "Date/Time",
+                      chk      => $mk_refchk->('Time::Piece::ISO',
+                                           'Time::Piece::ISO object'),
+                      conv     => sub { Time::Piece::ISO->strptime
+                                      ($_[0], $_[1] || '%Y-%m-%dT%T'),
+                                  },
+                      get     => $mk_getter,
+                      set     => $mk_setter,
+                      attr_set => $mk_psetter,
+                      attr_get => $mk_pgetter
+                    },
   );
 
     # Set up aliases.
@@ -418,10 +418,10 @@ those values.
 =cut
 
     sub new {
-	my $key = lc $_[1] || Carp::croak("Type argument required");
-	Carp::croak("Type '$_[1]' does not exist")
-	  unless $types{$key};
-	return bless $types{$key}, ref $_[0] || $_[0];
+        my $key = lc $_[1] || Carp::croak("Type argument required");
+        Carp::croak("Type '$_[1]' does not exist")
+          unless $types{$key};
+        return bless $types{$key}, ref $_[0] || $_[0];
     }
 
 ##############################################################################
@@ -634,72 +634,72 @@ you can use it as a template for your custom get attributes:
 =cut
 
     sub add {
-	my $pkg = shift;
-	# Make sure we can process the parameters.
-	Carp::croak("Odd number of parameters in call to add() when named "
-		    . "parameters were expected" ) if @_ % 2;
-	my %params = @_;
+        my $pkg = shift;
+        # Make sure we can process the parameters.
+        Carp::croak("Odd number of parameters in call to add() when named "
+                    . "parameters were expected" ) if @_ % 2;
+        my %params = @_;
 
-	# Check required paremeters.
-	foreach (qw(key name)) {
-	    Carp::croak("Parameter '$_' is required") unless $params{$_};
-	}
+        # Check required paremeters.
+        foreach (qw(key name)) {
+            Carp::croak("Parameter '$_' is required") unless $params{$_};
+        }
 
-	# Check the key parameter.
-	$params{key} = lc $params{key};
-	Carp::croak("Type '$params{key}' already defined")
-	  if exists $types{$params{key}};
+        # Check the key parameter.
+        $params{key} = lc $params{key};
+        Carp::croak("Type '$params{key}' already defined")
+          if exists $types{$params{key}};
 
-	# Set up the chk croak.
-	my $chk_die = sub {
-	    Carp::croak("Paremter 'chk' in call to add() must be a code "
-			. "reference, an array of code references, or a "
-			. "scalar naming an object type");
-	};
+        # Set up the chk croak.
+        my $chk_die = sub {
+            Carp::croak("Paremter 'chk' in call to add() must be a code "
+                        . "reference, an array of code references, or a "
+                        . "scalar naming an object type");
+        };
 
-	# Check the chk parameter.
-	if ($params{chk}) {
-	    my $ref = ref $params{chk};
-	    if (!$ref) {
-		# It names the object to be checked.
-		$params{chk} = $mk_isachk->(@params{qw(chk name)});
-	    } elsif ($ref eq 'CODE') {
-		$params{chk} = [$params{chk}]
-	    } elsif ($ref eq 'ARRAY') {
-		# Make sure that they're all code references.
-		foreach my $chk (@{$params{chk}}) {
-		    $chk_die->() unless ref $chk eq 'CODE';
-		}
-	    } else {
-		# It's bogus.
-		$chk_die->();
-	    }
-	}
+        # Check the chk parameter.
+        if ($params{chk}) {
+            my $ref = ref $params{chk};
+            if (!$ref) {
+                # It names the object to be checked.
+                $params{chk} = $mk_isachk->(@params{qw(chk name)});
+            } elsif ($ref eq 'CODE') {
+                $params{chk} = [$params{chk}]
+            } elsif ($ref eq 'ARRAY') {
+                # Make sure that they're all code references.
+                foreach my $chk (@{$params{chk}}) {
+                    $chk_die->() unless ref $chk eq 'CODE';
+                }
+            } else {
+                # It's bogus.
+                $chk_die->();
+            }
+        }
 
-	# Check the conv parameter.
-	if ($params{conv}) {
-	    Carp::croak("Paremter 'conv' in call to add() must be a code "
-			. "reference")
-	      unless ref $params{conv} eq 'CODE';
-	}
+        # Check the conv parameter.
+        if ($params{conv}) {
+            Carp::croak("Paremter 'conv' in call to add() must be a code "
+                        . "reference")
+              unless ref $params{conv} eq 'CODE';
+        }
 
-	# Check the remaining parameters
-	my %acc_map = ( set => $mk_setter,
-			get => $mk_getter,
-			attr_set => $mk_psetter,
-			attr_get => $mk_pgetter );
-	while (my ($p, $c) = each %acc_map) {
-	    if ($params{$p}) {
-		Carp::croak("Parameter '$p' in call to add() must be a code "
-			    . "reference") unless ref $params{$p} eq 'CODE';
-	    } else {
-		$params{$p} = $c;
-	    }
-	}
+        # Check the remaining parameters
+        my %acc_map = ( set => $mk_setter,
+                        get => $mk_getter,
+                        attr_set => $mk_psetter,
+                        attr_get => $mk_pgetter );
+        while (my ($p, $c) = each %acc_map) {
+            if ($params{$p}) {
+                Carp::croak("Parameter '$p' in call to add() must be a code "
+                            . "reference") unless ref $params{$p} eq 'CODE';
+            } else {
+                $params{$p} = $c;
+            }
+        }
 
-	# Okay, add the new type to the cache and construct it.
-	$types{$params{key}} = \%params;
-	return $pkg->new($params{key});
+        # Okay, add the new type to the cache and construct it.
+        $types{$params{key}} = \%params;
+        return $pkg->new($params{key});
     }
 
 }
