@@ -1,6 +1,6 @@
 package Class::Meta::Types::Perl;
 
-# $Id: Perl.pm,v 1.7 2004/01/10 01:58:33 david Exp $
+# $Id: Perl.pm,v 1.8 2004/01/20 21:34:49 david Exp $
 
 =head1 NAME
 
@@ -131,7 +131,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.11 distribution.
+This file was packaged with the Class-Meta-0.13 distribution.
 
 =head1 BUGS
 

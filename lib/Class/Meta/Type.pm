@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.23 2004/01/10 01:58:11 david Exp $
+# $Id: Type.pm,v 1.24 2004/01/20 21:34:48 david Exp $
 
 =head1 NAME
 
@@ -540,7 +540,7 @@ before creating your own.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.11 distribution.
+This file was packaged with the Class-Meta-0.13 distribution.
 
 =head1 BUGS
 

@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.30 2004/01/16 18:51:00 david Exp $
+# $Id: Class.pm,v 1.31 2004/01/20 21:34:48 david Exp $
 
 =head1 NAME
 
@@ -302,7 +302,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.11 distribution.
+This file was packaged with the Class-Meta-0.13 distribution.
 
 =head1 BUGS
 

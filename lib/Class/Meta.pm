@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.61 2004/01/20 21:15:00 david Exp $
+# $Id: Meta.pm,v 1.62 2004/01/20 21:34:48 david Exp $
 
 =head1 NAME
 
@@ -891,7 +891,7 @@ Allow attributes to get a new value once and only once.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.11 distribution.
+This file was packaged with the Class-Meta-0.13 distribution.
 
 =head1 BUGS
 

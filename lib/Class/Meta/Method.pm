@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.24 2004/01/20 21:15:01 david Exp $
+# $Id: Method.pm,v 1.25 2004/01/20 21:34:48 david Exp $
 
 =head1 NAME
 
@@ -227,7 +227,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.11 distribution.
+This file was packaged with the Class-Meta-0.13 distribution.
 
 =head1 BUGS
 
