@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.12 2003/12/10 07:34:12 david Exp $
+# $Id: Method.pm,v 1.13 2004/01/08 03:16:15 david Exp $
 
 =head1 NAME
 
@@ -192,26 +192,6 @@ Returns the method package.
 =cut
 
 sub my_package { $_[0]->{package} }
-
-=head2 my_desc
-
-  my $desc = $meth->my_desc;
-
-Returns the description of the method.
-
-=cut
-
-sub my_desc { $_[0]->{desc} }
-
-=head2 my_label
-
-  my $desc = $meth->my_label;
-
-Returns label for the method.
-
-=cut
-
-sub my_label { $_[0]->{label} }
 
 =head2 my_view
 

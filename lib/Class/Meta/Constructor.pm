@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.17 2003/12/10 07:34:12 david Exp $
+# $Id: Constructor.pm,v 1.18 2004/01/08 03:16:15 david Exp $
 
 use strict;
 
@@ -169,26 +169,6 @@ Returns the constructor name.
 
 sub my_name { $_[0]->{name} }
 
-=head2 my_desc
-
-  my $desc = $ctor->my_desc;
-
-Returns the description of the constructor.
-
-=cut
-
-sub my_desc { $_[0]->{desc} }
-
-=head2 my_label
-
-  my $desc = $ctor->my_label;
-
-Returns label for the constructor.
-
-=cut
-
-sub my_label { $_[0]->{label} }
-
 =head2 my_view
 
   my $view = $ctor->my_view;
@@ -245,7 +225,7 @@ sub build {
                     # Let them set the value.
                     $attr->call_set($new, exists $p{$key}
                                       ? delete $p{$key}
-                                        : $attr->my_default);
+                                      : $attr->my_default);
                 } else {
                     # Use the default value.
                     $new->{$key} = $attr->my_default;

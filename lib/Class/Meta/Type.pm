@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.14 2004/01/07 23:42:49 david Exp $
+# $Id: Type.pm,v 1.15 2004/01/08 03:16:15 david Exp $
 
 =head1 NAME
 
@@ -99,6 +99,8 @@ following modules:
 =item L<Class::Meta::Type::Perl|Class::Meta::Type::Perl>
 
 =over 4
+
+=item scalar
 
 =item scalarref
 

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.14 2004/01/07 07:12:03 david Exp $
+# $Id: Attribute.pm,v 1.15 2004/01/08 03:16:15 david Exp $
 
 =head1 NAME
 
@@ -147,10 +147,6 @@ sub my_view     { $_[0]->{view}     }
 sub my_context  { $_[0]->{context}  }
 sub my_authz    { $_[0]->{authz}    }
 sub my_type     { $_[0]->{type}     }
-sub my_length   { $_[0]->{length}   }
-sub my_label    { $_[0]->{label}    }
-sub my_field    { $_[0]->{field}    }
-sub my_desc     { $_[0]->{desc}     }
 sub is_required { $_[0]->{required} }
 
 sub my_default {
