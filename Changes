@@ -1,6 +1,10 @@
 Revision history for Perl extension Class::Meta.
 
 0.41
+      - Added "for_key()" class method to Class::Meta to return a
+        Class::Meta::Class class for a class key.
+      - Eliminated '"my" variable $objs masks earlier declaration in same
+        scope' warning.
 
 0.40  2004-08-27T01:51:12
       - Remembered to actually apply the patch taht fixes the tests under

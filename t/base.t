@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.27 2004/04/18 21:11:00 david Exp $
+# $Id: base.t,v 1.28 2004/08/27 02:30:39 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 112;
+use Test::More tests => 113;
 
 ##############################################################################
 # Create a simple class.
@@ -273,5 +273,8 @@ ok( @constructors = $class->constructors(qw(new)),
     'Grab specific constructor.');
 is( scalar @constructors, 1, 'Two constructors from constructors()' );
 is( $constructors[0]->name, 'new', 'Check specific constructor' );
+
+# Try getting the class object via the for_key() class method.
+is( Class::Meta->for_key($class->key), $class, "for_key returns class" );
 
 __END__
