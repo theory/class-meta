@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.50 2004/01/09 00:04:41 david Exp $
+# $Id: Meta.pm,v 1.51 2004/01/09 00:46:59 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -884,12 +884,18 @@ __END__
 
 =item *
 
-Add ability to create object attribute accessors, perhaps borrowing from
-Class::Data::Inheritable.
+Add ability to create object attribute accessors. The implementation is very
+similar to the existing accessor implementations, so perhaps they'd just be
+separate modules that can be loaded as needed, since class attributes are much
+rarer.
 
 =item *
 
 Allow attributes to get a new value once and only once.
+
+=item *
+
+Add errors for calling protected and private methods where one shouldn't.
 
 =back
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: chk_types_affordance.t,v 1.2 2004/01/09 00:04:42 david Exp $
+# $Id: chk_types_affordance.t,v 1.3 2004/01/09 00:47:00 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -65,8 +65,8 @@ like( $err, qr/^Value .* is not a valid string/, 'correct string exception' );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( my $set = $type->make_attr_set($aname . $i), "Check string attr_set" );
-ok( my $get = $type->make_attr_get($aname . $i), "Check string attr_get" );
+ok( my $set = $type->make_attr_set($attr), "Check string attr_set" );
+ok( my $get = $type->make_attr_get($attr), "Check string attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 'test', "Check string getter" );
@@ -103,8 +103,8 @@ is( $obj->$acc, 0, "Check boolean value off" );
 
 # And finally, check to make sure that the Attribute class accessor coderefs
 # are getting created.
-ok( $set = $type->make_attr_set($aname . $i), "Check boolean attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check boolean attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check boolean attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check boolean attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 0, "Check boolean getter" );
@@ -144,8 +144,8 @@ like( $err, qr/^Value .* is not a valid whole number/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check whole attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check whole attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check whole attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check whole attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12, "Check whole getter" );
@@ -186,8 +186,8 @@ like( $err, qr/^Value .* is not a valid integer/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check integer attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check integer attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check integer attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check integer attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12, "Check integer getter" );
@@ -228,8 +228,8 @@ like( $err, qr/^Value .* is not a valid decimal/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check decimal attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check decimal attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check decimal attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check decimal attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 12.2, "Check decimal getter" );
@@ -269,8 +269,8 @@ like( $err, qr/^Value .* is not a valid float/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check float attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check float attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check float attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check float attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 1.23e99, "Check float getter" );
@@ -302,8 +302,8 @@ is( $obj->$acc, 'foo', "Check scalar value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check scalar attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check scalar attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check scalar attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check scalar attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), 'foo', "Check scalar getter" );
@@ -344,8 +344,8 @@ like( $err, qr/^Value .* is not a valid Scalar Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check scalarref attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check scalarref attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check scalarref attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check scalarref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $sref, "Check scalarref getter" );
@@ -388,8 +388,8 @@ like( $err, qr/^Value .* is not a valid Array Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check arrayref attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check arrayref attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check arrayref attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check arrayref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $aref, "Check arrayref getter" );
@@ -432,8 +432,8 @@ like( $err, qr/^Value .* is not a valid Hash Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check hashref attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check hashref attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check hashref attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check hashref attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $href, "Check hashref getter" );
@@ -477,8 +477,8 @@ like( $err, qr/^Value .* is not a valid Code Reference/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check coderef attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check coderef attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check coderef attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check coderef attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $cref, "Check coderef getter" );

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.25 2004/01/09 00:04:42 david Exp $
+# $Id: Attribute.pm,v 1.26 2004/01/09 00:46:59 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -351,12 +351,12 @@ sub build {
 
     # Create the attribute object get code reference.
     if ($self->{authz} >= Class::Meta::READ) {
-        $self->{_get} = $type->make_attr_get($self->{name});
+        $self->{_get} = $type->make_attr_get($self);
     }
 
     # Create the attribute object set code reference.
     if ($self->{authz} >= Class::Meta::WRITE) {
-        $self->{_set} = $type->make_attr_set($self->{name});
+        $self->{_set} = $type->make_attr_set($self);
     }
 
 }

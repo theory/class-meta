@@ -1,6 +1,6 @@
 package Class::Meta::Types::Boolean;
 
-# $Id: Boolean.pm,v 1.4 2004/01/09 00:04:42 david Exp $
+# $Id: Boolean.pm,v 1.5 2004/01/09 00:47:00 david Exp $
 
 use strict;
 use Class::Meta::Type;
@@ -12,8 +12,11 @@ sub import {
 
     if ($builder eq 'default') {
         eval q|
-sub build_attr_get { eval "sub { shift->$_[0] }" }
-sub build_attr_set { eval "sub { shift->$_[0](\@_) }" }
+sub build_attr_get {
+    UNIVERSAL::can($_[0]->package, $_[0]->name);
+}
+
+*build_attr_set = \&build_attr_get;
 
 sub build {
     my ($pkg, $attr, $create) = @_;
@@ -41,9 +44,13 @@ sub build {
 }|
     } else {
         eval q|
-sub build_attr_get { eval "sub { shift->is_$_[0] }" }
+sub build_attr_get {
+    UNIVERSAL::can($_[0]->package, 'is_' . $_[0]->name);
+}
+
 sub build_attr_set {
-    eval "sub { \$_[1] ? \$_[0]->set_$_[0]_on : \$_[0]->set_$_[0]_off }";
+    my $name = shift->name;
+    eval "sub { \$_[1] ? \$_[0]->set_$name\_on : \$_[0]->set_$name\_off }";
 }
 
 sub build {

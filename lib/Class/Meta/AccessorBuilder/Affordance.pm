@@ -1,13 +1,18 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.4 2004/01/09 00:07:32 david Exp $
+# $Id: Affordance.pm,v 1.5 2004/01/09 00:46:59 david Exp $
 
 use strict;
 
 use Class::Meta;
 
-sub build_attr_get { eval "sub { shift->get_$_[0] }" }
-sub build_attr_set { eval "sub { shift->set_$_[0](\@_) }" }
+sub build_attr_get {
+    UNIVERSAL::can($_[0]->package, 'get_' . $_[0]->name);
+}
+
+sub build_attr_set {
+    UNIVERSAL::can($_[0]->package, 'set_' . $_[0]->name);
+}
 
 my $croak = sub {
     require Carp;

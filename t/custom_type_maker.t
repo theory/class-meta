@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: custom_type_maker.t,v 1.9 2004/01/09 00:04:42 david Exp $
+# $Id: custom_type_maker.t,v 1.10 2004/01/09 00:47:00 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -56,8 +56,8 @@ is( $obj->$acc, $homer, "Check homer value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check homer attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check homer attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check homer attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check homer attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $homer, "Check homer getter" );
@@ -95,8 +95,8 @@ is( $obj->$acc, $bart, "Check bart value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check bart attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check bart attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check bart attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check bart attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $bart, "Check bart getter" );
@@ -142,8 +142,8 @@ like( $err, qr/^Value .* is not a valid Marge/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check marge attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check marge attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check marge attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check marge attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $marge, "Check marge getter" );
@@ -183,8 +183,8 @@ is( $obj->$acc, $lisa, "Check lisa value" );
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check lisa attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check lisa attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check lisa attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check lisa attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $lisa, "Check lisa getter" );
@@ -234,8 +234,8 @@ like( $err, qr/^Value .* is not a valid Maggie/,
 
 # Check to make sure that the Attribute class accessor coderefs are getting
 # created.
-ok( $set = $type->make_attr_set($aname . $i), "Check maggie attr_set" );
-ok( $get = $type->make_attr_get($aname . $i), "Check maggie attr_get" );
+ok( $set = $type->make_attr_set($attr), "Check maggie attr_set" );
+ok( $get = $type->make_attr_get($attr), "Check maggie attr_get" );
 
 # Make sure they get and set values correctly.
 is( $get->($obj), $maggie, "Check maggie getter" );
