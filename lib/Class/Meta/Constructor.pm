@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.41 2004/04/18 23:37:35 david Exp $
+# $Id: Constructor.pm,v 1.42 2004/04/19 13:48:11 david Exp $
 
 =head1 NAME
 
@@ -269,8 +269,8 @@ sub build {
         my $real_sub = $sub;
         my $pkg = $self->package;
          $sub = sub {
-             $self->class->handle_error->("$name is a protected constrctor "
-                                          . "of $pkg")
+             $self->class->handle_error("$name is a protected constrctor "
+                                        . "of $pkg")
                unless caller->isa($pkg);
              goto &$real_sub;
         };
