@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.98 2004/09/20 05:24:51 david Exp $
+# $Id: Meta.pm,v 1.99 2004/09/20 06:22:38 david Exp $
 
 =head1 NAME
 
@@ -910,6 +910,10 @@ accessor, you'd specify it like this:
                       type   => $type,
                       authz  => Class::Meta::RDWR,
                       create => Class::Meta::NONE );
+
+Just be sure that your custom accessor is compiles before you call
+C<< $cm->build >> so that Class::Meta::Attribute can get a handle on it for
+its C<get()> and/or C<set()> methods.
 
 =item context
 

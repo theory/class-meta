@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.28 2004/08/27 02:30:39 david Exp $
+# $Id: base.t,v 1.29 2004/09/20 06:22:38 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 113;
+use Test::More tests => 119;
 
 ##############################################################################
 # Create a simple class.
@@ -64,6 +64,21 @@ BEGIN {
                        desc     => "The person's age.",
                        required => 0,
                        default  => undef,
+                   );
+
+    # Our custom accessor for goop.
+    sub goop { shift->{goop} }
+
+    # Add an attribute for which we will create the accessor method.
+    $c->add_attribute( name     => 'goop',
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::READ,
+                       create   => Class::Meta::NONE,
+                       type     => 'string',
+                       label    => 'Goop',
+                       desc     => "The person's gooposity.",
+                       required => 0,
+                       default  => 'very',
                    );
 
     # Add a class attribute.
@@ -131,7 +146,7 @@ is( $class->desc, 'Special person class just for testing Class::Meta.',
 
 # Test attributes().
 ok(my @attributes = $class->attributes, "Get attributes from attributes()" );
-is( scalar @attributes, 4, "Four attributes from attributes()" );
+is( scalar @attributes, 5, "Five attributes from attributes()" );
 isa_ok($attributes[0], 'Class::Meta::Attribute',
        "First object is a attribute object" );
 isa_ok($attributes[1], 'Class::Meta::Attribute',
@@ -231,6 +246,16 @@ ok( Class::Meta::TestPerson->count(35), 'Set class count' );
 is( Class::Meta::TestPerson->count, 35, 'Class count again' );
 is( $t->count, 35, 'Object count after class');
 is( $p->get($t), 35, 'Final Count get after class' );
+
+# Test goop attribute accessor.
+is( $t->goop, 'very', "Got goop" );
+$t->goop('feh');
+is( $t->goop, 'very', "Still got goop" );
+ok( $p = $class->attributes('goop'), "Get goop attribute object" );
+is( $p->get($t), 'very', "Got attribute goop" );
+eval { $p->set($t, 'feh') };
+ok( $@, "Can't set goop" );
+is( $p->get($t), 'very', "Still got attribute goop" );
 
 # Test methods().
 ok( my @methods = $class->methods, "Get method objects" );

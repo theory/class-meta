@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: errors.t,v 1.14 2004/09/19 23:54:09 david Exp $
+# $Id: errors.t,v 1.15 2004/09/20 06:22:38 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -14,6 +14,21 @@ BEGIN {
     main::use_ok('Class::Meta');
     main::use_ok('Class::Meta::Types::String');
 }
+
+##############################################################################
+# Packages we'll use for testing type errors.
+package NoAttrBuild;
+sub foo {}
+$INC{'NoAttrBuild.pm'} = __FILE__;
+
+package NoAttrGet;
+sub build {}
+$INC{'NoAttrGet.pm'} = __FILE__;
+
+package NoAttrSet;
+sub build {}
+sub build_attr_get {}
+$INC{'NoAttrSet.pm'} = __FILE__;
 
 ##############################################################################
 # Create some simple classes.
@@ -216,9 +231,9 @@ chk('Invalid type check array',
 eval {
     Class::Meta::Type->add( key => 'foo',
                             name => 'foo',
-                            builder => 'NoBuild');
+                            builder => 'NoAttrBuild');
 };
-chk('No build', qr/No such function 'NoBuild::build\(\)'/);
+chk('No build', qr/No such function 'NoAttrBuild::build\(\)'/);
 
 eval {
     Class::Meta::Type->add( key => 'foo',
@@ -287,12 +302,3 @@ sub chk {
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }
-
-##############################################################################
-# Packages we'll use for testing type errors.
-package NoAttrGet;
-sub build {}
-
-package NoAttrSet;
-sub build {}
-sub build_attr_get {}

@@ -6,6 +6,11 @@ Revision history for Perl extension Class::Meta.
       - Class::Meta::Class->handle_error() now joins multiple arguments it
         receives into a single string to be passed to the error handler
         code reference.
+      - Class::Meta::Attribute now correctly finds attribute accessors that
+        were not created by Class::Meta (that is, when the "create" parameter
+        is set to NONE), provided that the build_attr_set() and
+        build_attr_get() functions of the accessor builder package can
+        find them (as the accessor builders include with Class::Meta can).
 
 0.42  2004-09-19T23:57:53
       - Fixed test failures on Windows in "t/errors.t".

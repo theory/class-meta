@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.59 2004/09/20 05:24:51 david Exp $
+# $Id: Attribute.pm,v 1.60 2004/09/20 06:22:38 david Exp $
 
 =head1 NAME
 
@@ -402,12 +402,11 @@ sub build {
       unless UNIVERSAL::isa($caller, 'Class::Meta')
         || UNIVERSAL::isa($caller, __PACKAGE__);
 
-    # Just return if this attribute doesn't need accessors created for it.
-    return $self if $self->{create} == Class::Meta::NONE;
-
     # Get the data type object and assemble the validation checks.
     my $type = Class::Meta::Type->new($self->{type});
-    $type->build($class->{package}, $self, delete $self->{create});
+    my $create = delete $self->{create};
+    $type->build($class->{package}, $self, $create)
+      if $create != Class::Meta::NONE;
 
     # Create the attribute object get code reference.
     if ($self->{authz} >= Class::Meta::READ) {
