@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.87 2004/06/28 23:21:34 david Exp $
+# $Id: Meta.pm,v 1.88 2004/07/20 18:45:25 david Exp $
 
 =head1 NAME
 
@@ -29,7 +29,7 @@ Generate a class:
                           authz    => Class::Meta::READ,
                           type     => 'integer',
                           required => 1,
-                          default  => sub { ... } );
+                          default  => sub { Data::UUID->new->create_str } );
       $cm->add_attribute( name     => 'name',
                           type     => 'string',
                           required => 1,
@@ -75,7 +75,7 @@ Or make use of the introspection API:
       print "  o ", $attr->name, " => ", $attr->get($thingy), $/;
       if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
           $attr->get($thingy, 'hey there!');
-          print "    Changed to: ", $attr->get($thingy) $/;
+          print "    Changed to: ", $attr->get($thingy), $/;
       }
   }
 

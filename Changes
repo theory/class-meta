@@ -1,6 +1,9 @@
 Revision history for Perl extension Class::Meta.
 
 0.36
+      - Minor doc fixes, repoted by Jesse Vincent.
+      - Added simple example for a default value code reference. Suggested
+        by Jesse Vincent.
 
 0.35  2004-06-28T23:16:16
       - Fixed the names of the included types classes in the documentation

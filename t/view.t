@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: view.t,v 1.6 2004/06/28 23:15:31 david Exp $
+# $Id: view.t,v 1.7 2004/07/20 18:45:25 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -408,7 +408,7 @@ sub chk {
     # Check its message.
     like( $err, $qr, "Correct error" );
     # Make sure it refers to this file.
-    like( $err, qr/(?:at $fn|$fn at) line/, 'Correct context' );
+    like( $err, qr/(?:at\s+$fn|$fn\s+at)\s+line/, 'Correct context' );
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }
