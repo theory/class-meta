@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.25 2004/05/25 17:15:17 david Exp $
+# $Id: Affordance.pm,v 1.26 2004/06/17 00:11:11 david Exp $
 
 =head1 NAME
 
@@ -136,7 +136,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.33";
+our $VERSION = "0.34";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, 'get_' . $_[0]->name);
@@ -269,7 +269,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.33 distribution.
+This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 

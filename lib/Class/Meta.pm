@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.83 2004/06/17 00:07:33 david Exp $
+# $Id: Meta.pm,v 1.84 2004/06/17 00:11:11 david Exp $
 
 =head1 NAME
 
@@ -638,7 +638,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.33";
+our $VERSION = "0.34";
 
 ##############################################################################
 # Private Package Globals
@@ -1057,7 +1057,7 @@ may not be easy.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.33 distribution.
+This file was packaged with the Class-Meta-0.34 distribution.
 
 =head1 BUGS
 
