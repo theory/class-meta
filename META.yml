@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Class-Meta
-version: 0.12
+version: 0.13
 license: perl
 distribution_type: module
 requires:
@@ -13,25 +13,25 @@ conflicts: {}
 provides:
   Class::Meta:
     file: lib/Class/Meta.pm
-    version: 0.12
+    version: 0.13
   Class::Meta::AccessorBuilder:
     file: lib/Class/Meta/AccessorBuilder.pm
-    version: 0.12
+    version: 0.13
   Class::Meta::AccessorBuilder::Affordance:
     file: lib/Class/Meta/AccessorBuilder/Affordance.pm
-    version: 0.12
+    version: 0.13
   Class::Meta::Attribute:
     file: lib/Class/Meta/Attribute.pm
-    version: 0.12
+    version: 0.13
   Class::Meta::Class:
     file: lib/Class/Meta/Class.pm
     version: 0.12
   Class::Meta::Constructor:
     file: lib/Class/Meta/Constructor.pm
-    version: 0.12
+    version: 0.13
   Class::Meta::Method:
     file: lib/Class/Meta/Method.pm
-    version: 0.11
+    version: 0.12
   Class::Meta::Type:
     file: lib/Class/Meta/Type.pm
     version: 0.11
