@@ -1,6 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
 0.42
+      - Fixed test failures on Windows in "t/errors.t".
 
 0.41  2004-08-27T02:32:17
       - Added "for_key()" class method to Class::Meta to return a
