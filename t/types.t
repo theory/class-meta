@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 56;
+use Test::More tests => 58;
 
 ##############################################################################
 # Create a simple class.
@@ -65,7 +65,7 @@ BEGIN {
               );
     $c->add_attribute( name  => 'alive',
                   view   => Class::Meta::PUBLIC,
-                  type  => 'boolean',
+                  type  => 'bool',
                   label => 'Living',
                   field => 'checkbox',
                   desc  => "Is the person alive?",
@@ -194,6 +194,8 @@ is( $t->alive(0), 0, 'alive off');
 ok( !$t->alive, 'alive false');
 ok( $t->alive(1), 'alive on' );
 ok( $t->alive, 'alive true again');
+ok( my $alive = $class->attributes('alive'), "Get alive attribute object" );
+is( $alive->type, 'boolean', "Check that the alias was converted" );
 
 # Test whole number.
 eval { $t->whole(0) };
