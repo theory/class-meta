@@ -19,8 +19,6 @@ provides:
   Class::Meta::Constructor:
     file: lib/Class/Meta/Constructor.pm
     version: 0.01
-  Class::Meta::Field:
-    file: lib/Class/Meta/Field.pm
   Class::Meta::Method:
     file: lib/Class/Meta/Method.pm
     version: 0.01

@@ -4,11 +4,11 @@ lib/Class/Meta.pm
 lib/Class/Meta/Attribute.pm
 lib/Class/Meta/Class.pm
 lib/Class/Meta/Constructor.pm
-lib/Class/Meta/Field.pm
 lib/Class/Meta/Method.pm
 lib/Class/Meta/Type.pm
 Makefile.PL
 MANIFEST			This list of files
+META.yml
 README
 t/01basic.t
 t/base.t
