@@ -1,6 +1,13 @@
 Revision history for Perl extension Class::Meta.
 
 0.47
+      - Changed the "constructors()", "attributes()", and "methods()" methods
+        in Class::Meta::Class so that any classes thta inherit from
+        Class::Meta::Class are never considered to be the caller.
+      - Added the "trusted" parameter to "new()" to identify trusted packages.
+        Added a new constant, TRUSTED, for the "view" parameter to identfy
+        constructors, attributes, and methods that can be used by trusted
+        packages.
 
 0.46  2005-03-09T18:24:59
       - Fixed documentation to reflect that the "class()" method in the

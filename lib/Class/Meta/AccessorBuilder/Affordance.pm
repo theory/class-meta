@@ -318,6 +318,24 @@ sub _build {
                 goto &$real_sub;
             };
         }
+    } elsif ($attr->view == Class::Meta::TRUSTED) {
+        # XXX Should we have an accessor for this?
+        my $trusted = $attr->class->{trusted};
+        for ($get, $set) {
+            my $real_sub = $_ or next;
+            $_ = sub {
+                my $caller = caller;
+                # Circumvent generated constructors.
+                for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
+                    $caller = caller($i);
+                }
+                goto &$real_sub if $caller eq $pkg;
+                for my $pack (@{$trusted}) {
+                    goto &$real_sub if UNIVERSAL::isa($caller, $pack);
+                }
+                $attr->class->handle_error("$name is a trusted attribute of $pkg");
+            };
+        }
     }
     return ($pkg, $attr, $name, $get, $set);
 }

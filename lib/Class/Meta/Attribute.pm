@@ -110,6 +110,7 @@ sub new {
                                      . "'$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           or     $p{view} == Class::Meta::PROTECTED
+          or     $p{view} == Class::Meta::TRUSTED
           or     $p{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
@@ -172,9 +173,13 @@ sub new {
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
-        push @{$class->{prot_attr_ord}}, $p{name};
-        push @{$class->{attr_ord}}, $p{name}
-          if $p{view} == Class::Meta::PUBLIC;
+        push @{$class->{prot_attr_ord}}, $p{name}
+          unless $p{view} == Class::Meta::TRUSTED;
+        if ($p{view} > Class::Meta::PROTECTED) {
+            push @{$class->{trst_attr_ord}}, $p{name};
+            push @{$class->{attr_ord}}, $p{name}
+              if $p{view} == Class::Meta::PUBLIC;
+        }
     }
 
     # Store a reference to the class object.
@@ -248,6 +253,8 @@ values are defined by the following constants:
 =item Class::Meta::PUBLIC
 
 =item Class::Meta::PRIVATE
+
+=item Class::Meta::TRUSTED
 
 =item Class::Meta::PROTECTED
 

@@ -22,7 +22,7 @@ Class::Meta::Method - Class::Meta class method introspection
 
 This class provides an interface to the C<Class::Meta> objects that describe
 methods. It supports a simple description of the method, a label, and its
-visibility (private, protected, or public).
+visibility (private, protected, trusted, or public).
 
 Class::Meta::Method objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the method objects for a
@@ -92,6 +92,7 @@ sub new {
         $class->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
+          ||     $p{view} == Class::Meta::TRUSTED
           ||     $p{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
@@ -126,9 +127,13 @@ sub new {
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
-        push @{$class->{prot_meth_ord}}, $p{name};
-        push @{$class->{meth_ord}}, $p{name}
-          if $p{view} == Class::Meta::PUBLIC;
+        push @{$class->{prot_meth_ord}}, $p{name}
+          unless $p{view} == Class::Meta::TRUSTED;
+        if ($p{view} > Class::Meta::PROTECTED) {
+            push @{$class->{trst_meth_ord}}, $p{name};
+            push @{$class->{meth_ord}}, $p{name}
+              if $p{view} == Class::Meta::PUBLIC;
+        }
     }
 
     # Store a reference to the class object.
@@ -181,6 +186,8 @@ values are defined by the following constants:
 
 =item Class::Meta::PRIVATE
 
+=item Class::Meta::TRUSTED
+
 =item Class::Meta::PROTECTED
 
 =back
@@ -202,7 +209,7 @@ object method. The possible values are defined by the following constants:
 
 =head3 class
 
-  my $class = $attr->class;
+  my $class = $meth->class;
 
 Returns the Class::Meta::Class object that this method is associated
 with. Note that this object will always represent the class in which the
@@ -243,7 +250,7 @@ sub call {
 
 This is a protected method, designed to be called only by the Class::Meta
 class or a subclass of Class::Meta. It takes a single argument, the
-Class::Meta::Class object for the class in which the attribute was defined.
+Class::Meta::Class object for the class in which the method was defined.
 Currently, C<Class::Meta::Method::build()> is a no-op, although it does check
 to make sure that it is only called by Class::Meta or a subclass of
 Class::Meta or of Class::Meta::Method. Although you should never call this
@@ -256,7 +263,7 @@ sub build {
     my ($self, $class) = @_;
 
     # Check to make sure that only Class::Meta or a subclass is building
-    # attribute accessors.
+    # methods.
     my $caller = caller;
     $self->class->handle_error("Package '$caller' cannot call " . ref($self)
                                . "->build")

@@ -21,7 +21,7 @@ Class::Meta::Constructor - Class::Meta class constructor introspection
 
 This class provides an interface to the C<Class::Meta> objects that describe
 class constructors. It supports a simple description of the constructor, a
-label, and the constructor visibility (private, protected, or public).
+label, and the constructor visibility (private, protected, trusted,or public).
 
 Class::Meta::Constructor objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the constructor objects for a
@@ -96,6 +96,7 @@ sub new {
         $class->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
+          ||     $p{view} == Class::Meta::TRUSTED
           ||     $p{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
@@ -121,9 +122,13 @@ sub new {
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
-        push @{$class->{prot_ctor_ord}}, $p{name};
-        push @{$class->{ctor_ord}}, $p{name}
-          if $p{view} == Class::Meta::PUBLIC;
+        push @{$class->{prot_ctor_ord}}, $p{name}
+          unless $p{view} == Class::Meta::TRUSTED;
+        if ($p{view} > Class::Meta::PROTECTED) {
+            push @{$class->{trst_ctor_ord}}, $p{name};
+            push @{$class->{ctor_ord}}, $p{name}
+              if $p{view} == Class::Meta::PUBLIC;
+        }
     }
 
     # Store a reference to the class object.
@@ -177,13 +182,15 @@ values are defined by the following constants:
 
 =item Class::Meta::PRIVATE
 
+=item Class::Meta::TRUSTED
+
 =item Class::Meta::PROTECTED
 
 =back
 
 =head3 class
 
-  my $class = $attr->class;
+  my $class = $ctor->class;
 
 Returns the Class::Meta::Class object that this constructor is associated
 with. Note that this object will always represent the class in which the
@@ -226,11 +233,11 @@ sub call {
 
 This is a protected method, designed to be called only by the Class::Meta
 class or a subclass of Class::Meta. It takes a single argument, the
-Class::Meta::Class object for the class in which the attribute was defined,
+Class::Meta::Class object for the class in which the constructor was defined,
 and generates constructor methods for the Class::Meta::Constructor object.
 
 Although you should never call this method directly, subclasses of
-Class::Meta::Attribute may need to override its behavior.
+Class::Meta::Constructor may need to override its behavior.
 
 =cut
 
@@ -294,7 +301,7 @@ sub build {
         return $new;
     };
 
-    # Add public and private checks, if required.
+    # Add protected, private, or trusted checks, if required.
     if ($self->view == Class::Meta::PROTECTED) {
         my $real_sub = $sub;
         my $pkg = $self->package;

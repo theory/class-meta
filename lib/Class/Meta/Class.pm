@@ -94,6 +94,11 @@ sub new {
     # Set the abstract attribute.
     $spec->{abstract} = $spec->{abstract} ? 1 : 0;
 
+    # Set the trusted attribute.
+    $spec->{trusted} = exists $spec->{trust}
+      ? ref $spec->{trust} ? delete $spec->{trust} : [ delete $spec->{trust} ]
+      : [];
+
     # Okay, create the class object.
     my $self = bless $spec, ref $pkg || $pkg;
 }
@@ -180,21 +185,6 @@ specified names.
 
 =cut
 
-sub constructors {
-    my $self = shift;
-    my $objs = $self->{ctors};
-    my $list = @_
-      # Explicit list requested.
-      ? \@_
-      : UNIVERSAL::isa(scalar caller, $self->{package})
-        # List of protected interface objects.
-        ? $self->{prot_ctor_ord}
-        # List of public interface objects.
-        : $self->{ctor_ord};
-    return unless $list;
-    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
-}
-
 ##############################################################################
 
 =head3 attributes
@@ -212,21 +202,6 @@ names.
 
 =cut
 
-sub attributes {
-    my $self = shift;
-    my $objs = $self->{attrs};
-    my $list = @_
-      # Explicit list requested.
-      ? \@_
-      : UNIVERSAL::isa(scalar caller, $self->{package})
-        # List of protected interface objects.
-        ? $self->{prot_attr_ord}
-        # List of public interface objects.
-        : $self->{attr_ord};
-    return unless $list;
-    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
-}
-
 ##############################################################################
 
 =head3 methods
@@ -243,19 +218,36 @@ returns all of the method objects with the specified names.
 
 =cut
 
-sub methods {
-    my $self = shift;
-    my $objs = $self->{meths};
-    my $list = @_
-      # Explicit list requested.
-      ? \@_
-      : UNIVERSAL::isa(scalar caller, $self->{package})
-        # List of protected interface objects.
-        ? $self->{prot_meth_ord}
-        # List of public interface objects.
-        : $self->{meth_ord};
-    return unless $list;
-    return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+for ([qw(attributes attr)], [qw(methods meth)], [qw(constructors ctor)]) {
+    my ($meth, $key) = @$_;
+    no strict 'refs';
+    *{$meth} = sub {
+        my $self = shift;
+        my $objs = $self->{"${key}s"};
+        # Who's talking to us?
+        my $caller = caller;
+        for (my $i = 1; UNIVERSAL::isa($caller, __PACKAGE__); $i++) {
+            $caller = caller($i);
+        }
+        # XXX Do we want to make these additive instead of discreet, so that
+        # a class can get both protected and trusted attributes, for example?
+        my $list = do {
+            if (@_) {
+                # Explicit list requested.
+                \@_;
+            } elsif (UNIVERSAL::isa($caller, $self->{package})) {
+                # List of protected interface objects.
+                $self->{"prot_$key\_ord"};
+            } elsif (_trusted($self, $caller)) {
+                # List of trusted interface objects.
+                $self->{"trst_$key\_ord"};
+            } else {
+                # List of public interface objects.
+                $self->{"$key\_ord"};
+            }
+        };
+        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+    };
 }
 
 ##############################################################################
@@ -340,7 +332,7 @@ sub _inherit {
 
     # For each metadata class, copy the parents' objects.
     for my $key (@_) {
-        my (@things, @ord, @prot, %sord, %sprot);
+        my (@things, @ord, @prot, @trst, %sord, %sprot, %strst);
         for my $super (@classes) {
             push @things, %{ $classes->{$super}{"${key}s"} }
               if $classes->{$super}{$key . 's'};
@@ -350,13 +342,26 @@ sub _inherit {
             push @prot, grep { not $sprot{$_}++ }
               @{ $classes->{$super}{"prot_$key\_ord"} }
                 if $classes->{$super}{"prot_$key\_ord"};
+            push @trst, grep { not $strst{$_}++ }
+              @{ $classes->{$super}{"trst_$key\_ord"} }
+                if $classes->{$super}{"trst_$key\_ord"};
         }
 
         $self->{"${key}s"}        = { @things } if @things;
         $self->{"$key\_ord"}      = \@ord       if @ord;
         $self->{"prot_$key\_ord"} = \@prot      if @prot;
+        $self->{"trst_$key\_ord"} = \@trst      if @trst;
     }
     return $self;
+}
+
+sub _trusted {
+    my ($self, $caller) = @_;
+    my $trusted = $self->{trusted} or return;
+    for my $pkg (@{$trusted}) {
+        return 1 if UNIVERSAL::isa($caller, $pkg);
+    }
+    return;
 }
 
 1;
