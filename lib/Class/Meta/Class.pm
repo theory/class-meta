@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.11 2003/11/22 03:14:14 david Exp $
+# $Id: Class.pm,v 1.12 2003/11/23 03:23:16 david Exp $
 
 use strict;
 use Carp ();
@@ -31,24 +31,7 @@ use Class::Meta::Method;
         $specs{$spec->{class}} = $spec;
 
         # Okay, create the class object.
-        my $class = bless { package => $spec->{class} }, ref $pkg || $pkg;
-
-        # XXX Is there a way to make this any better, so it's not storing
-        # XXX copies of what's in ever parent class?
-        # Copy any attributes, constructors, or methods from its parents.
-        if (my @classes = Class::ISA::super_path($spec->{class})) {
-            for my $key (qw(attr ctor meth)) {
-                for my $super (@classes) {
-                    $spec->{$key} = { %{ $specs{$super}{$key} } };
-                    $spec->{"$key\_ord"} =
-                      [ @{ $specs{$super}{"$key\_ord"} } ];
-                    $spec->{"prot_$key\_ord"} =
-                      [ @{ $specs{$super}{"prot_$key\_ord"} } ];
-                }
-            }
-        }
-
-        return $class;
+        return bless { package => $spec->{class} }, ref $pkg || $pkg;
     }
 
     ##########################################################################
@@ -107,6 +90,29 @@ use Class::Meta::Method;
           : $spec->{meth_ord};
         return unless $list;
         return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+    }
+
+    sub build {
+        my $self = shift;
+        my $spec = $specs{$self->{package}};
+        # XXX Is there a way to make this any better, so it's not storing
+        # XXX copies of what's in ever parent class?
+        # Copy any attributes, constructors, or methods from its parents.
+        my @classes = reverse Class::ISA::self_and_super_path($spec->{package});
+        for my $key (qw(attr ctor meth)) {
+            my (@things, @ord, @prot, %sord, %sprot);
+            for my $super (@classes) {
+                push @things, %{ $specs{$super}{$key . 's'} };
+                push @ord, grep { not $sord{$_}++ }
+                  @{ $specs{$super}{"$key\_ord"} };
+                push @prot, grep { not $sprot{$_}++ }
+                  @{ $specs{$super}{"prot_$key\_ord"} };
+            }
+
+            $spec->{$key} = { @things };
+            $spec->{"$key\_ord"} = \@ord;
+            $spec->{"prot_$key\_ord"} = \@prot;
+        }
     }
 }
 
