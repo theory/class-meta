@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.9 2003/11/19 03:57:46 david Exp $
+# $Id: Attribute.pm,v 1.10 2003/11/21 21:21:07 david Exp $
 
 =head1 NAME
 
@@ -45,8 +45,7 @@ sub new {
     # Class::Meta::Attribute object.
     my $caller = caller;
     Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
-      unless grep { $_ eq 'Class::Meta' }
-                  $caller, eval '@' . $caller . "::ISA";
+      unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
     Carp::croak("Odd number of parameters in call to new() when named "
@@ -87,6 +86,18 @@ sub new {
     } else {
         # Make it read/write by default.
         $p{authz} = Class::Meta::RDWR;
+    }
+
+    # Check the creation constant.
+    if (exists $p{create}) {
+        Carp::croak("Not a valid create parameter: '$p{create}'")
+          unless $p{create} == Class::Meta::NONE
+          or     $p{create} == Class::Meta::GET
+          or     $p{create} == Class::Meta::SET
+          or     $p{create} == Class::Meta::GETSET;
+    } else {
+        # Relyl on the authz setting by default.
+        $p{create} = $p{authz};
     }
 
     # Check the context.
@@ -146,6 +157,63 @@ sub call_get   {
 sub call_set   {
     my $code = shift->{_set};
     $code->(@_);
+}
+
+my $req_chk = sub {
+    Carp::croak "Attribute must be defined" unless defined $_[0];
+};
+
+sub build {
+    my ($self, $spec) = @_;
+
+    # Check to make sure that only Class::Meta or a subclass is building
+    # attribute accessors.
+    my $caller = caller;
+    Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta');
+
+    # Just return if this attribute doesn't need accessors created for it.
+    return $self if $self->{create} == Class::Meta::NONE;
+
+    # XXX Do I need to add code to check the caller and throw an exception for
+    # private and protected methods?
+
+    # Get the data type object.
+    my $type = Class::Meta::Type->new($self->{type});
+
+    # Create accessors get accessor(s).
+    if ($self->{create} >= Class::Meta::GET) {
+
+        if (my $getters = $type->make_get($self->{name})) {
+            # Create the get method(s).
+            while (my ($meth, $code) = each %$getters) {
+                no strict 'refs';
+                *{"$spec->{package}::$meth"} = $code;
+            }
+        }
+
+        # Create the attribute object get code reference.
+        $self->{_get} = $type->make_attr_get($self->{name});
+    }
+
+    # Create accessors set accessor(s).
+    if ($self->{create} >= Class::Meta::SET) {
+        my @checks = $type->check;
+
+        # Add the required check, if necessary.
+        unshift @checks, $req_chk if $self->is_required;
+
+        if (my $setters = $type->make_set($self->{name}, \@checks)) {
+            # Create the set method(s).
+            while (my ($meth, $code) = each %$setters) {
+                no strict 'refs';
+                *{"$spec->{package}::$meth"} = $code;
+            }
+        }
+
+        # Create the attribute object set code reference.
+        $self->{_set} = $type->make_attr_set($self->{name});
+    }
 }
 
 1;

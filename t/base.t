@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: base.t,v 1.7 2002/05/16 18:12:47 david Exp $
+# $Id: base.t,v 1.8 2003/11/21 21:21:07 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -16,15 +16,15 @@ use Test::More tests => 4;
 package Class::Meta::TestPerson;
 use strict;
 use IO::Socket;
-*ok = *main::ok;
 
 BEGIN {
     main::use_ok( 'Class::Meta');
-    my $c = Class::Meta->new(person => __PACKAGE__);
-    $c->set_name('Class::Meta::TestPerson Class');
-    $c->set_desc('Special person class just for testing Class::Meta.');
-    $c->enable_chk;
-    $c->enable_conv;
+    main::ok( my $c = Class::Meta->new(
+        key   => 'person',
+        class => __PACKAGE__,
+        name  => 'Class::Meta::TestPerson Class',
+        desc  => 'Special person class just for testing Class::Meta.'
+    ), "Create new Class::Meta object" );
 
     # Add a constructor.
     $c->add_ctor( name => 'new',
@@ -32,9 +32,9 @@ BEGIN {
 
     # Add a couple of attributes with generated methods.
     $c->add_attr( name => 'id',
-                  vis   => Class::Meta::PUBLIC,
-                  auth  => Class::Meta::READ,
-                  gen   => Class::Meta::GET,
+                  vis   => &Class::Meta::PUBLIC,
+                  auth  => &Class::Meta::READ,
+                  gen   => &Class::Meta::GET,
                   type  => 'integer',
                   label => 'ID',
                   desc  => "The person object's ID.",
@@ -42,9 +42,9 @@ BEGIN {
                   def   => undef,
                 );
     $c->add_attr( name  => 'name',
-                  vis   => Class::Meta::PUBLIC,
-                  auth  => Class::Meta::RDWR,
-                  gen   => Class::Meta::GETSET,
+                  vis   => &Class::Meta::PUBLIC,
+                  auth  => &Class::Meta::RDWR,
+                  gen   => &Class::Meta::GETSET,
                   type  => 'string',
                   len   => 256,
                   label => 'Name',
@@ -54,10 +54,10 @@ BEGIN {
                   def   => undef,
                 );
     $c->add_attr( name  => 'age',
-                  vis   => Class::Meta::PUBLIC,
-                  auth  => Class::Meta::RDWR,
-                  gen   => Class::Meta::GETSET,
-                  type  => 'inteter',
+                  vis   => &Class::Meta::PUBLIC,
+                  auth  => &Class::Meta::RDWR,
+                  gen   => &Class::Meta::GETSET,
+                  type  => 'integer',
                   label => 'Age',
                   field => 'text',
                   desc  => "The person's age.",
@@ -67,7 +67,7 @@ BEGIN {
 
     # Add a custom method.
     $c->add_meth( name  => 'chk_pass',
-                  vis   => Class::Meta::PUBLIC,
+                  vis   => &Class::Meta::PUBLIC,
                 );
     $c->build;
 }
@@ -94,7 +94,7 @@ like( $err, qr/^Can't locate object method/,
 ok( $t->set_name('David'), 'set_name to "David"' );
 is( $t->get_name, 'David', 'get_name is "David"' );
 eval { $t->set_name([]) };
-ok( my $err = $@, 'set_name to array ref croaks' );
+ok( $err = $@, 'set_name to array ref croaks' );
 like( $err, qr/^Value .* is not a string/, 'correct string exception' );
 
 # Grab its metadata object.
@@ -106,7 +106,7 @@ ok( $class->isa('Class::Meta::PersonTest'), 'Class isa PersonTest');
 # Test the key methods.
 is( $class->get_key, 'person', 'Key is correct');
 eval { $class->set_key('foo') };
-ok (my $err = $@, "Got an error trying to change key");
+ok ( $err = $@, "Got an error trying to change key");
 like( $err, qr/Can't locate object method/, "Shouln't be able to change key");
 
 # Test the package methods.
@@ -128,7 +128,7 @@ is( $class->get_desc, 'Special person class just for testing Class::Meta.',
     "Description is correct");
 eval { $class->set_desc('foo') };
 ok ($err = $@, "Got an error trying to change description");
-like( $er, qr/^Can't locate object method/,
+like( $err, qr/^Can't locate object method/,
       "Correct method not found exception for class description");
 
 # Test my_attrs().
@@ -150,8 +150,8 @@ is( $attrs[1]->get_name, 'name', 'Second attr name' );
 ok( my $p = $class->my_attrs('id') );
 is( $p->my_name, 'id', 'ID name' );
 is( $p->my_desc, "The person object's ID.", 'ID description' );
-ok( $p->my_vis == Class::Meta::PUBLIC, 'ID visibility' );
-ok( $p->my_auth == Class::Meta::READ, 'ID authorization' );
+ok( $p->my_vis == &Class::Meta::PUBLIC, 'ID visibility' );
+ok( $p->my_auth == &Class::Meta::READ, 'ID authorization' );
 is( $p->my_type, 'integer', 'ID type' );
 ok( $p->my_len == 256, 'ID length' );
 is( $p->my_label, 'ID', 'ID label' );
@@ -162,15 +162,15 @@ ok( ! defined $p->my_def, "ID default" );
 ok( ! defined $p->get_val($t), 'ID not defined' );
 # ID is READ, so we shouldn't be able to set it.
 eval{ $p->set_val($t, 10) };
-ok( my $err = $@, "Set val failure" );
+ok( $err = $@, "Set val failure" );
 like( $err, qr/attribute 'id' is read only/, 'set val exception' );
 
 # Check the attributes of the "Name" attribute object.
-ok( my $p = $class->my_attrs('name') );
+ok( $p = $class->my_attrs('name') );
 is( $p->my_name, 'name', 'Name name' );
 is( $p->my_desc, "The person's name.", 'Name description' );
-ok( $p->my_vis == Class::Meta::PUBLIC, 'Name visibility' );
-ok( $p->my_auth == Class::Meta::RDWR, 'Name authorization' );
+ok( $p->my_vis == &Class::Meta::PUBLIC, 'Name visibility' );
+ok( $p->my_auth == &Class::Meta::RDWR, 'Name authorization' );
 is( $p->my_type, 'string', 'Name type' );
 ok( $p->my_len == 256, 'Name length' );
 is( $p->my_label, 'Name', 'Name label' );
@@ -189,8 +189,8 @@ is( $p->get_val($t), 'Damian', 'Final Name get_val' );
 ok( $p = $class->my_attrs('age') );
 is( $p->my_name, 'age', 'Age name' );
 is( $p->my_desc, "The person's age.", 'Age description' );
-ok( $p->my_vis == Class::Meta::PUBLIC, 'Age visibility' );
-ok( $p->my_auth == Class::Meta::RDWR, 'Age authorization' );
+ok( $p->my_vis == &Class::Meta::PUBLIC, 'Age visibility' );
+ok( $p->my_auth == &Class::Meta::RDWR, 'Age authorization' );
 is( $p->my_type, 'integer', 'Age type' );
 ok( $p->my_len == 256, 'Age length' );
 is( $p->my_label, 'Age', 'Age label' );
@@ -200,10 +200,10 @@ ok( ! defined $p->my_def, "Age default" );
 # Test the attribute accessors.
 ok( ! defined $p->get_val($t), 'Age get_val' );
 ok( $p->set_val($t, 10), 'Age set_val' );
-ok( $p->get_val($t), 10, 'New Age get_val' );
-ok( $t->get_age == 10, 'Object get_age');
+is( $p->get_val($t), 10, 'New Age get_val' );
+is( $t->get_age, 10, 'Object get_age');
 ok( $t->set_age(22), 'Object set_age' );
-ok( $p->get_val($t) == 22 'Final Age get_val' );
+is( $p->get_val($t), 22, 'Final Age get_val' );
 
 # Test my_meths().
 ok( my @meths = $class->my_meths );
@@ -232,7 +232,7 @@ is( $meths[2]->my_name, 'set_age', 'Third specific method' );
 ok( my $m = $class->my_meths('get_age'), 'Get get_age() method' );
 is( $m->my_name, 'get_age', 'get_age name' );
 ok( $m->call($t) == 22, 'Call get_age' );
-ok( my $m2  = $class->my_meths('set_age'), 'Get set_age() method' )
+ok( my $m2  = $class->my_meths('set_age'), 'Get set_age() method' );
 is( $m2->my_name, 'set_age', 'set_age name' );
 ok( $m2->call($t, 34), 'Call set_age method' );
 ok( $m->call($t) == 34, 'get_age execute again' );

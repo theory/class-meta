@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.8 2003/11/19 03:57:46 david Exp $
+# $Id: Class.pm,v 1.9 2003/11/21 21:21:07 david Exp $
 
 use strict;
 use Carp ();
@@ -43,29 +43,59 @@ use Class::Meta::Method;
 
     ##########################################################################
     # Check inheritance.
-    sub isa { exists $specs{$_[0]->{package}}->{isa}{$_[1]} }
+    sub is_a { UNIVERSAL::isa($_[0]->{package}, $_[1]) }
 
     ##########################################################################
     # Create accessors to get at the constructor, attribute, and method
     # objects.
-    for my $t (qw(ctor attr meth)) {
-        eval qq|
-            sub my_${t}s {
-                my \$self = shift;
-                my \$objs = \$specs{\$_[0]->{package}}->{${t}s};
-                my \$list = \@_
-                  # Explicit list requested.
-                  ? \\\@_
-                  : \$specs{\$_[0]->{package}}->{isa}{scalar caller}
-                  # List of protected interface objects.
-                  ? \$specs{\$_[0]->{package}}->{prot_$t\_ord}
-                  # List of public interface objects.
-                  : \$specs{\$_[0]->{package}}->{$t\_ord};
-                return \@\$list == 1
-                  ? \$objs->{\$list->[0]}
-                  : \@{\$objs}{\@\$list};
-            }
-        |;
+#    for my $t (qw(ctor attr meth)) {
+
+    sub my_ctors {
+        my $self = shift;
+        my $spec = $specs{$self->{package}};
+        my $objs = $spec->{attrs};
+        my $list = @_
+          # Explicit list requested.
+          ? \@_
+          : $spec->{isa}{scalar caller}
+          # List of protected interface objects.
+          ? $spec->{prot_ctor_ord}
+          # List of public interface objects.
+          : $spec->{ctor_ord};
+        return unless $list;
+        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+    }
+
+    sub my_attrs {
+        my $self = shift;
+        my $spec = $specs{$self->{package}};
+        my $objs = $spec->{attrs};
+        my $list = @_
+          # Explicit list requested.
+          ? \@_
+          : $spec->{isa}{scalar caller}
+          # List of protected interface objects.
+          ? $spec->{prot_attr_ord}
+          # List of public interface objects.
+          : $spec->{attr_ord};
+        return unless $list;
+        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
+    }
+
+    sub my_meths {
+        my $self = shift;
+        my $spec = $specs{$self->{package}};
+        my $objs = $spec->{attrs};
+        my $list = @_
+          # Explicit list requested.
+          ? \@_
+          : $spec->{isa}{scalar caller}
+          # List of protected interface objects.
+          ? $spec->{prot_meth_ord}
+          # List of public interface objects.
+          : $spec->{meth_ord};
+        return unless $list;
+        return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
     }
 }
 

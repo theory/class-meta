@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.4 2003/11/19 03:57:46 david Exp $
+# $Id: Constructor.pm,v 1.5 2003/11/21 21:21:07 david Exp $
 
 use strict;
 
@@ -92,8 +92,7 @@ sub new {
     # Class::Meta::Constructor object.
     my $caller = caller;
     Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
-      unless grep { $_ eq 'Class::Meta' }
-                  $caller, eval '@' . $caller . "::ISA";
+      unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
     Carp::croak("Odd number of parameters in call to new() when named "
@@ -199,6 +198,49 @@ Executes the constructor on the $obj object.
 sub call {
     my $code = shift->{caller};
     $code->(@_);
+}
+
+sub build {
+    my ($self, $spec) = @_;
+
+    # Check to make sure that only Class::Meta or a subclass is building
+    # constructors.
+    my $caller = caller;
+    Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
+      unless UNIVERSAL::isa($caller, 'Class::Meta');
+
+    if ($spec->{attrs}) {
+        # Build a construtor that takes a parameter list and assigns the
+        # the values to the appropriate attributes.
+        no strict 'refs';
+        *{"$spec->{package}::" . $self->my_name } = sub {
+            my $class = shift;
+            my $init = {@_};
+            my $new = bless {}, ref $class || $class;
+
+            # Assign all of the attribute values.
+            foreach my $attr (values %{ $spec->{attrs} }) {
+                next unless $attr->my_authz >= Class::Meta::SET;
+                $attr->call_set($new, $init->{$attr->my_name}
+                                  || $attr->my_default);
+            }
+            if (my @attrs = keys %$init) {
+                # Attempts to assign to non-existent attributes fail.
+                my $c = $#attrs > 0 ? 'attributes' : 'attribute';
+                local $" = "', '";
+                Carp::croak("No such $c '@attrs' in $self->{package} "
+                              . "objects");
+            }
+            return $new;
+        };
+    } else {
+        # Simple construself.
+        no strict 'refs';
+        *{"$spec->{package}::" . $self->my_name } = sub {
+            my $class = shift;
+            bless {}, ref $class || $class;
+        }
+    }
 }
 
 1;

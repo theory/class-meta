@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.8 2003/11/19 03:57:46 david Exp $
+# $Id: Type.pm,v 1.9 2003/11/21 21:21:07 david Exp $
 
 =head1 NAME
 
@@ -59,34 +59,31 @@ $VERSION = "0.01";
     };
 
     # This code ref will create Class::Meta::Attribute get code refs.
-    my $mk_pgetter = sub { eval "sub { shift->get$_[0](\@_) }" };
+    my $mk_pgetter = sub { eval "sub { shift->get_$_[0](\@_) }" };
 
     # This code ref will be used to create most set_* methods.
     my $mk_setter = sub {
-        my ($attr, $conv, $chk) = @_;
+        my ($attr, $chk, $conv) = @_;
         if ($conv && $chk) {
             return { "set_$attr" => sub {
-                my $self = shift;
                 # Convert the value.
-                my $val = $conv->(shift());
+                my $val = $conv->(shift);
                 # Check the value passed in.
-                $_->($val, @_) for @$chk;
+                $_->($val) for @$chk;
                 # Assign the value.
-                $self->{$attr} = $val;
+                $_[0]->{$attr} = $val;
             }};
         } elsif ($conv) {
             return { "set_$attr" => sub {
-                my $self = shift;
                 # Convert and assign the value.
-                $self->{$attr} = $conv->(shift());
+                $_[0]->{$attr} = $conv->(shift);
             }};
         } elsif ($chk) {
              return { "set_$attr" => sub {
-                my $self = shift;
                 # Check the value passed in.
-                $_->($val, @_) for @$chk;
+                $_->($_[1]) for @$chk;
                 # Assign the value.
-                $self->{$attr} = $_[1];
+                $_[0]->{$attr} = $_[1];
             }};
          } else {
              return { "set_$attr" => sub {
@@ -97,7 +94,7 @@ $VERSION = "0.01";
     };
 
     # This code ref will create Class::Meta::Attribute set code refs.
-    my $mk_psetter = sub { eval "sub { shift->set$_[0](\@_) }" };
+    my $mk_psetter = sub { eval "sub { shift->set_$_[0](\@_) }" };
 
     # This code ref creates the boolean set methods. They never need
     # to do checks or conversions.
@@ -126,10 +123,13 @@ $VERSION = "0.01";
     # This code ref builds value checkers.
     my $mk_chk = sub {
         my ($code, $type) = @_;
-        return [ sub {
-            $code->($_[0]) ||
-              Carp::croak("Value '$_[0]' is not a valid $type")
-        } ];
+        return [
+            sub {
+                return unless defined $_[0];
+                $code->($_[0])
+                  or Carp::croak("Value '$_[0]' is not a $type");
+                }
+        ];
     };
 
     # This code ref builds reference value checkers.
@@ -137,7 +137,7 @@ $VERSION = "0.01";
         my ($ref, $type) = @_;
         return [ sub {
       UNIVERSAL::isa($_[0], $ref)
-        or Carp::croak("Value '$_[0]' is not a valid $type")
+        or Carp::croak("Value '$_[0]' is not a $type")
         } ];
     };
 
@@ -556,7 +556,7 @@ you need different functionality, then use it as a template for what you
 need:
 
   my $mk_setter = sub {
-      my ($attr, $converter, $checkers) = @_;
+      my ($attr, $checkers, $converter) = @_;
       if ($converter && $checkers) {
           return { "set_$attr" => sub {
               my $self = shift;
@@ -716,68 +716,68 @@ template for your custom get attributes:
 
 =head1 INSTANCE METHODS
 
-=head2 get_key
+=head2 key
 
-  my $key = $type->get_key;
+  my $key = $type->key;
 
 Returns the key name for the type.
 
 =cut
 
-sub get_key  { $_[0]->{key}  }
+sub key  { $_[0]->{key}  }
 
 ##############################################################################
 
-=head2 get_name
+=head2 name
 
-  my $name = $type->get_name;
+  my $name = $type->name;
 
 Returns the type name.
 
 =cut
 
-sub get_name { $_[0]->{name} }
+sub name { $_[0]->{name} }
 
 ##############################################################################
 
-=head2 get_desc
+=head2 desc
 
-  my $desc = $type->get_desc;
+  my $desc = $type->desc;
 
 Returns the type description.
 
 =cut
 
-sub get_desc { $_[0]->{desc} }
+sub desc { $_[0]->{desc} }
 
 ##############################################################################
 
-=head2 get_check
+=head2 check
 
-  my $checks = $type->get_check;
-  my @checks = $type->get_check;
+  my $checks = $type->check;
+  my @checks = $type->check;
 
 Returns an array reference or list of the data type validation code checks
 for the data type.
 
 =cut
 
-sub get_check  {
+sub check  {
     return unless $_[0]->{check};
     wantarray ? @{$_[0]->{check}} : $_[0]->{check}
 }
 
 ##############################################################################
 
-=head2 get_converter
+=head2 converter
 
-  my $converter = $type->get_converter;
+  my $converter = $type->converter;
 
 Returns a the data type conversion code reference.
 
 =cut
 
-sub get_converter { $_[0]->{converter} }
+sub converter { $_[0]->{converter} }
 
 ##############################################################################
 
@@ -785,9 +785,9 @@ sub get_converter { $_[0]->{converter} }
 
   my $attr_name = 'foo';
   my $setters = $type->make_set($attr_name);
-  $setters = $type->make_set($attr_name, $type->get_check);
-  $setters = $type->make_set($attr_name, undef, $type->get_converter);
-  $setters = $type->make_set($attr_name, $type->get_check, $type->get_converter);
+  $setters = $type->make_set($attr_name, $type->check);
+  $setters = $type->make_set($attr_name, undef, $type->converter);
+  $setters = $type->make_set($attr_name, $type->check, $type->converter);
 
 Returns a hash reference of set method code references. The hash keys are the
 names of the methods (e.g., "set_foo"), and the values are code references
