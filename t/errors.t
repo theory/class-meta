@@ -1,12 +1,12 @@
 #!perl -w
 
-# $Id: errors.t,v 1.13 2004/09/17 03:20:02 david Exp $
+# $Id: errors.t,v 1.14 2004/09/19 23:54:09 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 use strict;
-use Test::More tests => 202;
+use Test::More tests => 208;
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'errors.t');
 
@@ -15,16 +15,24 @@ BEGIN {
     main::use_ok('Class::Meta::Types::String');
 }
 
-package Class::Meta::Testing;
+##############################################################################
+# Create some simple classes.
+##############################################################################
 
-##############################################################################
-# Create a simple class.
-##############################################################################
+package Class::Meta::Testing;
 
 BEGIN {
     my $cm = Class::Meta->new;
     $cm->add_constructor( name => 'new' );
     $cm->add_attribute( name => 'tail', type => 'string' );
+    $cm->build;
+}
+
+package Class::Meta::TestAbstract;
+@Class::Meta::TestAbstract::ISA = qw(Class::Meta::Testing);
+
+BEGIN {
+    my $cm = Class::Meta->new(abstract => 1);
     $cm->build;
 }
 
@@ -254,6 +262,16 @@ like( $foo, qr/No such function 'NoAttrSet::build_attr_set\(\)'/,
 eval { $cm->class->build };
 chk('Class->build still protected',
     qr/ cannot call Class::Meta::Class->build/);
+
+# Test the abstract attribute.
+is( Class::Meta::Testing->my_class->abstract, 0,
+    "Testing class isn't abstract" );
+is( Class::Meta::TestAbstract->my_class->abstract, 1,
+    "TestAbstract class isn't abstract" );
+
+eval { Class::Meta::TestAbstract->new };
+chk( 'Cannot create from abstract class',
+     qr/^Cannot construct objects of astract class Class::Meta::TestAbstract/);
 
 ##############################################################################
 # This function handles all the tests.

@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.55 2004/08/27 02:39:56 david Exp $
+# $Id: Constructor.pm,v 1.56 2004/09/19 23:54:09 david Exp $
 
 =head1 NAME
 
@@ -254,10 +254,16 @@ sub build {
         my $class = ref $_[0] ? ref shift : shift;
         my $spec = $specs->{$class};
 
+        # Throw an exception for attempts to create items of an abstract
+        # class.
+        $class->my_class->handle_error(
+            "Cannot construct objects of astract class $class"
+        ) if $class->my_class->abstract;
+
         # Just grab the parameters and let an error be thrown by Perl
         # if there aren't the right number of them.
         my %p = @_;
-        my $new = bless {}, ref $class || $class;
+        my $new = bless {}, $class;
 
         # Assign all of the attribute values.
         if ($spec->{attrs}) {
@@ -280,8 +286,8 @@ sub build {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attributes > 0 ? 'attributes' : 'attribute';
             local $" = "', '";
-            $self->class->handle_error("No such $c '@attributes' in "
-                                       . "$self->{package} objects");
+            $class->my_class->handle_error("No such $c '@attributes' in "
+                                           . "$self->{package} objects");
         }
         return $new;
     };

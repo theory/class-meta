@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.52 2004/08/27 02:39:56 david Exp $
+# $Id: Class.pm,v 1.53 2004/09/19 23:54:09 david Exp $
 
 =head1 NAME
 
@@ -87,6 +87,9 @@ sub new {
     # Set the name to be the same as the key by default.
     $spec->{name} = $spec->{key} unless defined $spec->{name};
 
+    # Set the abstract attribute.
+    $spec->{abstract} = $spec->{abstract} ? 1 : 0;
+
     # Okay, create the class object.
     my $self = bless $spec, ref $pkg || $pkg;
 }
@@ -123,12 +126,19 @@ name, rather than a package name.
 
 Returns a description of the class.
 
+=head3 abstract
+
+  my $abstract = $class->abstract;
+
+Returns true if the class is an abstract class, and false if it is not.
+
 =cut
 
-sub package { $_[0]->{package} }
-sub key     { $_[0]->{key}     }
-sub name    { $_[0]->{name}    }
-sub desc    { $_[0]->{desc}    }
+sub package  { $_[0]->{package}  }
+sub key      { $_[0]->{key}      }
+sub name     { $_[0]->{name}     }
+sub desc     { $_[0]->{desc}     }
+sub abstract { $_[0]->{abstract} }
 
 ##############################################################################
 
