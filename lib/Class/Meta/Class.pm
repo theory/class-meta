@@ -42,6 +42,10 @@ Class::Meta::Class objects are created by Class::Meta; they are never
 instantiated directly in client code. To access the class object for a
 Class::Meta-generated class, simply call its C<my_class()> method.
 
+At this point, those attributes tend to be database-specific. Once other types
+of data stores are added (XML, LDAP, etc.), other attributes may be added to
+allow their schemas to be built, as well.
+
 =cut
 
 ##############################################################################
