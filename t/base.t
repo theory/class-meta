@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.20 2004/01/08 18:37:52 david Exp $
+# $Id: base.t,v 1.21 2004/01/08 19:06:04 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -150,7 +150,7 @@ is( $p->view, Class::Meta::PUBLIC, 'ID view' );
 is( $p->authz, Class::Meta::READ, 'ID authorization' );
 is( $p->type, 'integer', 'ID type' );
 is( $p->label, 'ID', 'ID label' );
-ok( $p->is_required, "ID required" );
+ok( $p->required, "ID required" );
 is( $p->default, undef, "ID default" );
 
 # Test the attribute accessors.
@@ -168,7 +168,7 @@ is( $p->view, Class::Meta::PUBLIC, 'Name view' );
 is( $p->authz, Class::Meta::RDWR, 'Name authorization' );
 is( $p->type, 'string', 'Name type' );
 is( $p->label, 'Name', 'Name label' );
-ok( $p->is_required, "Name required" );
+ok( $p->required, "Name required" );
 is( $p->default, '', "Name default" );
 
 # Test the attribute accessors.
@@ -187,7 +187,7 @@ is( $p->view, Class::Meta::PUBLIC, 'Age view' );
 is( $p->authz, Class::Meta::RDWR, 'Age authorization' );
 is( $p->type, 'integer', 'Age type' );
 is( $p->label, 'Age', 'Age label' );
-ok( $p->is_required == 0, "Age required" );
+ok( $p->required == 0, "Age required" );
 is( $p->default, undef, "Age default" );
 
 # Test the attribute accessors.

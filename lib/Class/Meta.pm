@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.45 2004/01/08 18:45:46 david Exp $
+# $Id: Meta.pm,v 1.46 2004/01/08 19:06:04 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -452,7 +452,7 @@ Returns the name of the attribute.
 
 Returns the name of the attribute's data type.
 
-=item is_required
+=item required
 
 Returns true if the attribute is required to have a value.
 

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.22 2004/01/08 18:45:46 david Exp $
+# $Id: Attribute.pm,v 1.23 2004/01/08 19:06:04 david Exp $
 
 ##############################################################################
 # Dependencies                                                               #
@@ -62,7 +62,8 @@ the Class::Meta::Class object.
 ##############################################################################
 # Constructors                                                               #
 ##############################################################################
-# We don't document new(), since it's a protected method, really.
+# We don't document new(), since it's a protected method, really. Its
+# parameters are documented in Class::Meta.
 
 sub new {
     my $pkg = shift;
@@ -260,11 +261,11 @@ sub name     { $_[0]->{name}     }
 sub type     { $_[0]->{type}     }
 sub desc     { $_[0]->{desc}     }
 sub label    { $_[0]->{label}    }
+sub required { $_[0]->{required} }
 sub package  { $_[0]->{package}  }
 sub view     { $_[0]->{view}     }
 sub context  { $_[0]->{context}  }
 sub authz    { $_[0]->{authz}    }
-sub is_required { $_[0]->{required} }
 
 ##############################################################################
 
@@ -347,7 +348,7 @@ sub build {
     # Get the data type object and assemble the validation checks.
     my $type = Class::Meta::Type->new($self->{type});
     $type->build($spec->{package}, $self->{name}, $self->{create},
-                 ($self->is_required ? $req_chk : ()));
+                 ($self->required ? $req_chk : ()));
 
     # XXX Do I need to add code to check the caller and throw an exception for
     # private and protected methods?
