@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.23 2004/04/18 23:37:35 david Exp $
+# $Id: AccessorBuilder.pm,v 1.24 2004/04/19 22:16:46 david Exp $
 
 =head1 NAME
 
@@ -275,7 +275,12 @@ sub build {
              for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                  $caller = caller($i);
              }
-             $attr->class->handle_error("$name is a protected attribute "
+
+             # XXX Why oh why does carp insist on making Constructor.pm the
+             # context?? So we use the deprecated $Carp::CarpLevel as a hack
+             # to get 'round it.
+             local $Carp::CarpLevel = 4,
+               $attr->class->handle_error("$name is a protected attribute "
                                         . "of $pkg")
                unless UNIVERSAL::isa($caller, $pkg);
              goto &$real_sub;
@@ -288,7 +293,12 @@ sub build {
              for (my $i = 1; $caller eq 'Class::Meta::Constructor'; $i++) {
                  $caller = caller($i);
              }
-             $attr->class->handle_error("$name is a private attribute of $pkg")
+
+             # XXX Why oh why does carp insist on making Constructor.pm the
+             # context?? So we use the deprecated $Carp::CarpLevel as a hack
+             # to get 'round it.
+             local $Carp::CarpLevel = 4,
+               $attr->class->handle_error("$name is a private attribute of $pkg")
                unless $caller eq $pkg;
              goto &$real_sub;
          };
