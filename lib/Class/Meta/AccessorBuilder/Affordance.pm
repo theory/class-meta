@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id: Affordance.pm,v 1.3 2004/01/09 00:04:42 david Exp $
+# $Id: Affordance.pm,v 1.4 2004/01/09 00:07:32 david Exp $
 
 use strict;
 
@@ -23,6 +23,9 @@ sub build {
     my ($pkg, $attr, $create, @checks) = @_;
     unshift @checks, $req_chk if $attr->required;
     my $name = $attr->name;
+
+    # XXX Do I need to add code to check the caller and throw an exception for
+    # private and protected methods?
 
     no strict 'refs';
     if ($create >= Class::Meta::GET) {
