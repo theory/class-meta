@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: errors.t,v 1.12 2004/08/31 00:32:48 david Exp $
+# $Id: errors.t,v 1.13 2004/09/17 03:20:02 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -8,7 +8,7 @@
 use strict;
 use Test::More tests => 202;
 use File::Spec;
-my $fn = File::Spec->catfile('t', 'erorrs.t');
+my $fn = File::Spec->catfile('t', 'errors.t');
 
 BEGIN {
     main::use_ok('Class::Meta');
