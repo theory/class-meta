@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.4 2002/05/11 22:18:17 david Exp $
+# $Id: Attribute.pm,v 1.5 2002/05/13 16:01:53 david Exp $
 
 =head1 NAME
 
@@ -8,8 +8,7 @@ Kinet::Meta::Attribute - Objects describing Kinet object attributes.
 
 =head1 SYNOPSIS
 
-  use Kinet::Meta::Attribute;
-  my $attr = Kinet::Meta::Attribute->new($spec);
+
 
 =head1 DESCRIPTION
 
@@ -22,7 +21,6 @@ Kinet::Meta::Attribute - Objects describing Kinet object attributes.
 ##############################################################################
 use strict;
 use Carp ();
-use Class::Meta;
 
 ##############################################################################
 # Constants                                                                  #
@@ -45,26 +43,39 @@ sub new {}
 # Instance Methods                                                           #
 ##############################################################################
 
-sub my_name   { $_[0]->{name} }
-sub my_vis    { $_[0]->{vis} }
-sub my_auth   { $_[0]->{auth} }
-sub my_type   { $_[0]->{type} }
-sub my_length { $_[0]->{length} }
-sub my_label  { $_[0]->{label} }
-sub my_field  { $_[0]->{field} }
-sub my_desc   { $_[0]->{desc} }
-sub is_req    { $_[0]->{req} }
-sub my_def    { $_[0]->{def} }
-sub my_vals   { ref $_[0]->{vals} eq 'CODE' ? $_[0]->{vals}->() : $_[0]->{vals} }
-sub get_val   { shift->{_get}->(@_) }
-sub set_val   { shift->{_set}->(@_) }
+sub my_name    { $_[0]->{name} }
+sub my_vis     { $_[0]->{vis} }
+sub my_context { $_[0]->{context} }
+sub my_auth    { $_[0]->{auth} }
+sub my_type    { $_[0]->{type} }
+sub my_length  { $_[0]->{length} }
+sub my_label   { $_[0]->{label} }
+sub my_field   { $_[0]->{field} }
+sub my_desc    { $_[0]->{desc} }
+sub is_req     { $_[0]->{req} }
+sub my_def     { $_[0]->{def} }
+
+sub my_vals   {
+    my $vals = $_[0]->{vals};
+    ref $vals eq 'CODE' ? $vals->() : $vals;
+}
+
+sub call_get   {
+    my $code = shift->{_get};
+    $cod->(@_);
+}
+
+sub call_set   {
+    my $code = shift->{_set};
+    $code->(@_);
+}
 
 1;
 __END__
 
 =head1 AUTHOR
 
-David Wheeler <david@kineticode.com>
+David Wheeler <david@wheeler.net>
 
 =head1 SEE ALSO
 
