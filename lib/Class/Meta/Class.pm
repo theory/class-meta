@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.54 2004/09/20 05:24:51 david Exp $
+# $Id: Class.pm,v 1.55 2004/09/20 05:41:52 david Exp $
 
 =head1 NAME
 
@@ -268,7 +268,7 @@ the time the Class::Meta::Class object was created.
 
 sub handle_error {
     my $code = shift->{error_handler};
-    $code->(@_)
+    $code->(join '', @_)
 }
 
 ##############################################################################
