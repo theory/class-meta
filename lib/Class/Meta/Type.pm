@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.9 2003/11/21 21:21:07 david Exp $
+# $Id: Type.pm,v 1.10 2003/11/22 01:13:11 david Exp $
 
 =head1 NAME
 
@@ -132,23 +132,16 @@ $VERSION = "0.01";
         ];
     };
 
-    # This code ref builds reference value checkers.
-    my $mk_refchk = sub {
-        my ($ref, $type) = @_;
-        return [ sub {
-      UNIVERSAL::isa($_[0], $ref)
-        or Carp::croak("Value '$_[0]' is not a $type")
-        } ];
-    };
-
-    # This will be the defult check for all custom types. It validates
-    # object types.
+    # This code ref builds object/reference value checkers.
     my $mk_isachk = sub {
-        my ($ref, $type);
-        return [ sub {
-            UNIVERSAL::isa($_[0], $ref)
-              or Carp::croak("Value '$_[0]' is not a $type object")
-        } ];
+        my ($pkg, $type);
+        return [
+            sub {
+                return unless defined $_[0];
+                UNIVERSAL::isa($_[0], $pkg)
+                  or Carp::croak("Value '$_[0]' is not a $type object")
+              }
+        ];
     };
 
 ##############################################################################
@@ -252,7 +245,7 @@ $VERSION = "0.01";
         scalarref => { key           => "scalarref",
                       name           => "Scalar Reference",
                       desc           => "Scalar reference",
-                      check          => $mk_refchk->('SCALAR',
+                      check          => $mk_isachk->('SCALAR',
                                                      'scalar reference'),
                       converter      => sub { \$_[0] },
                       set_maker      => $mk_setter,
@@ -264,7 +257,7 @@ $VERSION = "0.01";
         array    => { key            => "array",
                       name           => "Array Reference",
                       desc           => "Array reference",
-                      check          => $mk_refchk->('ARRAY',
+                      check          => $mk_isachk->('ARRAY',
                                                      'array reference'),
                       converter      => sub { \@_ },
                       set_maker      => $mk_setter,
@@ -276,7 +269,7 @@ $VERSION = "0.01";
         hash     => { key            => "hash",
                       name           => "Hash Reference",
                       desc           => "Hash reference",
-                      check          => $mk_refchk->('HASH',
+                      check          => $mk_isachk->('HASH',
                                                      'hash reference'),
                       converter      => sub { { @_ } },
                       set_maker      => $mk_setter,
@@ -288,7 +281,7 @@ $VERSION = "0.01";
         code     => { key            => "code",
                       name           => "Code Reference",
                       desc           => "Code reference",
-                      check          => $mk_refchk->('CODE',
+                      check          => $mk_isachk->('CODE',
                                                      'code reference'),
                       converter      => sub { sub { @_ } },
                       set_maker      => $mk_setter,
@@ -300,7 +293,7 @@ $VERSION = "0.01";
         datetime => { key            => "datetime",
                       name           => "Date/Time",
                       desc           => "Date/Time",
-                      check          => $mk_refchk->('DateTime',
+                      check          => $mk_isachk->('DateTime',
                                                      'DateTime object'),
                       converter      => sub { DateTime->now },
                       get_maker      => $mk_getter,
