@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.54 2004/01/09 04:14:46 david Exp $
+# $Id: Meta.pm,v 1.55 2004/01/09 17:06:16 david Exp $
 
 =head1 NAME
 
@@ -93,7 +93,7 @@ class:
 
   BEGIN {
       # Create a Class::Meta object for this class.
-      my $c = Class::Meta->new( key => 'dog' );
+      my $cm = Class::Meta->new( key => 'dog' );
 
       # Add a constructor.
       $cm->add_constructor( name   => 'new',
