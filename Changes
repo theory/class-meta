@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::Meta.
 
+0.12  
+      - The class "name" attribute now defaults to be the same as the key
+        if it is not explicitly set.
+
 0.11  2004-01-15T03:47:33
       - Added link to rt.cpan.org for reporting bugs.
       - Added distribution information to all modules.

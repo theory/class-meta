@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.8 2004/01/08 21:56:43 david Exp $
+# $Id: class.t,v 1.9 2004/01/16 18:47:59 david Exp $
 
 use strict;
 use Test::More tests => 14;
@@ -20,8 +20,7 @@ use base 'Class::Meta';
 Test::More->import;
 
 # Set up simple settings.
-my $spec = { name  => 'Foo Class',
-             desc  => 'Foo Class description',
+my $spec = { desc  => 'Foo Class description',
              package => 'FooClass',
              key   => 'foo' };
 # This should be okay.
@@ -29,9 +28,9 @@ ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
 
 # Test the simple accessors.
-is( $class->name, $spec->{name}, 'name' );
-is( $class->desc, $spec->{desc}, 'name' );
-is( $class->key, $spec->{key}, 'name' );
+is( $class->name, $spec->{key}, 'name' );
+is( $class->desc, $spec->{desc}, 'desc' );
+is( $class->key, $spec->{key}, 'key' );
 
 # This should throw an exception because we can only create a class once.
 eval { $class = Class::Meta::Class->new($spec) };

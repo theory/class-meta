@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.28 2004/01/15 03:11:21 david Exp $
+# $Id: Class.pm,v 1.29 2004/01/16 18:47:59 david Exp $
 
 =head1 NAME
 
@@ -81,6 +81,9 @@ my $croak = sub { require Carp; Carp::croak(@_) };
         $croak->("Package '$caller' cannot create ", __PACKAGE__,
                  " objects")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
+
+        # Set the name to be the same as the key by default.
+        $spec->{name} = $spec->{key} unless defined $spec->{name};
 
         # Check to make sure we haven't created this class already.
         $croak->("Class object for class '$spec->{package}' already exists")
