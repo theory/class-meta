@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: base.t,v 1.25 2004/01/20 21:15:01 david Exp $
+# $Id: base.t,v 1.26 2004/01/28 02:09:04 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -43,7 +43,7 @@ BEGIN {
                        label    => 'ID',
                        desc     => "The person object's ID.",
                        required => 1,
-                       default  => undef,
+                       default  => 12,
                    );
     $c->add_attribute( name     => 'name',
                        view     => Class::Meta::PUBLIC,
@@ -100,7 +100,7 @@ sub shame { shift }
 package main;
 # Instantiate a base class object and test its accessors.
 ok( my $t = Class::Meta::TestPerson->new, 'Class::Meta::TestPerson->new');
-is( $t->id, undef, 'id is undef');
+is( $t->id, 12, 'id is 12');
 eval { $t->id(1) };
 
 # Test string.
@@ -158,12 +158,12 @@ is( $p->authz, Class::Meta::READ, 'ID authorization' );
 is( $p->type, 'integer', 'ID type' );
 is( $p->label, 'ID', 'ID label' );
 ok( $p->required, "ID required" );
-is( $p->default, undef, "ID default" );
+is( $p->default, 12, "ID default" );
 
 # Test the attribute accessors.
-ok( ! defined $p->call_get($t), 'ID not defined' );
+is( $p->get($t), 12, 'ID is 12' );
 # ID is READ, so we shouldn't be able to set it.
-eval { $p->call_set($t, 10) };
+eval { $p->set($t, 10) };
 ok( $err = $@, "Set val failure" );
 like( $err, qr/Cannot set attribute 'id/, 'set val exception' );
 
@@ -179,12 +179,12 @@ ok( $p->required, "Name required" );
 is( $p->default, '', "Name default" );
 
 # Test the attribute accessors.
-is( $p->call_get($t), 'David', 'Name call_get' );
-ok( $p->call_set($t, 'Larry'), 'Name call_set' );
-is( $p->call_get($t), 'Larry', 'New Name call_get' );
+is( $p->get($t), 'David', 'Name get' );
+ok( $p->set($t, 'Larry'), 'Name set' );
+is( $p->get($t), 'Larry', 'New Name get' );
 is( $t->name, 'Larry', 'Object name');
 ok( $t->name('Damian'), 'Object name' );
-is( $p->call_get($t), 'Damian', 'Final Name call_get' );
+is( $p->get($t), 'Damian', 'Final Name get' );
 
 # Check the attributes of the "Age" attribute object.
 ok( $p = $class->attributes('age'), "Get age attribute" );
@@ -198,12 +198,12 @@ ok( $p->required == 0, "Age required" );
 is( $p->default, undef, "Age default" );
 
 # Test the age attribute accessors.
-ok( ! defined $p->call_get($t), 'Age call_get' );
-ok( $p->call_set($t, 10), 'Age call_set' );
-is( $p->call_get($t), 10, 'New Age call_get' );
+ok( ! defined $p->get($t), 'Age get' );
+ok( $p->set($t, 10), 'Age set' );
+is( $p->get($t), 10, 'New Age get' );
 ok( $t->age == 10, 'Object age');
 ok( $t->age(22), 'Object age' );
-is( $p->call_get($t), 22, 'Final Age call_get' );
+is( $p->get($t), 22, 'Final Age get' );
 
 # Check the attributes of the "Count" attribute object.
 ok( $p = $class->attributes('count'), "Get count attribute" );
@@ -217,19 +217,19 @@ is( $p->required, 0, "Count required" );
 is( $p->default, 0, "Count default" );
 
 # Test the count attribute accessors.
-is( $p->call_get($t), 0, 'Count call_get' );
-ok( $p->call_set($t, 10), 'Count call_set' );
-is( $p->call_get($t), 10, 'New Count call_get' );
+is( $p->get($t), 0, 'Count get' );
+ok( $p->set($t, 10), 'Count set' );
+is( $p->get($t), 10, 'New Count get' );
 is( $t->count, 10, 'Object count');
 ok( $t->count(22), 'Set object count' );
-is( $p->call_get($t), 22, 'Final Count call_get' );
+is( $p->get($t), 22, 'Final Count get' );
 
 # Make sure they also work as class attributes.
 is( Class::Meta::TestPerson->count, 22, 'Class count' );
 ok( Class::Meta::TestPerson->count(35), 'Set class count' );
 is( Class::Meta::TestPerson->count, 35, 'Class count again' );
 is( $t->count, 35, 'Object count after class');
-is( $p->call_get($t), 35, 'Final Count call_get after class' );
+is( $p->get($t), 35, 'Final Count get after class' );
 
 # Test methods().
 ok( my @methods = $class->methods, "Get method objects" );

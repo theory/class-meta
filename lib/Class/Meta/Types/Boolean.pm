@@ -1,6 +1,6 @@
 package Class::Meta::Types::Boolean;
 
-# $Id: Boolean.pm,v 1.12 2004/01/21 01:07:11 david Exp $
+# $Id: Boolean.pm,v 1.13 2004/01/28 02:09:04 david Exp $
 
 =head1 NAME
 
@@ -68,7 +68,7 @@ without the overhead of validation checks.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = "0.11";
+our $VERSION = "0.20";
 
 sub import {
     my ($pkg, $builder) = @_;
@@ -149,7 +149,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

@@ -1,12 +1,12 @@
 #!perl -w
 
-# $Id: errors.t,v 1.1 2004/01/08 21:32:19 david Exp $
+# $Id: errors.t,v 1.2 2004/01/28 02:09:04 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 use strict;
-use Test::More tests => 189;
+use Test::More tests => 193;
 
 BEGIN {
     main::use_ok('Class::Meta');
@@ -55,6 +55,10 @@ eval { $cm->add_attribute(name => 'fo&o') };
 chk('Invalid attribute name',
     qr/Attribute 'fo&o' is not a valid attribute name/);
 
+eval { $cm->add_attribute( name => 'whoohoo', type => 'int', required => 1 ) };
+chk('Required without default',
+    qr/Required attributes must have a default value/);
+
 # Create an attribute to use for a few tests. It's private so that there are
 # no accessors.
 ok( my $attr = $cm->add_attribute( name => 'foo',
@@ -70,10 +74,10 @@ for my $p (qw(view authz create context)) {
     chk("Invalid Attribute $p", qr/Not a valid $p parameter: '100'/);
 }
 
-eval { $attr->call_get };
+eval { $attr->get };
 chk('No attribute get method', qr/Cannot get attribute 'foo'/);
 
-eval { $attr->call_set };
+eval { $attr->set };
 chk('No attribute set method', qr/Cannot set attribute 'foo'/);
 
 eval { Class::Meta::Attribute->build };
@@ -225,8 +229,6 @@ chk('No attr set', qr/No such function 'NoAttrSet::build_attr_set\(\)'/);
 
 eval { Class::Meta::Type->build };
 chk('Type->build protected', qr/ cannot call Class::Meta::Type->build/);
-
-
 
 ##############################################################################
 # This function handles all the tests.

@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: view.t,v 1.2 2004/01/20 22:36:44 david Exp $
+# $Id: view.t,v 1.3 2004/01/28 02:09:04 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -54,7 +54,7 @@ BEGIN {
                            type     => 'integer',
                            label    => 'ID',
                            required => 1,
-                           default  => undef,
+                           default  => 22,
                          ),
         "Add id attribute" );
     ok( $c->add_attribute( name     => 'name',
@@ -71,7 +71,7 @@ BEGIN {
                            label    => 'Age',
                            desc     => "The person's age.",
                            required => 0,
-                           default  => undef,
+                           default  => 0,
                          ),
         "Add private age attribute" );
     $c->build;
@@ -85,31 +85,31 @@ ok( my $obj = __PACKAGE__->new, "Create new object" );
 ok( my $class = __PACKAGE__->my_class, "Get class object" );
 
 # Check id public attribute.
-is( $obj->id, undef, 'Check undef ID' );
+is( $obj->id, 22, 'Check default ID' );
 ok( $obj->id(12), "Set ID" );
 is( $obj->id, 12, 'Check 12 ID' );
 ok( my $attr = $class->attributes('id'), 'Get "id" attribute object' );
-is( $attr->call_get($obj), 12, "Check indirect 12 ID" );
-ok( $attr->call_set($obj, 15), "Indirectly set ID" );
-is( $attr->call_get($obj), 15, "Check indirect 15 ID" );
+is( $attr->get($obj), 12, "Check indirect 12 ID" );
+ok( $attr->set($obj, 15), "Indirectly set ID" );
+is( $attr->get($obj), 15, "Check indirect 15 ID" );
 
 # Check name protected attribute succeeds.
 is( $obj->name, '', 'Check empty name' );
 ok( $obj->name('Larry'), "Set name" );
 is( $obj->name, 'Larry', 'Check "Larry" name' );
 ok( $attr = $class->attributes('name'), 'Get "name" attribute object' );
-is( $attr->call_get($obj), 'Larry', 'Check indirect "Larry" name' );
-ok( $attr->call_set($obj, 'Chip'), "Indirectly set name" );
-is( $attr->call_get($obj), 'Chip', 'Check indirect "chip" name' );
+is( $attr->get($obj), 'Larry', 'Check indirect "Larry" name' );
+ok( $attr->set($obj, 'Chip'), "Indirectly set name" );
+is( $attr->get($obj), 'Chip', 'Check indirect "chip" name' );
 
 # Check age private attribute succeeds.
-is( $obj->age, undef, 'Check undef age' );
+is( $obj->age, 0, 'Check default age' );
 ok( $obj->age(42), "Set age" );
 is( $obj->age, 42, 'Check 42 age' );
 ok( $attr = $class->attributes('age'), 'Get "age" attribute object' );
-is( $attr->call_get($obj), 42, "Check indirect 12 age" );
-ok( $attr->call_set($obj, 15), "Indirectly set age" );
-is( $attr->call_get($obj), 15, "Check indirect 15 age" );
+is( $attr->get($obj), 42, "Check indirect 12 age" );
+ok( $attr->set($obj, 15), "Indirectly set age" );
+is( $attr->get($obj), 15, "Check indirect 15 age" );
 
 # Make sure that we can set all of the attributes via new().
 ok( $obj = __PACKAGE__->new( id   => 10,
@@ -195,22 +195,22 @@ ok( $obj = __PACKAGE__->new, "Create new Testarama object" );
 ok( $class = __PACKAGE__->my_class, "Get Testarama class object" );
 
 # Check id public attribute.
-is( $obj->id, undef, 'Check undef ID' );
+is( $obj->id, 22, 'Check default ID' );
 ok( $obj->id(12), "Set ID" );
 is( $obj->id, 12, 'Check 12 ID' );
 ok( $attr = $class->attributes('id'), 'Get "id" attribute object' );
-is( $attr->call_get($obj), 12, "Check indirect 12 ID" );
-ok( $attr->call_set($obj, 15), "Indirectly set ID" );
-is( $attr->call_get($obj), 15, "Check indirect 15 ID" );
+is( $attr->get($obj), 12, "Check indirect 12 ID" );
+ok( $attr->set($obj, 15), "Indirectly set ID" );
+is( $attr->get($obj), 15, "Check indirect 15 ID" );
 
 # Check name protected attribute succeeds.
-is( $obj->name, '', 'Check undef name' );
+is( $obj->name, '', 'Check empty name' );
 ok( $obj->name('Larry'), "Set name" );
 is( $obj->name, 'Larry', 'Check Larry name' );
 ok( $attr = $class->attributes('name'), 'Get "name" attribute object' );
-is( $attr->call_get($obj), 'Larry', 'Check indirect "Larry" name' );
-ok( $attr->call_set($obj, 'Chip'), "Indirectly set name" );
-is( $attr->call_get($obj), 'Chip', 'Check indirect "chip" name' );
+is( $attr->get($obj), 'Larry', 'Check indirect "Larry" name' );
+ok( $attr->set($obj, 'Chip'), "Indirectly set name" );
+is( $attr->get($obj), 'Chip', 'Check indirect "chip" name' );
 
 # Check age private attribute
 eval { $obj->age(12) };
@@ -222,10 +222,10 @@ main::chk( 'private exception again',
 
 # Check that age fails when accessed indirectly, too.
 ok( $attr = $class->attributes('age'), 'Get "age" attribute object' );
-eval { $attr->call_set($obj, 12) };
+eval { $attr->set($obj, 12) };
 main::chk('indirect private exception',
           qr/age is a private attribute of Class::Meta::Test/);
-eval { $attr->call_get($obj) };
+eval { $attr->get($obj) };
 main::chk('another indirect private exception',
           qr/age is a private attribute of Class::Meta::Test/);
 
@@ -307,13 +307,13 @@ ok( $obj = Class::Meta::Test->new, "Create new object in main" );
 ok( $class = Class::Meta::Test->my_class, "Get class object in main" );
 
 # Make sure we can access id.
-is( $obj->id, undef, 'Check undef ID' );
+is( $obj->id, 22, 'Check default ID' );
 ok( $obj->id(12), "Set ID" );
 is( $obj->id, 12, 'Check 12 ID' );
 ok( $attr = $class->attributes('id'), 'Get "id" attribute object' );
-is( $attr->call_get($obj), 12, "Check indirect 12 ID" );
-ok( $attr->call_set($obj, 15), "Indirectly set ID" );
-is( $attr->call_get($obj), 15, "Check indirect 15 ID" );
+is( $attr->get($obj), 12, "Check indirect 12 ID" );
+ok( $attr->set($obj, 15), "Indirectly set ID" );
+is( $attr->get($obj), 15, "Check indirect 15 ID" );
 
 # Check name protected attribute
 eval { $obj->name('foo') };
@@ -325,10 +325,10 @@ chk('another protected exception',
 
 # Check that name fails when accessed indirectly, too.
 ok( $attr = $class->attributes('name'), 'Get "name" attribute object' );
-eval { $attr->call_set($obj, 'foo') };
+eval { $attr->set($obj, 'foo') };
 chk('indirect protected exception',
     qr/name is a protected attribute of Class::Meta::Test/);
-eval { $attr->call_get($obj) };
+eval { $attr->get($obj) };
 chk('another indirect protected exception',
     qr/name is a protected attribute of Class::Meta::Test/);
 
@@ -342,10 +342,10 @@ chk( 'another private exception',
 
 # Check that age fails when accessed indirectly, too.
 ok( $attr = $class->attributes('age'), 'Get "age" attribute object' );
-eval { $attr->call_set($obj, 12) };
+eval { $attr->set($obj, 12) };
 chk( 'indirect private exception',
      qr/age is a private attribute of Class::Meta::Test/);
-eval { $attr->call_get($obj) };
+eval { $attr->get($obj) };
 chk( 'another indirect private exception',
      qr/age is a private attribute of Class::Meta::Test/);
 

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.37 2004/01/21 22:47:00 david Exp $
+# $Id: Attribute.pm,v 1.38 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -14,10 +14,10 @@ Class::Meta::Attribute - Class::Meta class attribute introspection
 
   print "\nAttributes:\n";
   for my $attr ($class->attributes) {
-      print "  o ", $attr->name, " => ", $attr->call_get($thingy), $/;
+      print "  o ", $attr->name, " => ", $attr->get($thingy), $/;
       if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
-          $attr->call_get($thingy, 'hey there!');
-          print "    Changed to: ", $attr->call_get($thingy) $/;
+          $attr->get($thingy, 'hey there!');
+          print "    Changed to: ", $attr->get($thingy) $/;
       }
   }
 
@@ -45,7 +45,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.14";
+our $VERSION = "0.20";
 
 ##############################################################################
 # Private Package Globals
@@ -88,8 +88,10 @@ sub new {
     # Grab the package name.
     $p{package} = $spec->{package};
 
-    # Set the required attribute.
-    $p{required} = exists $p{required} ? $p{required} ? 1 : 0 : 0;
+    # Set the required and once attributes.
+    for (qw(required once)) {
+        $p{$_} = $p{$_} ? 1 : 0;
+    }
 
     # Make sure the name hasn't already been used for another attribute
     $croak->("Attribute '$p{name}' already exists in class",
@@ -127,7 +129,7 @@ sub new {
           or     $p{create} == Class::Meta::SET
           or     $p{create} == Class::Meta::GETSET;
     } else {
-        # Relyl on the authz setting by default.
+        # Rely on the authz setting by default.
         $p{create} = $p{authz};
     }
 
@@ -150,6 +152,15 @@ sub new {
 
     # Create and cache the attribute object.
     $spec->{attrs}{$p{name}} = bless \%p, ref $pkg || $pkg;
+
+    $croak->('Required attributes must have a default value')
+      if $p{required} && !defined $spec->{attrs}{$p{name}}->default;
+
+    if ($p{once} && $p{required} && $p{create} >= Class::Meta::SET) {
+        # No need to generate a mutator for required values that can only be
+        # set once.
+        $p{create} = Class::Meta::GET;
+    }
 
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
@@ -197,6 +208,18 @@ Returns a description of the attribute.
 Returns a label for the attribute, suitable for use in a user interface. It is
 distinguished from the attribute name, which functions to name the accessor
 methods for the attribute.
+
+=head3 required
+
+  my $req = $attr->required;
+
+Indicates if the attribute is required to have a value.
+
+=head3 once
+
+  my $once = $attr->once;
+
+Indicates whether an attribute value can be set to a defined value only once.
 
 =head3 package
 
@@ -262,6 +285,7 @@ sub type     { $_[0]->{type}     }
 sub desc     { $_[0]->{desc}     }
 sub label    { $_[0]->{label}    }
 sub required { $_[0]->{required} }
+sub once     { $_[0]->{once}     }
 sub package  { $_[0]->{package}  }
 sub view     { $_[0]->{view}     }
 sub context  { $_[0]->{context}  }
@@ -290,18 +314,18 @@ sub default {
 
 ##############################################################################
 
-=head3 call_get
+=head3 get
 
-  my $value = $attr->call_get($thingy);
+  my $value = $attr->get($thingy);
 
 This method calls the "get" accessor method on the object passed as the sole
 argument and returns the value of the attribute for that object. Note that it
-uses a C<goto> to execute the accessor, so the call to C<call_set()> itself
+uses a C<goto> to execute the accessor, so the call to C<set()> itself
 will not appear in a call stack trace.
 
 =cut
 
-sub call_get   {
+sub get {
     my $self = shift;
     my $code = $self->{_get}
       or $croak->("Cannot get attribute '", $self->name, "'");
@@ -310,19 +334,19 @@ sub call_get   {
 
 ##############################################################################
 
-=head3 call_set
+=head3 set
 
-  $attr->call_set($thingy, $new_value);
+  $attr->set($thingy, $new_value);
 
 This method calls the "set" accessor method on the object passed as the first
 argument and passes any remaining arguments to assign a new value to the
 attribute for that object. Note that it uses a C<goto> to execute the
-accessor, so the call to C<call_set()> itself will not appear in a call stack
+accessor, so the call to C<set()> itself will not appear in a call stack
 trace.
 
 =cut
 
-sub call_set   {
+sub set {
     my $self = shift;
     my $code = $self->{_set}
       or $croak->("Cannot set attribute '", $self->name, "'");
@@ -366,7 +390,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

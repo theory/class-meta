@@ -21,6 +21,8 @@ t/base.t
 t/chk_types.t
 t/chk_types_affordance.t
 t/class.t
+t/constraints.t
+t/constraints_affordance.t
 t/ctor.t
 t/custom_type_maker.t
 t/errors.t

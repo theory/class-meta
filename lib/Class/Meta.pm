@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.65 2004/01/21 22:47:00 david Exp $
+# $Id: Meta.pm,v 1.66 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -72,10 +72,10 @@ Or make use of the introspection API:
 
   print "\nAttributes:\n";
   for my $attr ($class->attributes) {
-      print "  o ", $attr->name, " => ", $attr->call_get($thingy), $/;
+      print "  o ", $attr->name, " => ", $attr->get($thingy), $/;
       if ($attr->authz >= Class::Meta::SET && $attr->type eq 'string') {
-          $attr->call_get($thingy, 'hey there!');
-          print "    Changed to: ", $attr->call_get($thingy) $/;
+          $attr->get($thingy, 'hey there!');
+          print "    Changed to: ", $attr->get($thingy) $/;
       }
   }
 
@@ -441,11 +441,15 @@ Returns the name of the attribute's data type.
 
 Returns true if the attribute is required to have a value.
 
-=item call_set
+=item once
+
+Returns true if the attribute value can be set to a defined value only once.
+
+=item set
 
 Sets the value of an attribute on an object.
 
-=item call_get
+=item get
 
 Returns the value of an attribute on an object.
 
@@ -580,7 +584,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.15";
+our $VERSION = "0.20";
 
 ##############################################################################
 # Private Package Globals
@@ -702,6 +706,16 @@ for this parameter. Required.
 
 The name of the attribute. The name must consist of only alphanumeric
 characters or "_". Required.
+
+=item required
+
+A boolean value indicating whether the attribute is required to have a value.
+Defaults to false.
+
+=item once
+
+A boolean value indicating whether the attribute can be set to a defined value
+only once. Defaults to false.
 
 =item label
 
@@ -934,7 +948,7 @@ Allow attributes to get a new value once and only once.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

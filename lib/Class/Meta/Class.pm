@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.34 2004/01/21 22:47:00 david Exp $
+# $Id: Class.pm,v 1.35 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -21,7 +21,7 @@ Class::Meta::Class - Class::Meta class introspection
 
   print "\nAttributes:\n";
   for my $attr ($class->attributes) {
-      print "  o ", $attr->name, " => ", $attr->call_get($thingy) $/;
+      print "  o ", $attr->name, " => ", $attr->get($thingy) $/;
   }
 
   print "\nMethods:\n";
@@ -56,7 +56,7 @@ use Class::Meta::Method;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.13";
+our $VERSION = "0.20";
 our @CARP_NOT = qw(Class::Meta);
 
 ##############################################################################
@@ -302,7 +302,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

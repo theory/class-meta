@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.36 2004/01/21 22:47:00 david Exp $
+# $Id: Constructor.pm,v 1.37 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.15";
+our $VERSION = "0.20";
 
 ##############################################################################
 # Private Package Globals
@@ -235,7 +235,7 @@ sub build {
                 my $key = $attr->name;
                 if (exists $p{$key} && $attr->authz >= Class::Meta::SET) {
                     # Let them set the value.
-                    $attr->call_set($new, delete $p{$key});
+                    $attr->set($new, delete $p{$key});
                 } else {
                     # Use the default value.
                     $new->{$key} = $attr->default;
@@ -283,7 +283,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

@@ -1,6 +1,6 @@
 package Class::Meta::Type;
 
-# $Id: Type.pm,v 1.27 2004/01/21 01:33:22 david Exp $
+# $Id: Type.pm,v 1.28 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -41,7 +41,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.12";
+our $VERSION = "0.20";
 
 ##############################################################################
 # Private Package Globals                                                    #
@@ -192,10 +192,11 @@ The check parameter can be specified in any of the following ways:
 =item *
 
 As a code reference. When Class::Meta executes this code reference, it will
-pass in the value to check. If it's not the proper value for your custom data
-type, the code reference should throw an exception. Here's an example; it's
-the code reference used by "string" data type, which you can add to
-Class::Meta::Type simply by using Class::Meta::Types::String:
+pass in the value to check and a reference to the existing value. If the new
+value is not the proper value for your custom data type, the code reference
+should throw an exception. Here's an example; it's the code reference used by
+"string" data type, which you can add to Class::Meta::Type simply by using
+Class::Meta::Types::String:
 
   check => sub {
       my $value = shift;
@@ -203,6 +204,17 @@ Class::Meta::Type simply by using Class::Meta::Types::String:
       require Carp;
       our @CARP_NOT = qw(Class::Meta::Attribute);
       Carp::croak("Value '$value' is not a valid string");
+  }
+
+Here's another example. This check code reference might be used to make sure
+that a new value is always greater than the existing value.
+
+  check => sub {
+      my ($new_val, $old_val_ref) = @_;
+      return if defined $new_val && $new_val > $$old_val_ref;
+      require Carp;
+      our @CARP_NOT = qw(Class::Meta::Attribute);
+      Carp::croak("Value '$new_val' is not greater than '$$old_val_ref'");
   }
 
 =item *
@@ -470,7 +482,7 @@ to throw an error with the file and line number of the client code:
 
 The C<our @CARP_NOT> line prevents the context from being thrown from within
 Class::Meta::Attribute, which is useful if you make use of that class'
-C<call_set()> method.
+C<set()> method.
 
 =head2 Custom Accessor Building
 
@@ -533,14 +545,14 @@ The C<build_attr_get()> and C<build_attr_set()> functions take a single
 argument, a Class::Meta::Attribute object, and return code references that
 either represent the corresponding methods, or that call the appropriate
 accessor methods to get and set an attribute, respectively. The code
-references will be used by Class::Meta::Attribute's C<call_get()> and
-C<call_set()> methods to get and set attribute values. Again, see
+references will be used by Class::Meta::Attribute's C<get()> and
+C<set()> methods to get and set attribute values. Again, see
 L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> for examples
 before creating your own.
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

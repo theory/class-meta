@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.15 2004/01/21 01:07:10 david Exp $
+# $Id: AccessorBuilder.pm,v 1.16 2004/01/28 02:09:03 david Exp $
 
 =head1 NAME
 
@@ -127,7 +127,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.14";
+our $VERSION = "0.20";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -145,12 +145,19 @@ my $req_chk = sub {
     $croak->("Attribute must be defined") unless defined $_[0];
 };
 
+my $once_chk = sub {
+    $croak->("Attribute can only be set once") if defined ${$_[1]};
+};
+
 sub build {
     my ($pkg, $attr, $create, @checks) = @_;
     my $name = $attr->name;
 
     # Add the required check, if needed.
     unshift @checks, $req_chk if $attr->required;
+
+    # Add a once check, if needed.
+    unshift @checks, $once_chk if $attr->once;
 
     my $sub;
     if ($attr->context == Class::Meta::CLASS) {
@@ -167,7 +174,7 @@ sub build {
             if (@checks) {
                 $sub = sub {
                     # Check the value passed in.
-                    $_->($_[1]) for @checks;
+                    $_->($_[1], \$data) for @checks;
                     # Assign the value.
                     $data = $_[1];
                     return;
@@ -187,7 +194,7 @@ sub build {
                     my $self = shift;
                     return $data unless @_;
                     # Check the value passed in.
-                    $_->($_[0]) for @checks;
+                    $_->($_[0], \$data) for @checks;
                     # Assign the value.
                     return $data = $_[0];
                 };
@@ -213,7 +220,7 @@ sub build {
             if (@checks) {
                 $sub = sub {
                     # Check the value passed in.
-                    $_->($_[1]) for @checks;
+                    $_->($_[1], \$_[0]->{$name}) for @checks;
                     # Assign the value.
                     $_[0]->{$name} = $_[1];
                     return;
@@ -233,7 +240,7 @@ sub build {
                     my $self = shift;
                     return $self->{$name} unless @_;
                     # Check the value passed in.
-                    $_->($_[0]) for @checks;
+                    $_->($_[0], \$self->{$name}) for @checks;
                     # Assign the value.
                     return $self->{$name} = $_[0];
                 };
@@ -287,7 +294,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.15 distribution.
+This file was packaged with the Class-Meta-0.20 distribution.
 
 =head1 BUGS
 

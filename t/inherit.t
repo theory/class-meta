@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.7 2004/01/17 19:50:24 david Exp $
+# $Id: inherit.t,v 1.8 2004/01/28 02:09:04 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -43,7 +43,7 @@ BEGIN {
                            label    => 'ID',
                            desc     => "The object's ID.",
                            required => 1,
-                           default  => undef,
+                           default  => 12,
                        ),
         "Create One's ID attribute" );
 
@@ -188,14 +188,14 @@ isa_ok( $one, 'Test::One' );
 is( $one->get_name, 'foo', "Check One's name" );
 ok( $one->set_name('hello'), "Set One's name" );
 is( $one->get_name, 'hello', "Check One's new name" );
-is( $one->get_id, undef, "Check One's id" );
+is( $one->get_id, 12, "Check One's id" );
 eval { $one->set_id(1) };
 ok( $err = $@, "Check for set_id exception" );
 
 # Check One's attribute object accessors.
-is( $one_attributes[0]->call_get($one), undef, "Check attr call id" );
-ok( $one_attributes[1]->call_set($one, 'howdy'), "Call set on One" );
-is( $one_attributes[1]->call_get($one), 'howdy', "Call get on One" );
+is( $one_attributes[0]->get($one), 12, "Check attr call id" );
+ok( $one_attributes[1]->set($one, 'howdy'), "Call set on One" );
+is( $one_attributes[1]->get($one), 'howdy', "Call get on One" );
 
 # Check One's methods.
 is( $one->foo, 'Test::One', "Check One->foo" );
@@ -230,7 +230,7 @@ ok( $two = Test::Two->two_new(name => 'Larry'),
 isa_ok( $two, 'Test::Two' );
 
 # Check Two's attribute accessors.
-is( $two->get_id, undef, "Check Two's id" );
+is( $two->get_id, 12, "Check Two's id" );
 eval { $two->set_id(1) };
 ok( $err = $@, "Check for set_id exception" );
 is( $two->get_name, 'Larry', "Check Two's name" );
@@ -246,19 +246,19 @@ ok( $two->set_description('yello'), "Set Two's description" );
 is( $two->get_description, 'yello', "Check Two's new description" );
 
 # Check Two's attribute object accessors.
-is( $two_attributes[0]->call_get($two), undef, "Check attr call id" );
+is( $two_attributes[0]->get($two), 12, "Check attr call id" );
 
-is( $two_attributes[1]->call_get($two), 'hello', "Call get name on Two" );
-ok( $two_attributes[1]->call_set($two, 'howdy'), "Call set name on Two" );
-is( $two_attributes[1]->call_get($two), 'howdy', "Call get name on Two again" );
+is( $two_attributes[1]->get($two), 'hello', "Call get name on Two" );
+ok( $two_attributes[1]->set($two, 'howdy'), "Call set name on Two" );
+is( $two_attributes[1]->get($two), 'howdy', "Call get name on Two again" );
 
-is( $two_attributes[2]->call_get($two), 12, "Call get count on Two" );
-ok( $two_attributes[2]->call_set($two, 10), "Call set count on Two" );
-is( $two_attributes[2]->call_get($two), 10, "Call get count on Two again" );
+is( $two_attributes[2]->get($two), 12, "Call get count on Two" );
+ok( $two_attributes[2]->set($two, 10), "Call set count on Two" );
+is( $two_attributes[2]->get($two), 10, "Call get count on Two again" );
 
-is( $two_attributes[3]->call_get($two), 'yello', "Call get on Two" );
-ok( $two_attributes[3]->call_set($two, 'rowdy'), "Call set on Two" );
-is( $two_attributes[3]->call_get($two), 'rowdy', "Call get on Two again" );
+is( $two_attributes[3]->get($two), 'yello', "Call get on Two" );
+ok( $two_attributes[3]->set($two, 'rowdy'), "Call set on Two" );
+is( $two_attributes[3]->get($two), 'rowdy', "Call get on Two again" );
 
 # Make sure that the count class attribute accessors work as expected.
 is( $one->get_count, 10, 'Check one get_count' );
