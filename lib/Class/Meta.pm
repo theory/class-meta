@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.30 2003/11/25 18:38:40 david Exp $
+# $Id: Meta.pm,v 1.31 2003/11/25 19:12:11 david Exp $
 
 =head1 NAME
 
@@ -231,11 +231,6 @@ __END__
 =head1 TO DO
 
 =over 4
-
-=item *
-
-Make it possible to subclass all of the member classes, as well as
-Class::Meta::Class, of course.
 
 =item *
 
