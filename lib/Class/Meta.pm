@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.29 2003/11/25 01:35:21 david Exp $
+# $Id: Meta.pm,v 1.30 2003/11/25 18:38:40 david Exp $
 
 =head1 NAME
 
@@ -152,8 +152,13 @@ our $VERSION = "0.01";
         Carp::croak("Class '$p{package}' already created")
           if exists $classes{$p{package}};
 
+        $p{class_class} ||= 'Class::Meta::Class';
+        $p{ctor_class} ||= 'Class::Meta::Constructor';
+        $p{attr_class} ||= 'Class::Meta::Attribute';
+        $p{meth_class} ||= 'Class::Meta::Method';
+
         # Instantiate a Class object.
-        $p{class} = Class::Meta::Class->new(\%p);
+        $p{class} = $p{class_class}->new(\%p);
 
         # Cache the definition.
         $classes{$p{package}} = \%p;
@@ -174,8 +179,7 @@ our $VERSION = "0.01";
 
     sub add_attr {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_attr_ord}},
-          Class::Meta::Attribute->new($spec, @_);
+        push @{$spec->{build_attr_ord}}, $spec->{attr_class}->new($spec, @_);
         return $spec->{build_attr_ord}[-1];
     }
 
@@ -183,7 +187,8 @@ our $VERSION = "0.01";
 # add_meth()
 
     sub add_meth {
-        Class::Meta::Method->new($classes{ shift->{package} }, @_);
+        my $spec = $classes{ shift->{package} };
+        $spec->{meth_class}->new($spec, @_);
     }
 
 ##############################################################################
@@ -191,8 +196,7 @@ our $VERSION = "0.01";
 
     sub add_ctor {
         my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_ctor_ord}},
-          Class::Meta::Constructor->new($spec, @_);
+        push @{$spec->{build_ctor_ord}}, $spec->{ctor_class}->new($spec, @_);
         return $spec->{build_ctor_ord}[-1];
     }
 
