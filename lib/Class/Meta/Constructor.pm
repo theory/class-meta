@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.8 2003/11/22 00:23:38 david Exp $
+# $Id: Constructor.pm,v 1.9 2003/11/22 02:44:05 david Exp $
 
 use strict;
 
@@ -230,8 +230,9 @@ sub build {
             # Assign all of the attribute values.
             foreach my $attr (values %{ $spec->{attrs} }) {
                 next unless $attr->my_authz >= Class::Meta::SET;
-                $attr->call_set($new, $init->{$attr->my_name}
-                                  || $attr->my_default);
+                $attr->call_set($new, exists $init->{$attr->my_name}
+                                ? $init->{$attr->my_name}
+                                : $attr->my_default);
             }
             if (my @attrs = keys %$init) {
                 # Attempts to assign to non-existent attributes fail.
