@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.14 2004/01/20 22:36:44 david Exp $
+# $Id: AccessorBuilder.pm,v 1.15 2004/01/21 01:07:10 david Exp $
 
 =head1 NAME
 
@@ -287,7 +287,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.14 distribution.
+This file was packaged with the Class-Meta-0.15 distribution.
 
 =head1 BUGS
 

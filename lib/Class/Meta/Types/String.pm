@@ -1,6 +1,6 @@
 package Class::Meta::Types::String;
 
-# $Id: String.pm,v 1.8 2004/01/20 22:36:44 david Exp $
+# $Id: String.pm,v 1.9 2004/01/21 01:07:11 david Exp $
 
 =head1 NAME
 
@@ -63,7 +63,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.14 distribution.
+This file was packaged with the Class-Meta-0.15 distribution.
 
 =head1 BUGS
 

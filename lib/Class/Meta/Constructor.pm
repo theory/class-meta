@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.34 2004/01/21 00:59:36 david Exp $
+# $Id: Constructor.pm,v 1.35 2004/01/21 01:07:10 david Exp $
 
 =head1 NAME
 
@@ -283,7 +283,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.14 distribution.
+This file was packaged with the Class-Meta-0.15 distribution.
 
 =head1 BUGS
 
