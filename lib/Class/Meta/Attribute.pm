@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.7 2002/06/04 20:50:19 david Exp $
+# $Id: Attribute.pm,v 1.8 2002/06/07 21:53:05 david Exp $
 
 =head1 NAME
 
@@ -76,13 +76,25 @@ sub new {
         $params{vis} = Class::Meta::PUBLIC;
     }
 
+    # Check the authorization level.
+    if (exists $params{auth}) {
+        Carp::croak("Not a valid auth parameter: '$params{auth}'")
+          unless $params{auth} == Class::Meta::NONE
+          ||     $params{auth} == Class::Meta::READ
+          ||     $params{auth} == Class::Meta::WRITE
+          ||     $params{auth} == Class::Meta::RDWR;
+    } else {
+        # Make it read/write by default.
+        $paarms{auth} = Class::Meta::RDWR;
+    }
+
     # Check the context.
     if (exists $params{context}) {
         Carp::croak("Not a valid context parameter: '$params{context}'")
           unless $params{context} == Class::Meta::OBJECT
           ||     $params{context} == Class::Meta::CLASS;
     } else {
-        # Make it public by default.
+        # Put it in object context by default.
         $params{context} = Class::Meta::OBJECT;
     }
 
