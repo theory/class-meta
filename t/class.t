@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.5 2003/11/22 00:07:05 david Exp $
+# $Id: class.t,v 1.6 2003/11/25 00:58:18 david Exp $
 
 use strict;
 use Test::More tests => 9;
@@ -17,11 +17,13 @@ like($err, qr/^Package 'main' cannot create.*objects/,
 package Class::Meta::FooSub;
 
 @Class::Meta::FooSub::ISA = qw(Class::Meta);
+use Carp;
+$SIG{__WARN__} = \&Carp::cluck;
 
 # Set up simple settings.
 my $spec = { name  => 'Foo Class',
              desc  => 'Foo Class description',
-             class => 'FooClass',
+             package => 'FooClass',
              key   => 'foo' };
 # This should be okay.
 main::ok( $class = Class::Meta::Class->new($spec),

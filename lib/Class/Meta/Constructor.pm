@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.14 2003/11/24 02:05:02 david Exp $
+# $Id: Constructor.pm,v 1.15 2003/11/25 00:58:17 david Exp $
 
 use strict;
 
@@ -133,9 +133,8 @@ sub new {
           $p{caller} = eval "sub { shift->$p{name}(\@_) }";
       }
 
-    $p{package} = $spec->{package};
-
     # Create and cache the constructor object.
+    $p{package} = $spec->{package};
     $spec->{ctors}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.

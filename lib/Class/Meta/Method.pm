@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.9 2003/11/22 00:48:10 david Exp $
+# $Id: Method.pm,v 1.10 2003/11/25 00:58:17 david Exp $
 
 =head1 NAME
 
@@ -150,6 +150,7 @@ sub new {
       }
 
     # Create and cache the method object.
+    $p{package} = $spec->{package};
     $spec->{meths}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.
@@ -178,6 +179,16 @@ Returns the method name.
 =cut
 
 sub my_name { $_[0]->{name} }
+
+=head2 my_package
+
+  my $package = $meth->my_package;
+
+Returns the method package.
+
+=cut
+
+sub my_package { $_[0]->{package} }
 
 =head2 my_desc
 

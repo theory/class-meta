@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.14 2003/11/24 01:38:28 david Exp $
+# $Id: Class.pm,v 1.15 2003/11/25 00:58:17 david Exp $
 
 use strict;
 use Carp ();
@@ -31,7 +31,10 @@ use Class::Meta::Method;
         $specs{$spec->{class}} = $spec;
 
         # Okay, create the class object.
-        return bless { package => $spec->{class} }, ref $pkg || $pkg;
+        my $self = bless { package => $spec->{class} }, ref $pkg || $pkg;
+
+        # Copy its parents' attributes and return.
+        return $self->_inherit('attr');
     }
 
     ##########################################################################
@@ -48,7 +51,6 @@ use Class::Meta::Method;
     ##########################################################################
     # Create accessors to get at the constructor, attribute, and method
     # objects.
-#    for my $t (qw(ctor attr meth)) {
 
     sub my_ctors {
         my $self = shift;
@@ -100,16 +102,21 @@ use Class::Meta::Method;
         my $caller = caller;
         Carp::croak("Package '$caller' cannot call " . __PACKAGE__ . "->build")
           unless UNIVERSAL::isa($caller, 'Class::Meta');
+        $self->_inherit(qw(ctor meth));
+    }
 
+    sub _inherit {
+        my $self = shift;
         my $spec = $specs{$self->{package}};
-        # XXX Is there a way to make this any better, so it's not storing
-        # XXX copies of what's in ever parent class?
-        # Copy any attributes, constructors, or methods from its parents.
+
+        # Get a list of all of the parent classes.
         my @classes = reverse Class::ISA::self_and_super_path($spec->{package});
-        for my $key (qw(attr ctor meth)) {
+
+        # For each metadata class, copy the parents' objects.
+        for my $key (@_) {
             my (@things, @ord, @prot, %sord, %sprot);
             for my $super (@classes) {
-                push @things, %{ $specs{$super}{$key . 's'} }
+                push @things, %{ $specs{$super}{"${key}s"} }
                   if $specs{$super}{$key . 's'};
                 push @ord, grep { not $sord{$_}++ }
                   @{ $specs{$super}{"$key\_ord"} }
@@ -119,10 +126,11 @@ use Class::Meta::Method;
                   if $specs{$super}{"prot_$key\_ord"};
             }
 
-            $spec->{$key} = { @things };
-            $spec->{"$key\_ord"} = \@ord;
-            $spec->{"prot_$key\_ord"} = \@prot;
+            $spec->{"${key}s"}         = { @things } if @things;
+            $spec->{"$key\_ord"}      = \@ord       if @ord;
+            $spec->{"prot_$key\_ord"} = \@prot      if @prot;
         }
+        return $self;
     }
 }
 

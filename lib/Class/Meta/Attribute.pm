@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.11 2003/11/21 23:03:16 david Exp $
+# $Id: Attribute.pm,v 1.12 2003/11/25 00:58:17 david Exp $
 
 =head1 NAME
 
@@ -60,9 +60,12 @@ sub new {
                 . "-- only alphanumeric and '_' characters allowed")
       if $p{name} =~ /\W/;
 
+    # Grab the package name.
+    $p{package} = $spec->{package};
+
     # Make sure the name hasn't already been used for another attribute
-    Carp::croak("Attribute '$p{name}' already exists in class "
-                . "'$spec->{class}'")
+    Carp::croak("Attribute '$p{name}' already exists in class",
+                " '", $spec->{attrs}{$p{name}}{package}, "'")
       if exists $spec->{attrs}{$p{name}};
 
     # Check the view.
@@ -136,6 +139,7 @@ sub new {
 ##############################################################################
 
 sub my_name     { $_[0]->{name}     }
+sub my_package  { $_[0]->{package}  }
 sub my_view     { $_[0]->{view}     }
 sub my_context  { $_[0]->{context}  }
 sub my_authz    { $_[0]->{authz}    }
