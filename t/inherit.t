@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.6 2004/01/16 19:13:33 david Exp $
+# $Id: inherit.t,v 1.7 2004/01/17 19:50:24 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 102;
+use Test::More tests => 126;
 
 ##############################################################################
 # Create a simple class.
@@ -52,14 +52,24 @@ BEGIN {
                            authz    => Class::Meta::RDWR,
                            create   => Class::Meta::GETSET,
                            type     => 'string',
-                           length      => 256,
                            label    => 'Name',
-                           field    => 'text',
                            desc     => "The object's name.",
                            required => 1,
                            default  => 'foo',
                        ),
         "Create One's name attribute" );
+
+    ok( $c->add_attribute( name     => 'count',
+                           view     => Class::Meta::PUBLIC,
+                           authz    => Class::Meta::RDWR,
+                           create   => Class::Meta::GETSET,
+                           context  => Class::Meta::CLASS,
+                           type     => 'integer',
+                           label    => 'Count',
+                           desc     => "The object count.",
+                           default  => 0,
+                       ),
+        "Create One's count attribute" );
 
     ok( $c->add_method(name => 'foo'), "Add foo method to One" );
     ok( $c->add_method(name => 'bar'), "Add bar method to One" );
@@ -93,7 +103,6 @@ BEGIN {
                            create   => Class::Meta::GETSET,
                            type     => 'string',
                            label    => 'Description',
-                           field    => 'text',
                            desc     => "The object's description.",
                            required => 1,
                            default  => '',
@@ -108,9 +117,7 @@ BEGIN {
                            authz    => Class::Meta::RDWR,
                            create   => Class::Meta::GETSET,
                            type     => 'string',
-                           length      => 256,
                            label    => 'Name',
-                           field    => 'text',
                            desc     => "The object's name.",
                            required => 1,
                            default  => '',
@@ -142,9 +149,10 @@ ok( ! $one_class->is_a('Test::Two'), "Check it's not for Test::Two" );
 
 # Check One's attributes.
 ok( my @one_attributes = $one_class->attributes, "Get attributes" );
-is( scalar @one_attributes, 2, "Check for two attributes" );
+is( scalar @one_attributes, 3, "Check for three attributes" );
 is( $one_attributes[0]->name, 'id', "Check for id attribute" );
 is( $one_attributes[1]->name, 'name', "Check for name attribute" );
+is( $one_attributes[2]->name, 'count', "Check for count attribute" );
 
 # Check out Test::Two's class object.
 ok( my $two_class = Test::Two->my_class, "Get Two's Class object" );
@@ -154,12 +162,14 @@ ok( $two_class->is_a('Test::Two'), "Check it's for Test::Two" );
 
 # Check Two's attributes.
 ok( my @two_attributes = $two_class->attributes, "Get attributes" );
-is( scalar @two_attributes, 3, "Check for two attributes" );
+is( scalar @two_attributes, 4, "Check for four attributes" );
 is( $two_attributes[0]->name, 'id', "Check for id attribute" );
 is( $one_attributes[0], $two_attributes[0], "Check for same id as One" );
 is( $two_attributes[1]->name, 'name', "Check for name attribute" );
 is( $one_attributes[1], $two_attributes[1], "Check for same name as One" );
-is( $two_attributes[2]->name, 'description', "Check for description attribute" );
+is( $two_attributes[2]->name, 'count', "Check for count attribute" );
+is( $one_attributes[2], $two_attributes[2], "Check for same count as One" );
+is( $two_attributes[3]->name, 'description', "Check for description attribute" );
 
 # Make sure that One's new() constructor works.
 ok( my $one = Test::One->new( name => 'foo'), "Construct One object" );
@@ -226,18 +236,47 @@ ok( $err = $@, "Check for set_id exception" );
 is( $two->get_name, 'Larry', "Check Two's name" );
 ok( $two->set_name('hello'), "Set Two's name" );
 is( $two->get_name, 'hello', "Check Two's new name" );
+
+is( $two->get_count, 0, "Check Two's count" );
+ok( $two->set_count(12), "Set Two's count" );
+is( $two->get_count, 12, "Check Two's new count" );
+
 is( $two->get_description, '', "Check Two's description" );
 ok( $two->set_description('yello'), "Set Two's description" );
 is( $two->get_description, 'yello', "Check Two's new description" );
 
 # Check Two's attribute object accessors.
 is( $two_attributes[0]->call_get($two), undef, "Check attr call id" );
-is( $two_attributes[1]->call_get($two), 'hello', "Call get on Two" );
-ok( $two_attributes[1]->call_set($two, 'howdy'), "Call set on Two" );
-is( $two_attributes[1]->call_get($two), 'howdy', "Call get on Two again" );
-is( $two_attributes[2]->call_get($two), 'yello', "Call get on Two" );
-ok( $two_attributes[2]->call_set($two, 'rowdy'), "Call set on Two" );
-is( $two_attributes[2]->call_get($two), 'rowdy', "Call get on Two again" );
+
+is( $two_attributes[1]->call_get($two), 'hello', "Call get name on Two" );
+ok( $two_attributes[1]->call_set($two, 'howdy'), "Call set name on Two" );
+is( $two_attributes[1]->call_get($two), 'howdy', "Call get name on Two again" );
+
+is( $two_attributes[2]->call_get($two), 12, "Call get count on Two" );
+ok( $two_attributes[2]->call_set($two, 10), "Call set count on Two" );
+is( $two_attributes[2]->call_get($two), 10, "Call get count on Two again" );
+
+is( $two_attributes[3]->call_get($two), 'yello', "Call get on Two" );
+ok( $two_attributes[3]->call_set($two, 'rowdy'), "Call set on Two" );
+is( $two_attributes[3]->call_get($two), 'rowdy', "Call get on Two again" );
+
+# Make sure that the count class attribute accessors work as expected.
+is( $one->get_count, 10, 'Check one get_count' );
+is( $two->get_count, 10, 'Check two get_count' );
+is( Test::One->get_count, 10, 'Check Test::One get_count' );
+is( Test::Two->get_count, 10, 'Check Test::Two get_count' );
+
+ok( Test::One->set_count(22), 'Set One count' );
+is( $one->get_count, 22, 'Check one get_count again' );
+is( $two->get_count, 22, 'Check two get_count again' );
+is( Test::One->get_count, 22, 'Check Test::One get_count again' );
+is( Test::Two->get_count, 22, 'Check Test::Two get_count again' );
+
+ok( $one->set_count(35), 'Set $one count' );
+is( $one->get_count, 35, 'Check one get_count three' );
+is( $two->get_count, 35, 'Check two get_count three' );
+is( Test::One->get_count, 35, 'Check Test::One get_count three' );
+is( Test::Two->get_count, 35, 'Check Test::Two get_count three' );
 
 # Check Two's methods.
 is( $two->foo, 'Test::One', 'Check Two->foo' );

@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.31 2004/01/10 01:58:11 david Exp $
+# $Id: Attribute.pm,v 1.32 2004/01/17 19:50:24 david Exp $
 
 =head1 NAME
 
@@ -45,7 +45,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = "0.11";
+our $VERSION = "0.12";
 
 ##############################################################################
 # Private Package Globals
@@ -87,6 +87,9 @@ sub new {
 
     # Grab the package name.
     $p{package} = $spec->{package};
+
+    # Set the required attribute.
+    $p{required} = exists $p{required} ? $p{required} ? 1 : 0 : 0;
 
     # Make sure the name hasn't already been used for another attribute
     $croak->("Attribute '$p{name}' already exists in class",

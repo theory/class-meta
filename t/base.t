@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.23 2004/01/15 03:11:21 david Exp $
+# $Id: base.t,v 1.24 2004/01/17 19:50:24 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 88;
+use Test::More tests => 109;
 
 ##############################################################################
 # Create a simple class.
@@ -51,7 +51,6 @@ BEGIN {
                        create   => Class::Meta::GETSET,
                        type     => 'string',
                        label    => 'Name',
-                       field    => 'text',
                        desc     => "The person's name.",
                        required => 1,
                        default  => '',
@@ -62,19 +61,25 @@ BEGIN {
                        create   => Class::Meta::GETSET,
                        type     => 'integer',
                        label    => 'Age',
-                       field    => 'text',
                        desc     => "The person's age.",
                        required => 0,
                        default  => undef,
                    );
 
+    # Add a class attribute.
+    $c->add_attribute( name     => 'count',
+                       type     => 'integer',
+                       label    => 'Count',
+                       default  => 0,
+                   );
+
     # Add a couple of custom methods.
     $c->add_method( name  => 'chk_pass',
-                    view   => Class::Meta::PUBLIC,
+                    view  => Class::Meta::PUBLIC,
                 );
 
     $c->add_method( name  => 'shame',
-                    view   => Class::Meta::PUBLIC,
+                    view  => Class::Meta::PUBLIC,
                 );
 
     $c->build;
@@ -125,13 +130,15 @@ is( $class->desc, 'Special person class just for testing Class::Meta.',
 
 # Test attributes().
 ok(my @attributes = $class->attributes, "Get attributes from attributes()" );
-is( scalar @attributes, 3, "Three attributes from attributes()" );
+is( scalar @attributes, 4, "Four attributes from attributes()" );
 isa_ok($attributes[0], 'Class::Meta::Attribute',
        "First object is a attribute object" );
 isa_ok($attributes[1], 'Class::Meta::Attribute',
        "Second object is a attribute object" );
 isa_ok($attributes[2], 'Class::Meta::Attribute',
        "Third object is a attribute object" );
+isa_ok($attributes[3], 'Class::Meta::Attribute',
+       "Fourth object is a attribute object" );
 
 # Get specific attributes.
 ok( @attributes = $class->attributes(qw(age name)), 'Get specific attributes' );
@@ -189,13 +196,39 @@ is( $p->label, 'Age', 'Age label' );
 ok( $p->required == 0, "Age required" );
 is( $p->default, undef, "Age default" );
 
-# Test the attribute accessors.
+# Test the age attribute accessors.
 ok( ! defined $p->call_get($t), 'Age call_get' );
 ok( $p->call_set($t, 10), 'Age call_set' );
 is( $p->call_get($t), 10, 'New Age call_get' );
 ok( $t->age == 10, 'Object age');
 ok( $t->age(22), 'Object age' );
 is( $p->call_get($t), 22, 'Final Age call_get' );
+
+# Check the attributes of the "Count" attribute object.
+ok( $p = $class->attributes('count'), "Get count attribute" );
+is( $p->name, 'count', 'Count name' );
+is( $p->desc, undef, 'Count description' );
+is( $p->view, Class::Meta::PUBLIC, 'Count view' );
+is( $p->authz, Class::Meta::RDWR, 'Count authorization' );
+is( $p->type, 'integer', 'Count type' );
+is( $p->label, 'Count', 'Count label' );
+is( $p->required, 0, "Count required" );
+is( $p->default, 0, "Count default" );
+
+# Test the count attribute accessors.
+is( $p->call_get($t), 0, 'Count call_get' );
+ok( $p->call_set($t, 10), 'Count call_set' );
+is( $p->call_get($t), 10, 'New Count call_get' );
+is( $t->count, 10, 'Object count');
+ok( $t->count(22), 'Set object count' );
+is( $p->call_get($t), 22, 'Final Count call_get' );
+
+# Make sure they also work as class attributes.
+is( Class::Meta::TestPerson->count, 22, 'Class count' );
+ok( Class::Meta::TestPerson->count(35), 'Set class count' );
+is( Class::Meta::TestPerson->count, 35, 'Class count again' );
+is( $t->count, 35, 'Object count after class');
+is( $p->call_get($t), 35, 'Final Count call_get after class' );
 
 # Test methods().
 ok( my @methods = $class->methods, "Get method objects" );

@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.9 2004/01/10 01:58:11 david Exp $
+# $Id: AccessorBuilder.pm,v 1.10 2004/01/17 19:50:24 david Exp $
 
 =head1 NAME
 
@@ -60,11 +60,41 @@ value is never undefined. It does not currently check to ensure that private
 and protected methods are used only in their appropriate contexts, but may do
 so in a future release.
 
+=head2 Class Attributes
+
+If the C<context> attribute of the attribute object for which accessors are to
+be built is C<Class::Meta::CLASS>, Class::Meta::AccessorBuilder will build
+accessors for a class attribute instead of an object attribute. Of course,
+this means that if you change the value of the class attribute in any
+context--whether via a an object, the class name, or an an inherited class
+name or object, the value will be changed everywhere.
+
+For example, for a class attribute "count", you can expect the following to
+work:
+
+  MyApp::Custom->count(10);
+  my $count = MyApp::Custom->count; # Returns 10.
+  my $obj = MyApp::Custom->new;
+  $count = $obj->count;             # Returns 10.
+
+  $obj->count(22);
+  $count = $obj->count;             # Returns 22.
+  my $count = MyApp::Custom->count; # Returns 22.
+
+  MyApp::Custom->count(35);
+  $count = $obj->count;             # Returns 35.
+  my $count = MyApp::Custom->count; # Returns 35.
+
+Currently, class attribute accessors are not designed to be inheritable in the
+way designed by Class::Data::Inheritable, although this might be changed in a
+future release. For now, I expect that the current simple approach will cover
+the vast majority of circumstances.
+
 =cut
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.11";
+our $VERSION = "0.12";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -91,6 +121,59 @@ sub build {
     # private and protected methods?
 
     no strict 'refs';
+    if ($attr->context == Class::Meta::OBJECT) {
+        # Create class attribute accessors by creating a closure tha
+        # references this variable.
+        my $data = $attr->default;
+
+        if ($create == Class::Meta::GET) {
+            # Create GET accessor.
+            *{"${pkg}::$name"} = sub { $data };
+
+        } elsif ($create == Class::Meta::SET) {
+            # Create SET accessor.
+            if (@checks) {
+                *{"${pkg}::$name"} = sub {
+                    # Check the value passed in.
+                    $_->($_[1]) for @checks;
+                    # Assign the value.
+                    $data = $_[1];
+                    return;
+                };
+            } else {
+                *{"${pkg}::$name"} = sub {
+                    # Assign the value.
+                    $data = $_[1];
+                    return;
+                };
+            }
+
+        } elsif ($create == Class::Meta::GETSET) {
+            # Create GETSET accessor(s).
+            if (@checks) {
+                *{"${pkg}::$name"} = sub {
+                    my $self = shift;
+                    return $data unless @_;
+                    # Check the value passed in.
+                    $_->($_[0]) for @checks;
+                    # Assign the value.
+                    return $data = $_[0];
+                };
+            } else {
+                *{"${pkg}::$name"} = sub {
+                    my $self = shift;
+                    return $data unless @_;
+                    # Assign the value.
+                    return $data = shift;
+                };
+            }
+        } else {
+            # Well, nothing I guess.
+        }
+        return
+    }
+
+    # Create object attribute accessors.
     if ($create == Class::Meta::GET) {
         # Create GET accessor.
         *{"${pkg}::$name"} = sub { $_[0]->{$name} };

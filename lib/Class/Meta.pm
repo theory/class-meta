@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.58 2004/01/16 18:44:48 david Exp $
+# $Id: Meta.pm,v 1.59 2004/01/17 19:50:24 david Exp $
 
 =head1 NAME
 
@@ -882,13 +882,6 @@ __END__
 =head1 TO DO
 
 =over 4
-
-=item *
-
-Add ability to create object attribute accessors. The implementation is very
-similar to the existing accessor implementations, so perhaps they'd just be
-separate modules that can be loaded as needed, since class attributes are much
-rarer.
 
 =item *
 
