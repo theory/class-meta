@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.36 2004/01/08 05:03:24 david Exp $
+# $Id: Meta.pm,v 1.37 2004/01/08 05:10:15 david Exp $
 
 =head1 NAME
 
@@ -912,7 +912,51 @@ David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
-L<Class::Contract|Class::Contract>
+Other classes of interest within the Class::Meta distribution include:
+
+=over 4
+
+=item L<Class::Meta::Class|Class::Meta::Class>
+
+=item L<Class::Meta::Constructor|Class::Meta::Constructor>
+
+=item L<Class::Meta::Attribute|Class::Meta::Attribute>
+
+=item L<Class::Meta::Method|Class::Meta::Method>
+
+=item L<Class::Meta::Type|Class::Meta::Type>
+
+=item L<Class::Meta::Types::Perl|Class::Meta::Type::Perl>
+
+=item L<Class::Meta::Types::String|Class::Meta::Type::String>
+
+=item L<Class::Meta::Types::Boolean|Class::Meta::Type::Boolean>
+
+=item L<Class::Meta::Types::Numeric|Class::Meta::Type::Numeric>
+
+=back
+
+For comparative purposes, you might also want to check out these fine modules:
+
+=over
+
+=item L<Class::Accessor|Class::Accessor>
+
+Accessor and constructor automation.
+
+=item L<Params::Validate|Params::Validate>
+
+Parameter validation.
+
+=item L<Class::Contract|Class::Contract>
+
+Design by contract.
+
+=item L<Class::Tangram|Class::Tangram>
+
+Accessor automation and data validation for Tangram applications.
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
