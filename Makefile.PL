@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: Makefile.PL,v 1.6 2002/06/04 20:50:57 david Exp $
+# $Id: Makefile.PL,v 1.7 2003/11/21 23:03:15 david Exp $
 
 use strict;
 use ExtUtils::MakeMaker;
@@ -9,9 +9,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile( NAME            => 'Class::Meta',
                VERSION_FROM    => 'lib/Class/Meta.pm', # finds $VERSION
                PREREQ_PM       => { Data::Types => 0.02,
-                                    Time::Piece => 1.01,
-                                    Time::Piece::ISO => 0.03,
-                                    Class::ISA => 0.31,
+                                    DateTime    => 0,
                                   },
                LIBS            => [''], # e.g., '-lm'
                DEFINE          => '', # e.g., '-DHAVE_SOMETHING'

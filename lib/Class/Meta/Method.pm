@@ -1,6 +1,6 @@
 package Class::Meta::Method;
 
-# $Id: Method.pm,v 1.7 2003/11/19 03:57:46 david Exp $
+# $Id: Method.pm,v 1.8 2003/11/21 23:03:16 david Exp $
 
 =head1 NAME
 
@@ -91,68 +91,76 @@ object or class is the first argument to the code reference.
 
 sub new {
     my $pkg = shift;
-    my $def = shift;
+    my $spec = shift;
 
     # Check to make sure that only Class::Meta or a subclass is constructing a
     # Class::Meta::Method object.
     my $caller = caller;
     Carp::croak("Package '$caller' cannot create " . __PACKAGE__ . " objects")
-      unless grep { $_ eq 'Class::Meta' }
-                  $caller, eval '@' . $caller . "::ISA";
+        unless UNIVERSAL::isa($caller, 'Class::Meta');
 
     # Make sure we can get all the arguments.
     Carp::croak("Odd number of parameters in call to new() when named "
                 . "parameters were expected" ) if @_ % 2;
-    my %params = @_;
+    my %p = @_;
 
     # Validate the name.
     Carp::croak("Parameter 'name' is required in call to new()")
-      unless $params{name};
-    Carp::croak("Method '$params{name}' is not a valid method name "
+      unless $p{name};
+    Carp::croak("Method '$p{name}' is not a valid method name "
                 . "-- only alphanumeric and '_' characters allowed")
-      if $params{name} =~ /\W/;
+      if $p{name} =~ /\W/;
 
     # Make sure the name hasn't already been used for another method
     # or constructor.
-    Carp::croak("Method '$params{name}' already exists in class "
-                . "'$def->{class}'")
-      if exists $def->{meths}{$params{name}}
-      || exists $def->{ctors}{$params{name}};
+    Carp::croak("Method '$p{name}' already exists in class "
+                . "'$spec->{class}'")
+      if exists $spec->{meths}{$p{name}}
+      || exists $spec->{ctors}{$p{name}};
 
     # Check the visibility.
-    if (exists $params{view}) {
+    if (exists $p{view}) {
 
-        Carp::croak("Not a valid view parameter: '$params{view}'")
-          unless $params{view} == Class::Meta::PUBLIC
-          ||     $params{view} == Class::Meta::PROTECTED
-          ||     $params{view} == Class::Meta::PRIVATE;
+        Carp::croak("Not a valid view parameter: '$p{view}'")
+          unless $p{view} == Class::Meta::PUBLIC
+          ||     $p{view} == Class::Meta::PROTECTED
+          ||     $p{view} == Class::Meta::PRIVATE;
     } else {
         # Make it public by default.
-        $params{view} = Class::Meta::PUBLIC;
+        $p{view} = Class::Meta::PUBLIC;
     }
 
     # Check the context.
-    if (exists $params{context}) {
-        Carp::croak("Not a valid context parameter: '$params{context}'")
-          unless $params{context} == Class::Meta::OBJECT
-          ||     $params{context} == Class::Meta::CLASS;
+    if (exists $p{context}) {
+        Carp::croak("Not a valid context parameter: '$p{context}'")
+          unless $p{context} == Class::Meta::OBJECT
+          ||     $p{context} == Class::Meta::CLASS;
     } else {
         # Make it public by default.
-        $params{context} = Class::Meta::OBJECT;
+        $p{context} = Class::Meta::OBJECT;
     }
 
     # Validate or create the method caller if necessary.
-    if ($params{caller}) {
-        my $ref = ref $params{caller};
+    if ($p{caller}) {
+        my $ref = ref $p{caller};
         Carp::croak("Parameter caller must be a code reference")
           unless $ref && $ref eq 'CODE'
       } else {
-          $params{caller} = eval "sub { shift->$params{name}(\@_) }";
+          $p{caller} = eval "sub { shift->$p{name}(\@_) }";
       }
 
-    # Create and cache the object and return it.
-    $def->{meths}{$params{name}} = bless \%params, ref $pkg || $pkg;
-    return $def->{meths}{$params{name}};
+    # Create and cache the method object.
+    $spec->{meths}{$p{name}} = bless \%p, ref $pkg || $pkg;
+
+    # Index its view.
+    if ($p{view} > Class::Meta::PRIVATE) {
+        push @{$spec->{prot_meth_ord}}, $p{name};
+        push @{$spec->{meth_ord}}, $p{name}
+          if $p{view} == Class::Meta::PUBLIC;
+    }
+
+    # Let 'em have it.
+    return $spec->{ctors}{$p{name}};
 }
 
 ##############################################################################

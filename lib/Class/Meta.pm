@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.18 2003/11/21 21:21:07 david Exp $
+# $Id: Meta.pm,v 1.19 2003/11/21 23:03:16 david Exp $
 
 =head1 NAME
 
@@ -118,31 +118,19 @@ use constant GETSET    => RDWR;
 use constant CLASS     => 0x01;
 use constant OBJECT    => 0x02;
 
-# Metadata types. Used internally for tracking the different types of
-# Class::Meta objects.
-use constant ATTR      => 'attr';
-use constant METH      => 'meth';
-use constant CTOR      => 'ctor';
-
 ##############################################################################
 # Dependencies that rely on the above constants                              #
 ##############################################################################
 use Class::Meta::Type;
 use Class::Meta::Class;
+use Class::Meta::Constructor;
 use Class::Meta::Attribute;
 use Class::Meta::Method;
-use Class::Meta::Constructor;
 
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-use vars qw($VERSION);
-$VERSION = "0.01";
-
-##############################################################################
-# Function and Closure Prototypes                                            #
-##############################################################################
-my $add_memb;
+our $VERSION = "0.01";
 
 ##############################################################################
 # Constructors                                                               #
@@ -165,10 +153,6 @@ my $add_memb;
         # Make sure we haven't been here before.
         Carp::croak("Class '$p{class}' already created")
           if exists $classes{$p{class}};
-
-        # Record the class' inheritance.
-        $p{isa} = { Class::ISA::self_and_super_versions($p{class}) };
-        $p{isa_ord} = [ Class::ISA::self_and_super_path($p{class}) ];
 
         # Instantiate a Class object.
         $p{class} = Class::Meta::Class->new(\%p);
@@ -201,10 +185,7 @@ my $add_memb;
 # add_meth()
 
     sub add_meth {
-        my $spec = $classes{ shift->{package} };
-        push @{$spec->{build_meth_ord}},
-          Class::Meta::Method->new($spec, @_);
-        return $spec->{build_meth_ord}[-1];
+        Class::Meta::Method->new($classes{ shift->{package} }, @_);
     }
 
 ##############################################################################
@@ -233,86 +214,11 @@ my $add_memb;
             $_->build($spec) for @$ctors;
         }
 
-        # Build the Class::Met::Class accessor.
+        # Build the Class::Meta::Class accessor.
         no strict 'refs';
         *{"$spec->{package}::my_class"} = sub { $spec->{class} };
 
     }
-}
-
-##############################################################################
-# Private closures                                                           #
-##############################################################################
-
-{
-    my %types = ( &ATTR => { label => 'Attribute',
-                             class  => 'Class::Meta::Attribute' },
-                  &METH => { label => 'Method',
-                             class => 'Class::Meta::Method' },
-                  &CTOR => { label => 'Constructor',
-                             class => 'Class::Meta::Constructor' }
-                );
-
-    $add_memb = sub {
-        my ($type, $spec) = @_;
-        # Make sure that the name hasn't already been used.
-        Carp::croak("Attribute '$spec->{name}' is not a valid attribute name "
-                    . "-- only alphanumeric and '_' characters allowed")
-          if $spec->{name} =~ /\W/;
-        # Check to see if this member has been created already.
-        Carp::croak("$types{$type}->{label} '$spec->{name}' already exists in "
-                    . "class '$spec->{class}'")
-          if exists $spec->{$type . 's'}{$spec->{name}};
-
-        if ($type eq METH) {
-            # Methods musn't conflict with constructors, either.
-            Carp::croak("Construtor '$spec->{name}' already exists in class "
-                        . "'$spec->{class}'")
-              if exists $spec->{ctors}{$spec->{name}};
-        } elsif ($type eq CTOR) {
-            # Constructors musn't conflict with methods, either.
-            Carp::croak("Method '$spec->{name}' already exists in class "
-                        . "'$spec->{class}'")
-              if exists $spec->{meths}{$spec->{name}};
-        }
-
-        # Create the member object.
-        $spec->{class} = $spec->{class};
-        my $memb = $spec->{$type. 's'}{$spec->{name}} =
-          bless $spec, $types{$type}->{class};
-
-        # Save the object if it needs accessors built. This will be cleaned
-        # out when build() is called.
-#       push @{ $spec->{'build_' . $type . '_ord'} }, $mem
-#         unless $spec->{create} == NONE;
-
-        # Just return the object if it's private.
-        return $memb if $spec->{view} == PRIVATE;
-
-        # Preserve the order in which the attribute is declared.
-        # Assume at least protected here.
-        push @{ $spec->{'prot_' . $type . '_ord'} }, $spec->{name};
-        push @{ $spec->{prot_ord} }, [$type, $spec->{name}];
-        if ($spec->{view} == PUBLIC) {
-            # Save the position of the attribute from the public perspective.
-            push @{ $spec->{$type . '_ord'} }, $spec->{name};
-            push @{ $spec->{ord} }, [$type, $spec->{name}];
-        }
-
-        # Return the new attribute object.
-        return $memb;
-    };
-
-    my %attr_defs = ( view => GETSET,
-                      
-
-                    );
-
-    my $set_attr = sub {
-        my ($type, $spec) = @_;
-        $spec->{view} ||= $spec->{authz} || GETSET if $type ne METH;
-
-    };
 }
 
 1;

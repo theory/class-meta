@@ -1,6 +1,6 @@
 package Class::Meta::Class;
 
-# $Id: Class.pm,v 1.9 2003/11/21 21:21:07 david Exp $
+# $Id: Class.pm,v 1.10 2003/11/21 23:03:16 david Exp $
 
 use strict;
 use Carp ();
@@ -20,8 +20,7 @@ use Class::Meta::Method;
         my $caller = caller;
         Carp::croak("Package '$caller' cannot create ", __PACKAGE__,
                     " objects")
-          unless grep { $_ eq 'Class::Meta' }
-          $caller, eval '@' . $caller . "::ISA";
+          unless UNIVERSAL::isa($caller, 'Class::Meta');
 
         # Check to make sure we haven't created this class already.
         Carp::croak("Class object for class '$spec->{class}' already exists")
@@ -53,13 +52,11 @@ use Class::Meta::Method;
     sub my_ctors {
         my $self = shift;
         my $spec = $specs{$self->{package}};
-        my $objs = $spec->{attrs};
-        my $list = @_
-          # Explicit list requested.
-          ? \@_
-          : $spec->{isa}{scalar caller}
+        my $objs = $spec->{ctors};
+        # Explicit list requested.
+        my $list = @_ ? \@_
           # List of protected interface objects.
-          ? $spec->{prot_ctor_ord}
+          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_ctor_ord}
           # List of public interface objects.
           : $spec->{ctor_ord};
         return unless $list;
@@ -70,12 +67,10 @@ use Class::Meta::Method;
         my $self = shift;
         my $spec = $specs{$self->{package}};
         my $objs = $spec->{attrs};
-        my $list = @_
-          # Explicit list requested.
-          ? \@_
-          : $spec->{isa}{scalar caller}
+        # Explicit list requested.
+        my $list = @_ ? \@_
           # List of protected interface objects.
-          ? $spec->{prot_attr_ord}
+          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_attr_ord}
           # List of public interface objects.
           : $spec->{attr_ord};
         return unless $list;
@@ -85,13 +80,11 @@ use Class::Meta::Method;
     sub my_meths {
         my $self = shift;
         my $spec = $specs{$self->{package}};
-        my $objs = $spec->{attrs};
-        my $list = @_
-          # Explicit list requested.
-          ? \@_
-          : $spec->{isa}{scalar caller}
+        my $objs = $spec->{meths};
+        # Explicit list requested.
+        my $list = @_ ? \@_
           # List of protected interface objects.
-          ? $spec->{prot_meth_ord}
+          : UNIVERSAL::isa(scalar caller, $self->{package}) ? $spec->{prot_meth_ord}
           # List of public interface objects.
           : $spec->{meth_ord};
         return unless $list;

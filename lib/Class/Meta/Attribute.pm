@@ -1,6 +1,6 @@
 package Class::Meta::Attribute;
 
-# $Id: Attribute.pm,v 1.10 2003/11/21 21:21:07 david Exp $
+# $Id: Attribute.pm,v 1.11 2003/11/21 23:03:16 david Exp $
 
 =head1 NAME
 
@@ -117,8 +117,17 @@ sub new {
           if ref $p{default} eq 'CODE';
     }
 
-    # Create and cache the object and return it.
+    # Create and cache the attribute object.
     $spec->{attrs}{$p{name}} = bless \%p, ref $pkg || $pkg;
+
+    # Index its view.
+    if ($p{view} > Class::Meta::PRIVATE) {
+        push @{$spec->{prot_attr_ord}}, $p{name};
+        push @{$spec->{attr_ord}}, $p{name}
+          if $p{view} == Class::Meta::PUBLIC;
+    }
+
+    # Let 'em have it.
     return $spec->{attrs}{$p{name}};
 }
 
@@ -150,12 +159,16 @@ sub my_options   {
 }
 
 sub call_get   {
-    my $code = shift->{_get};
+    my $self = shift;
+    my $code = $self->{_get}
+      or Carp::croak "Cannot get attribute '", $self->my_name, "'";
     $code->(@_);
 }
 
 sub call_set   {
-    my $code = shift->{_set};
+    my $self = shift;
+    my $code = $self->{_set}
+      or Carp::croak "Cannot set attribute '", $self->my_name, "'";
     $code->(@_);
 }
 
@@ -191,8 +204,10 @@ sub build {
                 *{"$spec->{package}::$meth"} = $code;
             }
         }
+    }
 
-        # Create the attribute object get code reference.
+    # Create the attribute object get code reference.
+    if ($self->{authz} >= Class::Meta::READ) {
         $self->{_get} = $type->make_attr_get($self->{name});
     }
 
@@ -210,10 +225,13 @@ sub build {
                 *{"$spec->{package}::$meth"} = $code;
             }
         }
+    }
 
-        # Create the attribute object set code reference.
+    # Create the attribute object set code reference.
+    if ($self->{authz} >= Class::Meta::WRITE) {
         $self->{_set} = $type->make_attr_set($self->{name});
     }
+
 }
 
 1;
