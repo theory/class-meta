@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.43
+0.43  2004-09-20T06:19:27
       - Accessor builder classes that don't properly load will now correctly
         cause Class::Meta to die.
       - Class::Meta::Class->handle_error() now joins multiple arguments it
