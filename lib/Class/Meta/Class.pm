@@ -346,12 +346,19 @@ sub _inherit {
               @{ $classes->{$super}{"trst_$key\_ord"} }
                 if $classes->{$super}{"trst_$key\_ord"};
         }
-
         $self->{"${key}s"}        = { @things } if @things;
         $self->{"$key\_ord"}      = \@ord       if @ord;
         $self->{"prot_$key\_ord"} = \@prot      if @prot;
         $self->{"trst_$key\_ord"} = \@trst      if @trst;
     }
+
+    # Hrm, how can I avoid iterating over the classes a second time?
+    my @trusted;
+    for my $super (@classes) {
+        push @trusted, @{$classes->{$super}{trusted}}
+    }
+    $self->{trusted} = \@trusted if @trusted;
+
     return $self;
 }
 

@@ -9,7 +9,7 @@
 use strict;
 use Test::More $] < 5.008
   ? (skip_all => 'Older Carp lacks @CARP_NOT support')
-  : (tests => 390);
+  : (tests => 391);
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'view.t');
 
@@ -401,6 +401,9 @@ ok( $obj = Class::Meta::Test->new, "Create new Test object" );
 ok( $class = Class::Meta::Test->my_class, "Get Test class object" );
 is_deeply( [map { $_->name } $class->attributes], [qw(id sn)],
            "Call to attributes() should return public and trusted attrs" );
+is_deeply( [map { $_->name } Class::Meta::Testarama->my_class->attributes],
+           [qw(id sn)],
+           "Call to inherited attributes() should also return public and protected attrs" );
 
 # Check id public attribute.
 is( $obj->id, 22, 'Check default ID' );
