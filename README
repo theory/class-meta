@@ -1,4 +1,4 @@
-Class/Meta version 0.32
+Class/Meta version 0.33
 =======================
 
 Class::Meta provides an interface for automating the creation of Perl classes
@@ -47,7 +47,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   Data::Types 0.05 or later
-  Class::ISA 0.32 or later
+  Class::ISA 0.33 or later
 
 The test suite requires:
 

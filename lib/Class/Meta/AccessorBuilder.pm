@@ -1,6 +1,6 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id: AccessorBuilder.pm,v 1.26 2004/04/21 11:40:21 david Exp $
+# $Id: AccessorBuilder.pm,v 1.27 2004/05/25 17:15:17 david Exp $
 
 =head1 NAME
 
@@ -135,7 +135,7 @@ create your own accessor generation code
 
 use strict;
 use Class::Meta;
-our $VERSION = "0.32";
+our $VERSION = "0.33";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -306,7 +306,7 @@ __END__
 
 =head1 DISTRIBUTION INFORMATION
 
-This file was packaged with the Class-Meta-0.32 distribution.
+This file was packaged with the Class-Meta-0.33 distribution.
 
 =head1 BUGS
 
