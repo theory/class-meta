@@ -1,6 +1,6 @@
 package Class::Meta;
 
-# $Id: Meta.pm,v 1.73 2004/04/18 23:37:34 david Exp $
+# $Id: Meta.pm,v 1.74 2004/04/19 23:29:35 david Exp $
 
 =head1 NAME
 
@@ -497,6 +497,42 @@ of their interfaces.
 =cut
 
 ##############################################################################
+# Class Methods
+##############################################################################
+
+=head1 INTERFACE
+
+=head2 Class Methods
+
+=head3 default_error_handler
+
+  Class::Meta->default_error_handler($code);
+
+Sets the default error handler for Class::Meta classes. If no C<error_handler>
+attribute is passed to new, then this error handler will be associated with
+the new class. The default default error handler uses C<Carp::croak()> to
+handle errors.
+
+##############################################################################
+# Class Methods
+##############################################################################
+
+=head1 INTERFACE
+
+=head2 Class Methods
+
+=head3 default_error_handler
+
+  Class::Meta->default_error_handler($code);
+
+Sets the default error handler for Class::Meta classes. If no C<error_handler>
+attribute is passed to new, then this error handler will be associated with
+the new class. The default default error handler uses C<Carp::croak()> to
+handle errors.
+
+=cut
+
+##############################################################################
 # Constructors                                                               #
 ##############################################################################
 
@@ -546,6 +582,18 @@ Class::Meta::Attribute.
 The name of a class that inherits from Class::Meta::Method to be used to
 create all of the method objects for the class. Defaults to
 Class::Meta::Method.
+
+=item error_handler
+
+A code reference that will be used to handle errors thrown by the methods
+created for the new class. Defaults to the value returned by
+C<< Class::Meta->default_error_handler >>.
+
+=item error_handler
+
+A code reference that will be used to handle errors thrown by the methods
+created for the new class. Defaults to the value returned by
+C<< Class::Meta->default_error_handler >>.
 
 =back
 
@@ -603,27 +651,29 @@ our $VERSION = "0.30";
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-my $error_handler = sub {
-    require Carp;
-    our @CARP_NOT = qw(Class::Meta
-                       Class::Meta::Attribute
-                       Class::Meta::Constructor
-                       Class::Meta::Method
-                       Class::Meta::Type
-                       Class::Meta::Types::Numeric
-                       Class::Meta::Types::String
-                       Class::Meta::AccessorBuilder);
-    Carp::croak(@_);
-};
-
-sub default_error_handler {
-    shift;
-    return $error_handler unless @_;
-    return $error_handler = shift;
-}
-
 {
     my %classes;
+    my $error_handler = sub {
+        require Carp;
+        our @CARP_NOT = qw(Class::Meta
+                           Class::Meta::Attribute
+                           Class::Meta::Constructor
+                           Class::Meta::Method
+                           Class::Meta::Type
+                           Class::Meta::Types::Numeric
+                           Class::Meta::Types::String
+                           Class::Meta::AccessorBuilder);
+        Carp::croak(@_);
+    };
+
+
+    sub default_error_handler {
+        shift;
+        return $error_handler unless @_;
+        $error_handler->("Error handler must be a code reference")
+          unless ref $_[0] eq 'CODE';
+        return $error_handler = shift;
+    }
 
     sub new {
         my $pkg = shift;
@@ -641,7 +691,15 @@ sub default_error_handler {
         $p{constructor_class} ||= 'Class::Meta::Constructor';
         $p{attribute_class}   ||= 'Class::Meta::Attribute';
         $p{method_class}      ||= 'Class::Meta::Method';
-        $p{error_handler}     ||= $pkg->default_error_handler;
+
+        if (exists $p{error_handler}) {
+            $error_handler->("Error handler must be a code reference")
+              unless ref $p{error_handler} eq 'CODE';
+        } else {
+            $p{error_handler} = $pkg->default_error_handler;
+
+        }
+
 
         # Instantiate a Class object.
         $p{class} = $p{class_class}->new(\%p);
