@@ -1,6 +1,9 @@
 Revision history for Perl extension Class::Meta.
 
 0.36
+      - Finally, truly got the tests fixed for Windows. Without question.
+        The fix was even tested, first! Thanks to Robert Rothenberg for
+        his persistence.
       - Minor doc fixes, repoted by Jesse Vincent.
       - Added simple example for a default value code reference. Suggested
         by Jesse Vincent.
