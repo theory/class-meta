@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: ctor.t,v 1.7 2004/01/08 22:00:19 david Exp $
+# $Id: ctor.t,v 1.8 2004/01/16 19:13:33 david Exp $
 
 ##############################################################################
 # Set up the tests.
@@ -32,9 +32,9 @@ BEGIN {
     # Create a constructor.
     sub inst { bless {} }
     ok( my $ctor = $c->add_constructor( name    => 'inst',
-                                 desc    => 'The inst constructor',
-                                 label   => 'inst Constructor',
-                                 view     => Class::Meta::PUBLIC ),
+                                        desc    => 'The inst constructor',
+                                        label   => 'inst Constructor',
+                                        view     => Class::Meta::PUBLIC ),
         "Create 'inst' ctor");
     isa_ok($ctor, 'Class::Meta::Constructor');
 
@@ -43,7 +43,7 @@ BEGIN {
     is( $ctor->desc, "The inst constructor", "Check inst desc" );
     is( $ctor->label, "inst Constructor", "Check inst label" );
     ok( $ctor->view == Class::Meta::PUBLIC, "Check inst view" );
-    isa_ok( $ctor->call, __PACKAGE__);
+    isa_ok( $ctor->call(__PACKAGE__), __PACKAGE__);
 
     # Okay, now test to make sure that an attempt to create a constructor
     # directly fails.
@@ -66,12 +66,12 @@ BEGIN {
 
     # Try a couple of bogus visibilities.
     eval { $c->add_constructor( name => 'new_ctor',
-                         view  => 25) };
+                                view  => 25) };
     ok( $err = $@, "Caught bogus view exception");
     like( $err, qr/Not a valid view parameter: '25'/,
         "Caught proper bogus view exception");
     eval { $c->add_constructor( name => 'new_ctor',
-                         view  => 10) };
+                                view  => 10) };
     ok( $err = $@, "Caught another bogus view exception");
     like( $err, qr/Not a valid view parameter: '10'/,
         "Caught another proper bogus view exception");
@@ -93,7 +93,8 @@ BEGIN {
     ok( ! defined $ctor->desc, "Check new_ctor desc" );
     ok( ! defined $ctor->label, "Check new_ctor label" );
     ok( $ctor->view == Class::Meta::PUBLIC, "Check new_ctor view" );
-    is ($ctor->call, '22', 'Call the new_ctor constructor' );
+    is ($ctor->call(__PACKAGE__), '22',
+        'Call the new_ctor constructor indirectly' );
 }
 
 # Now try subclassing Class::Meta.
@@ -128,7 +129,7 @@ BEGIN {
     ok( ! defined $ctor->desc, "Check new foo_ctor desc" );
     ok( ! defined $ctor->label, "Check new foo_ctor label" );
     ok( $ctor->view == Class::Meta::PUBLIC, "Check new foo_ctor view" );
-    isa_ok($ctor->call, __PACKAGE__);
+    isa_ok($ctor->call(__PACKAGE__), __PACKAGE__);
 }
 
 ##############################################################################

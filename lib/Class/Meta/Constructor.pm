@@ -1,6 +1,6 @@
 package Class::Meta::Constructor;
 
-# $Id: Constructor.pm,v 1.29 2004/01/16 18:51:00 david Exp $
+# $Id: Constructor.pm,v 1.30 2004/01/16 19:13:33 david Exp $
 
 =head1 NAME
 
@@ -190,7 +190,7 @@ sub call {
     my $self = shift;
     my $code = $self->{caller}
       or $croak->("Cannot call constructor '", $self->name, "'");
-    $code->($self->{package}, @_);
+    $code->(@_);
 }
 
 ##############################################################################

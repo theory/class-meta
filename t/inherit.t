@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: inherit.t,v 1.5 2004/01/08 18:37:52 david Exp $
+# $Id: inherit.t,v 1.6 2004/01/16 19:13:33 david Exp $
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 95;
+use Test::More tests => 102;
 
 ##############################################################################
 # Create a simple class.
@@ -57,7 +57,7 @@ BEGIN {
                            field    => 'text',
                            desc     => "The object's name.",
                            required => 1,
-                           default  => '',
+                           default  => 'foo',
                        ),
         "Create One's name attribute" );
 
@@ -169,6 +169,11 @@ ok( my $err = $@, 'Catch bad One parameter exception' );
 like( $err, qr/No such attribute 'description' in Test::One/,
       'Check bad One exception' );
 
+# Make sure that One's new constructor object works.
+ok( my $one_new = $one_class->constructors('new'), "Get one's new object" );
+ok( $one = $one_new->call('Test::One'), "Create new one indirectly" );
+isa_ok( $one, 'Test::One' );
+
 # Check One's attribute accessors.
 is( $one->get_name, 'foo', "Check One's name" );
 ok( $one->set_name('hello'), "Set One's name" );
@@ -201,6 +206,12 @@ ok( my $two = Test::Two->new( name => 'foo'), "Construct Two object" );
 isa_ok( $two, 'Test::Two' );
 ok( $two = Test::Two->new(name => 'foo',  description => 'bar'),
     "Construct another Two object" );
+isa_ok( $two, 'Test::Two' );
+
+# Make sure that One's new constructor object works.
+ok( my $two_new = $two_class->constructors('new'), "Get two's new object" );
+is( $two_new, $one_new, 'Check for the same new as in one' );
+ok( $two = $one_new->call('Test::Two'), "Create new two indirectly" );
 isa_ok( $two, 'Test::Two' );
 
 # make sure that Two's own constructor works, too.
