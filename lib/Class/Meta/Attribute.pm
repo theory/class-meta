@@ -164,13 +164,6 @@ sub new {
     # Create and cache the attribute object.
     $class->{attrs}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
-    my $def = defined $class->{attrs}{$p{name}}->default;
-    if ($p{once} && $def && $p{create} >= Class::Meta::SET) {
-        # No need to generate a mutator for required values that can only be
-        # set once.
-        $p{create} = Class::Meta::GET;
-    }
-
     # Index its view.
     if ($p{view} > Class::Meta::PRIVATE) {
         push @{$class->{prot_attr_ord}}, $p{name}

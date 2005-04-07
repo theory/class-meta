@@ -1,6 +1,6 @@
 #!perl -w
 
-# $Id: constraints.t,v 1.1 2004/01/28 22:02:33 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
@@ -87,10 +87,12 @@ ok( $@, 'Catch once exception' );
 
 # Check once with a default.
 is( $obj->once_def, 'hola', 'Check once_def' );
-ok( $obj->once_def('ha'), 'Try setting once_def'); # Fails silently.
+eval { $obj->once_def('ha') };
+ok( $@, 'Catch once_def exception' );
 is( $obj->once_def, 'hola', "Check once_def hasn't changed" );
 
 # Check required once with a default.
 is( $obj->once_req, 'bonjour', 'Check once_req' );
-ok( $obj->once_req('ha'), 'Try setting once_req'); # Fails silently.
+eval { $obj->once_req('ha') };
+ok( $@, 'Catch once_req exception' );
 is( $obj->once_req, 'bonjour', "Check once_req hasn't changed" );
