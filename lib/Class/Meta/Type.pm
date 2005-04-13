@@ -368,22 +368,23 @@ accessor builders.
         }
 
         # Check the builder parameter.
-        $params{builder} ||= 'default';
+        $params{builder} ||= $pkg->default_builder;
+
         my $builder = $def_builders{$params{builder}} || $params{builder};
         # Make sure it's loaded.
         eval "require $builder" or die $@;
 
         $params{builder} = UNIVERSAL::can($builder, 'build')
           || Class::Meta->handle_error("No such function "
-                                         . "'${builder}::build()'");
+                                        . "'${builder}::build()'");
 
         $params{attr_get} = UNIVERSAL::can($builder, 'build_attr_get')
           || Class::Meta->handle_error("No such function "
-                                         . "'${builder}::build_attr_get()'");
+                                        . "'${builder}::build_attr_get()'");
 
         $params{attr_set} = UNIVERSAL::can($builder, 'build_attr_set')
           || Class::Meta->handle_error("No such function "
-                                         . "'${builder}::build_attr_set()'");
+                                        . "'${builder}::build_attr_set()'");
 
         # Okay, add the new type to the cache and construct it.
         $types{$params{key}} = \%params;
@@ -402,7 +403,31 @@ accessor builders.
 
 ##############################################################################
 
-=head3 class_validation_generator
+=head1 CLASS METHODS
+
+=head2 default_builder
+
+  my $default_builder = Class::Meta::Type->default_builder;
+  Class::Meta::Type->default_builder($default_builder);
+
+Get or set the default builder class attribute. The value can be any one of
+the values specified for the C<builder> parameter to add(). The value set in
+this attribute will be used for the C<builder> parameter to to add() when none
+is explicitly passed. Defaults to "default".
+
+=cut
+
+my $default_builder = 'default';
+sub default_builder {
+    my $pkg = shift;
+    return $default_builder unless @_;
+    $default_builder = shift;
+    return $pkg;
+}
+
+##############################################################################
+
+=head2 class_validation_generator
 
   my $gen = Class::Meta::Type->class_validation_generator;
   Class::Meta::Type->class_validation_generator( sub {

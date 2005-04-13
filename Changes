@@ -5,6 +5,11 @@ Revision history for Perl extension Class::Meta.
         a value can be passed to a constructor and properly assigned to the
         "once" attribute instead of its default, rather than throwing a
         read-only exception.
+      - Added "default_builder()" class method to Class::Meta::Type. This
+        allows a default builder other than "default" to be specified when
+        none is explicitly passed to Class::Meta::Type->add(), such as when
+        data types are implicitly created for attributes that reference
+        objects of Class::Meta classes.
 
 0.47  2005-04-05T16:25:28
       - Changed the "constructors()", "attributes()", and "methods()" methods

@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 26;
+use Test::More tests => 28;
 
 ##############################################################################
 # Create a simple class.
@@ -72,7 +72,11 @@ BEGIN {
             $ERROR = "Value '$value' is not a valid $type";
             die "hooyah!";
         } ];
-    }), "Replace class type check generator") ;
+    }), "Replace class type check generator");
+
+    can_ok 'Class::Meta::Type', 'default_builder';
+    ok( Class::Meta::Type->default_builder('affordance'),
+        "Make affordance accessors for YetAnother objects" );
 
     ok my $cm = Class::Meta->new(
         package => __PACKAGE__,
@@ -104,9 +108,9 @@ like $err, qr/Value 'foo' is not a valid Class::Meta::TestTypes/,
 
 # Now try with our replaced class check generator.
 ok my $yet = Class::Meta::YetAnother->new, 'Create YetAnother object';
-isa_ok $yet->another_implicit, 'Class::Meta::Another';
+isa_ok $yet->get_another_implicit, 'Class::Meta::Another';
 is $Class::Meta::YetAnother::ERROR, undef, "Check for undef error";
-eval { $yet->another_implicit('foo') };
+eval { $yet->set_another_implicit('foo') };
 ok $err = $@, "Catch Another exception";
 like $err, qr/hooyah\!/,
   "Check Another exception string";
