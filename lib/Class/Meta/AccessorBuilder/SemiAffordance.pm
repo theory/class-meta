@@ -201,7 +201,7 @@ be used in the set acccessor (mutator) to validate new attribute values.
 use strict;
 use Class::Meta;
 use base 'Class::Meta::AccessorBuilder::Affordance';
-our $VERSION = "0.48";
+our $VERSION = "0.49";
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
