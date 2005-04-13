@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.48
+0.48  2005-04-13T21:32:39
       - Fixed accessor generation for "once" attributes with a default so that
         a value can be passed to a constructor and properly assigned to the
         "once" attribute instead of its default, rather than throwing a
