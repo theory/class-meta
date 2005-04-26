@@ -1030,6 +1030,17 @@ A code reference that calls the method. Defaults to a code reference that
 calls a method with the name provided by the C<name> attribute on the class
 being defined.
 
+=item args
+
+A description of the arguments to the method. This can be anything you like,
+but I recommend something like a string for a single argument, an array
+reference for a list of arguments, or a hash reference for parameter
+arguments.
+
+=item returns
+
+A string describing the return value or values of the method.
+
 =back
 
 =cut

@@ -1,13 +1,13 @@
 #!perl -w
 
-# $Id: base.t,v 1.29 2004/09/20 06:22:38 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 119;
+use Test::More tests => 123;
 
 ##############################################################################
 # Create a simple class.
@@ -90,12 +90,15 @@ BEGIN {
                    );
 
     # Add a couple of custom methods.
-    $c->add_method( name  => 'chk_pass',
-                    view  => Class::Meta::PUBLIC,
+    $c->add_method( name    => 'chk_pass',
+                    view    => Class::Meta::PUBLIC,
+                    args    => ['string', 'string'],
+                    returns => 'bool',
                 );
 
-    $c->add_method( name  => 'shame',
-                    view  => Class::Meta::PUBLIC,
+    $c->add_method( name    => 'shame',
+                    view    => Class::Meta::PUBLIC,
+                    returns => 'person',
                 );
 
     $c->build;
@@ -269,6 +272,10 @@ isa_ok($methods[1], 'Class::Meta::Method',
 is( $methods[0]->name, 'chk_pass', 'First method' );
 is( $methods[1]->name, 'shame', 'Second method' );
 is( $methods[0]->class, $class, "Check method class" );
+is_deeply( $methods[0]->args, ['string', 'string'], "Check method args" );
+is( $methods[0]->returns, 'bool', "Check method returns" );
+is( $methods[1]->args, undef, 'Second specific method args' );
+is( $methods[1]->returns, 'person', 'Second specific method returns' );
 
 # Get a few specific methods.
 ok( @methods = $class->methods(qw(shame chk_pass)),
