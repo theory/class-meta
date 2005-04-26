@@ -234,7 +234,7 @@ sub desc    { $_[0]->{desc}    }
 sub label   { $_[0]->{label}   }
 sub view    { $_[0]->{view}    }
 sub context { $_[0]->{context} }
-sub args    { $_[0]->{args} }
+sub args    { $_[0]->{args}    }
 sub returns { $_[0]->{returns} }
 sub class   { $_[0]->{class}   }
 
