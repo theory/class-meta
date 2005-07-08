@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 123;
+use Test::More tests => 130;
 
 ##############################################################################
 # Create a simple class.
@@ -102,6 +102,30 @@ BEGIN {
                 );
 
     $c->build;
+
+    my $d = Class::Meta->new(
+        key     => 'green_monkey',
+        package => 'Class::Meta::GreenMonkey',
+        name    => 'Class::Meta::GreenMonkey Class',
+        desc    => 'Special monkey class just for testing Class::Meta.',
+    );
+
+    # Add a constructor.
+    $d->add_constructor( name => 'new',
+                         create  => 1 );
+
+    # Add a couple of attributes with created methods.
+    $d->add_attribute( name     => 'id',
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::READ,
+                       create   => Class::Meta::GET,
+                       type     => 'integer',
+                       label    => 'ID',
+                       desc     => "The monkey object's ID.",
+                       required => 1,
+                       default  => 12,
+                   );
+    $d->build;
 }
 
 sub chk_pass {
@@ -308,5 +332,17 @@ is( $constructors[0]->name, 'new', 'Check specific constructor' );
 
 # Try getting the class object via the for_key() class method.
 is( Class::Meta->for_key($class->key), $class, "for_key returns class" );
+
+# Try getting a list of all class object keys
+can_ok( 'Class::Meta', 'keys' );
+ok( my $keys = Class::Meta->keys, 'Calling keys in scalar context should succeed');
+is( ref $keys, 'ARRAY', 'And it should return an array ref');
+@$keys = sort @$keys;
+is_deeply($keys, [qw/green_monkey person/], 'And keys should return the correct keys');
+
+ok( my @keys = Class::Meta->keys, 'Calling keys in list context should succeed');
+is(scalar @keys, 2, 'And it should return the correct number of keys');
+@keys = sort @keys;
+is_deeply(\@keys, [qw/green_monkey person/], 'And keys should return the correct keys');
 
 __END__

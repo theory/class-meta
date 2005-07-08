@@ -540,6 +540,14 @@ need to get a handle on that class. With the class package name, you can of
 course simply call C<< $pkg->my_class >>; this method is the solution for
 getting the class object for a class key.
 
+=head3 keys
+
+  my @keys = Class::Meta->keys;
+
+Returns the keys for all Class::Meta::Class objects.  The order of keys is
+not guaranteed.  In scalar context, this method returns an array reference
+containing the keys.
+
 =cut
 
 ##############################################################################
@@ -715,6 +723,8 @@ our $VERSION = "0.49";
     }
 
     sub for_key { $keys{$_[1]} }
+
+    sub keys    { wantarray ? keys %keys : [keys %keys] }
 
     sub new {
         my $pkg = shift;
