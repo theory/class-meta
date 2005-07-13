@@ -506,6 +506,17 @@ of their interfaces.
 
 =head2 Class Methods
 
+=head3 clear
+
+  Class::Meta->clear;
+  Class::Meta->clear($key);
+
+Called without arguments, C<clear> will remove all Class::Meta objects class
+objects from memory.  Called with an argument, C<clear> attempts to remove
+only that key from memory.
+
+Calling it with a non-existent key is a no-op.
+
 =head3 default_error_handler
 
   Class::Meta->default_error_handler($code);
@@ -725,6 +736,8 @@ our $VERSION = "0.49";
     sub for_key { $keys{$_[1]} }
 
     sub keys    { wantarray ? keys %keys : [keys %keys] }
+
+    sub clear   { shift; @_ ? delete $keys{+shift} : undef %keys }
 
     sub new {
         my $pkg = shift;

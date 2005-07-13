@@ -1,6 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
 0.49
+      - Added "clear" method to delete Class Object keys.
       - Added "keys" method to allow all Class Object keys to be fetched.
       - Added "args" and "returns" parameters to "add_method()" to allow
         methods to be better described.

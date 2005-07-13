@@ -7,7 +7,8 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 130;
+#use Test::More tests => 130;
+use Test::More 'no_plan';
 
 ##############################################################################
 # Create a simple class.
@@ -345,4 +346,17 @@ is(scalar @keys, 2, 'And it should return the correct number of keys');
 @keys = sort @keys;
 is_deeply(\@keys, [qw/green_monkey person/], 'And keys should return the correct keys');
 
+# try deleting the class object classes
+can_ok('Class::Meta', 'clear');
+Class::Meta->clear('green_monkey');
+@keys = Class::Meta->keys;
+is_deeply(\@keys, ['person'], 'And it should delete a key if provided with one');
+
+Class::Meta->clear('no_such_key');
+@keys = Class::Meta->keys;
+is_deeply(\@keys, ['person'], 'But deleting a non-existent key should be a no-op');
+
+Class::Meta->clear;
+@keys = Class::Meta->keys;
+is_deeply(\@keys, [], 'And calling it without arguments should remove all keys');
 __END__
