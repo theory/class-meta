@@ -237,13 +237,13 @@ for ([qw(attributes attr)], [qw(methods meth)], [qw(constructors ctor)]) {
                 \@_;
             } elsif (UNIVERSAL::isa($caller, $self->{package})) {
                 # List of protected interface objects.
-                $self->{"prot_$key\_ord"};
+                $self->{"prot_$key\_ord"} || [];
             } elsif (_trusted($self, $caller)) {
                 # List of trusted interface objects.
-                $self->{"trst_$key\_ord"};
+                $self->{"trst_$key\_ord"} || [];
             } else {
                 # List of public interface objects.
-                $self->{"$key\_ord"};
+                $self->{"$key\_ord"} || [];
             }
         };
         return @$list == 1 ? $objs->{$list->[0]} : @{$objs}{@$list};
