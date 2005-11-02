@@ -506,17 +506,6 @@ of their interfaces.
 
 =head2 Class Methods
 
-=head3 clear
-
-  Class::Meta->clear;
-  Class::Meta->clear($key);
-
-Called without arguments, C<clear> will remove all Class::Meta objects class
-objects from memory.  Called with an argument, C<clear> attempts to remove
-only that key from memory.
-
-Calling it with a non-existent key is a no-op.
-
 =head3 default_error_handler
 
   Class::Meta->default_error_handler($code);
@@ -558,6 +547,19 @@ getting the class object for a class key.
 Returns the keys for all Class::Meta::Class objects.  The order of keys is
 not guaranteed.  In scalar context, this method returns an array reference
 containing the keys.
+
+=head3 clear
+
+  Class::Meta->clear;
+  Class::Meta->clear($key);
+
+Called without arguments, C<clear> will remove all
+L<Class::Meta::Class|Class::Meta::Class> objects from memory. Called with an
+argument, C<clear> attempts to remove only that key from memory. Calling it
+with a non-existent key is a no-op.
+
+In general, you probably won't want to use this method, except perhaps in
+tests, when you might need to do funky things with your classes.
 
 =cut
 
