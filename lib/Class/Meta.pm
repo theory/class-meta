@@ -969,7 +969,7 @@ accessor, you'd specify it like this:
                       authz  => Class::Meta::RDWR,
                       create => Class::Meta::NONE );
 
-Just be sure that your custom accessor is compiles before you call
+Just be sure that your custom accessor compiles before you call
 C<< $cm->build >> so that Class::Meta::Attribute can get a handle on it for
 its C<get()> and/or C<set()> methods.
 
