@@ -321,7 +321,7 @@ modules for more information.
 
 =head2 Accessors
 
-Class::Meta supports the creation of two different types of attribute
+Class::Meta supports the creation of three different types of attribute
 accessors: typical Perl single-method accessors, "affordance" accessors, and
 "semi-affordance" accessors. The single accessors are named for their
 attributes, and typically tend to look like this:
@@ -335,7 +335,7 @@ attributes, and typically tend to look like this:
 Although this can be an oversimplification if the data type has associated
 validation checks.
 
-Affordance accessors provide at least two accessors for every attribute: One
+Affordance accessors provide at up to two accessors for every attribute: One
 to set the value and one to retrieve the value. They tend to look like this:
 
   sub get_tail { shift->{tail} }
