@@ -9,7 +9,7 @@
 use strict;
 use Test::More $] < 5.008
   ? (skip_all => 'Older Carp lacks @CARP_NOT support')
-  : (tests => 391);
+  : (tests => 394);
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'view.t');
 
@@ -103,8 +103,17 @@ BEGIN {
 
 ok( my $obj = __PACKAGE__->new, "Create new object" );
 ok( my $class = __PACKAGE__->my_class, "Get class object" );
-is_deeply( [map { $_->name } $class->attributes], [qw(id name)],
-           "Call to attributes() should return all but private attribute" );
+is_deeply(
+    [map { $_->name } $class->attributes],
+    [qw(id name age sn)],
+    'Call to attributes() should return all attributes'
+);
+
+is_deeply(
+    [map { $_->name } $class->constructors],
+    [qw(new prot_new priv_new trust_new)],
+    'Call to constructors() should return all constructors'
+);
 
 # Check id public attribute.
 is( $obj->id, 22, 'Check default ID' );
@@ -265,6 +274,8 @@ ok( $obj = __PACKAGE__->new, "Create new Testarama object" );
 ok( $class = __PACKAGE__->my_class, "Get Testarama class object" );
 is_deeply( [map { $_->name } $class->attributes], [qw(id name)],
            "Call to attributes() should return public and protected attrs" );
+is_deeply( [map { $_->name } $class->constructors], [qw(new prot_new)],
+           "Call to constructors() should return public and protected ctors" );
 
 # Check id public attribute.
 is( $obj->id, 22, 'Check default ID' );
@@ -401,9 +412,17 @@ ok( $obj = Class::Meta::Test->new, "Create new Test object" );
 ok( $class = Class::Meta::Test->my_class, "Get Test class object" );
 is_deeply( [map { $_->name } $class->attributes], [qw(id sn)],
            "Call to attributes() should return public and trusted attrs" );
-is_deeply( [map { $_->name } Class::Meta::Testarama->my_class->attributes],
-           [qw(id sn)],
-           "Call to inherited attributes() should also return public and protected attrs" );
+is_deeply(
+    [map { $_->name } Class::Meta::Testarama->my_class->attributes],
+    [qw(id sn)],
+    'Call to attributes() should return public and trusted attrs',
+);
+
+is_deeply(
+    [map { $_->name } Class::Meta::Testarama->my_class->constructors],
+    [qw(new trust_new)],
+    'Call to constructors() should return public and trusted ctors',
+);
 
 # Check id public attribute.
 is( $obj->id, 22, 'Check default ID' );

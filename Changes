@@ -1,6 +1,14 @@
 Revision history for Perl extension Class::Meta.
 
 0.50
+      - Constructors created by Class::Meta now iterate over the attributes
+        when assigning arguments or defaults in the order in which the
+        were defined, rather than randomly.
+      - The "attributes()", "constructors()", and "methods()" methods of
+        Class::Meta::Class now return *all* objects, including private and
+        trusted objects, when called from the class that defined those
+        objects.
+      - Minor optimizations to the constructor created by Class::Meta.
 
 0.49  2005-11-02T03:27:10
       - Added "keys" method to allow all Class Object keys to be fetched.

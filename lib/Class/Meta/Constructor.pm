@@ -121,6 +121,7 @@ sub new {
     $class->{ctors}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.
+    push @{ $class->{all_ctor_ord} }, $p{name};
     if ($p{view} > Class::Meta::PRIVATE) {
         push @{$class->{prot_ctor_ord}}, $p{name}
           unless $p{view} == Class::Meta::TRUSTED;
@@ -260,23 +261,23 @@ sub build {
     my $name = $self->name;
 
     my $sub = sub {
-        my $class = ref $_[0] ? ref shift : shift;
-        my $spec = $specs->{$class};
+        my $package = ref $_[0] ? ref shift : shift;
+        my $class = $specs->{$package};
 
         # Throw an exception for attempts to create items of an abstract
         # class.
-        $class->my_class->handle_error(
-            "Cannot construct objects of astract class $class"
-        ) if $class->my_class->abstract;
+        $class->handle_error(
+            "Cannot construct objects of astract class $package"
+        ) if $class->abstract;
 
         # Just grab the parameters and let an error be thrown by Perl
         # if there aren't the right number of them.
         my %p = @_;
-        my $new = bless {}, $class;
+        my $new = bless {}, $package;
 
         # Assign all of the attribute values.
-        if ($spec->{attrs}) {
-            foreach my $attr (values %{ $spec->{attrs} }) {
+        if (my $attrs = $class->{attrs}) {
+            foreach my $attr (@{ $attrs }{ @{ $class->{all_attr_ord} } }) {
                 # Skip class attributes.
                 next if $attr->context == Class::Meta::CLASS;
                 my $key = $attr->name;
@@ -290,13 +291,14 @@ sub build {
             }
         }
 
-        # Check for parameters for which attributes that don't exist.
+        # Check for params for which attributes are private or don't exist.
         if (my @attributes = keys %p) {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attributes > 0 ? 'attributes' : 'attribute';
             local $" = "', '";
-            $class->my_class->handle_error("No such $c '@attributes' in "
-                                           . "$self->{package} objects");
+            $class->handle_error(
+                "No such $c '@attributes' in $self->{package} objects"
+            );
         }
         return $new;
     };
@@ -304,19 +306,20 @@ sub build {
     # Add protected, private, or trusted checks, if required.
     if ($self->view == Class::Meta::PROTECTED) {
         my $real_sub = $sub;
-        my $pkg = $self->package;
-         $sub = sub {
-             $self->class->handle_error("$name is a protected constrctor "
-                                        . "of $pkg")
-               unless caller->isa($pkg);
+        my $pkg      = $self->package;
+        my $class    = $self->class;
+        $sub = sub {
+             $class->handle_error("$name is a protected constrctor of $pkg")
+                 unless caller->isa($pkg);
              goto &$real_sub;
         };
     } elsif ($self->view == Class::Meta::PRIVATE) {
         my $real_sub = $sub;
-        my $pkg = $self->package;
+        my $pkg      = $self->package;
+        my $class    = $self->class;
         $sub = sub {
-            $self->class->handle_error("$name is a private constructor of $pkg")
-               unless caller eq $pkg;
+            $class->handle_error("$name is a private constructor of $pkg")
+                unless caller eq $pkg;
              goto &$real_sub;
          };
     }

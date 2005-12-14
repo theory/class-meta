@@ -81,8 +81,8 @@ BEGIN {
 
 ok( my $obj = __PACKAGE__->new, "Create new object" );
 ok( my $class = __PACKAGE__->my_class, "Get class object" );
-is_deeply( [map { $_->name } $class->attributes], [qw(id name)],
-           "Call to attributes() should return all but private attribute" );
+is_deeply( [map { $_->name } $class->attributes], [qw(id name age sn)],
+           'Call to attributes() should return all attributes' );
 
 # Check id public attribute.
 is( $obj->id, 22, 'Check default ID' );

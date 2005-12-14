@@ -126,6 +126,7 @@ sub new {
     $class->{meths}{$p{name}} = bless \%p, ref $pkg || $pkg;
 
     # Index its view.
+    push @{ $class->{all_meth_ord} }, $p{name};
     if ($p{view} > Class::Meta::PRIVATE) {
         push @{$class->{prot_meth_ord}}, $p{name}
           unless $p{view} == Class::Meta::TRUSTED;

@@ -235,6 +235,9 @@ for ([qw(attributes attr)], [qw(methods meth)], [qw(constructors ctor)]) {
             if (@_) {
                 # Explicit list requested.
                 \@_;
+            } elsif ($caller eq $self->{package}) {
+                # List of protected interface objects.
+                $self->{"priv_$key\_ord"} || [];
             } elsif (UNIVERSAL::isa($caller, $self->{package})) {
                 # List of protected interface objects.
                 $self->{"prot_$key\_ord"} || [];
@@ -328,29 +331,8 @@ sub _inherit {
     my $classes = shift;
 
     # Get a list of all of the parent classes.
-    my @classes = reverse Class::ISA::self_and_super_path($self->{package});
-
-    # For each metadata class, copy the parents' objects.
-    for my $key (@_) {
-        my (@things, @ord, @prot, @trst, %sord, %sprot, %strst);
-        for my $super (@classes) {
-            push @things, %{ $classes->{$super}{"${key}s"} }
-              if $classes->{$super}{$key . 's'};
-            push @ord, grep { not $sord{$_}++ }
-              @{ $classes->{$super}{"$key\_ord"} }
-                if $classes->{$super}{"$key\_ord"};
-            push @prot, grep { not $sprot{$_}++ }
-              @{ $classes->{$super}{"prot_$key\_ord"} }
-                if $classes->{$super}{"prot_$key\_ord"};
-            push @trst, grep { not $strst{$_}++ }
-              @{ $classes->{$super}{"trst_$key\_ord"} }
-                if $classes->{$super}{"trst_$key\_ord"};
-        }
-        $self->{"${key}s"}        = { @things } if @things;
-        $self->{"$key\_ord"}      = \@ord       if @ord;
-        $self->{"prot_$key\_ord"} = \@prot      if @prot;
-        $self->{"trst_$key\_ord"} = \@trst      if @trst;
-    }
+    my $package = $self->package;
+    my @classes = reverse Class::ISA::self_and_super_path($package);
 
     # Hrm, how can I avoid iterating over the classes a second time?
     my @trusted;
@@ -359,6 +341,49 @@ sub _inherit {
           if $classes->{$super}{trusted};
     }
     $self->{trusted} = \@trusted if @trusted;
+
+    # For each metadata class, copy the parents' objects.
+    for my $key (@_) {
+        my (@lookup, @all, @ord, @prot, @trst, @priv, %sall, %sord, %sprot, %strst);
+        for my $super (@classes) {
+            my $class = $classes->{$super};
+            if (my $things = $class->{$key . 's'}) {
+                push @lookup, %{ $things };
+
+                if (my $ord = $class->{"$key\_ord"}) {
+                    push @ord, grep { not $sord{$_}++ }   @{ $ord} ;
+                }
+
+                if (my $prot = $class->{"prot_$key\_ord"}) {
+                    push @prot, grep { not $sprot{$_}++ } @{ $prot };
+                }
+
+                if (my $trust = $class->{"trst_$key\_ord"}) {
+                    push @trst, grep { not $strst{$_}++ } @{ $trust };
+                }
+
+                if (my $all = $class->{"all_$key\_ord"}) {
+                    for my $name (@{ $all }) {
+                        next if $sall{$name}++;
+                        push @all, $name;
+                        my $view  = $things->{$name}->view;
+                        push @priv, $name if $super eq $package
+                            || $view == Class::Meta::PUBLIC
+                            || $view == Class::Meta::PROTECTED
+                            || _trusted($class, $package);
+                    }
+                }
+            }
+        }
+
+        $self->{"${key}s"}        = { @lookup } if @lookup;
+        $self->{"$key\_ord"}      = \@ord       if @ord;
+        $self->{"all_$key\_ord"}  = \@all       if @all;
+        $self->{"prot_$key\_ord"} = \@prot      if @prot;
+        $self->{"trst_$key\_ord"} = \@trst      if @trst;
+        $self->{"priv_$key\_ord"} = \@priv      if @priv;
+    }
+
 
     return $self;
 }
