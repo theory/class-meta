@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
+0.51
+
 0.50  2005-12-14T04:33:46
       - Constructors created by Class::Meta now iterate over the attributes
         when assigning arguments or defaults in the order in which the
