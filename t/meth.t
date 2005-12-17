@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# $Id: meth.t,v 1.10 2004/08/26 23:50:15 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
 ##############################################################################
 
 use strict;
-use Test::More tests => 48;
+use Test::More tests => 54;
 
 ##############################################################################
 # Create a simple class.
@@ -32,12 +32,13 @@ BEGIN {
 
     # Create a new method with all of the parameters set.
     sub foo_meth { 'foo' }
-    ok( my $meth = $c->add_method( name    => 'foo_meth',
-                                 desc    => 'The foo method',
-                                 label   => 'Foo method',
-                                 context => Class::Meta::CLASS,
-                                 view    => Class::Meta::PUBLIC ),
-        "Create foo_meth" );
+    ok( my $meth = $c->add_method(
+        name    => 'foo_meth',
+        desc    => 'The foo method',
+        label   => 'Foo method',
+        context => Class::Meta::CLASS,
+        view    => Class::Meta::PUBLIC
+    ), 'Create foo_meth' );
 
     isa_ok($meth, 'Class::Meta::Method');
 
@@ -101,6 +102,20 @@ BEGIN {
     ok( $meth->view == Class::Meta::PUBLIC, "Check new_meth view" );
     ok( $meth->context == Class::Meta::OBJECT, "Check new_meth context" );
     is( $meth->call(__PACKAGE__), '22', 'Call the new_meth method' );
+
+    # Now install a method.
+    ok( $meth = $c->add_method(
+        name => 'implicit',
+        code => sub { return 'implicitly' },
+    ), 'Define a method');
+    isa_ok($meth, 'Class::Meta::Method');
+
+    ok( $c->build, 'Build the class' );
+    can_ok( __PACKAGE__, 'implicit' );
+    is( __PACKAGE__->implicit, 'implicitly',
+        'It should be the method we installed' );
+    is( $meth->call(__PACKAGE__), 'implicitly',
+        'and we should be able to call it indirectly' );
 }
 
 # Now try subclassing Class::Meta.

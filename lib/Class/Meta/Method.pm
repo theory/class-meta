@@ -113,13 +113,20 @@ sub new {
     # Validate or create the method caller if necessary.
     if ($p{caller}) {
         my $ref = ref $p{caller};
-        $class->handle_error("Parameter caller must be a code "
-                                     . "reference")
-          unless $ref && $ref eq 'CODE'
-      } else {
-          $p{caller} = eval "sub { shift->$p{name}(\@_) }"
+        $class->handle_error(
+            'Parameter caller must be a code reference'
+        ) unless $ref && $ref eq 'CODE'
+    } else {
+        $p{caller} = eval "sub { shift->$p{name}(\@_) }"
             if $p{view} > Class::Meta::PRIVATE;
-      }
+    }
+
+    if ($p{code}) {
+        my $ref = ref $p{code};
+        $class->handle_error(
+            'Parameter code must be a code reference'
+        ) unless $ref && $ref eq 'CODE'
+    }
 
     # Create and cache the method object.
     $p{package} = $class->{package};
@@ -264,12 +271,13 @@ sub call {
 
 This is a protected method, designed to be called only by the Class::Meta
 class or a subclass of Class::Meta. It takes a single argument, the
-Class::Meta::Class object for the class in which the method was defined.
-Currently, C<Class::Meta::Method::build()> is a no-op, although it does check
-to make sure that it is only called by Class::Meta or a subclass of
-Class::Meta or of Class::Meta::Method. Although you should never call this
-method directly, subclasses of Class::Meta::Method may need to override it in
-order to add behavior.
+Class::Meta::Class object for the class in which the method was defined. Once
+it checks to make sure that it is only called by Class::Meta or a subclass of
+Class::Meta or of Class::Meta::Method, C<Cbuild()> installs the method if it
+was specified via the C<code> parameter to C<new()>.
+
+Although you should never call this method directly, subclasses of
+Class::Meta::Method may need to override it in order to add behavior.
 
 =cut
 
@@ -279,12 +287,19 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # methods.
     my $caller = caller;
-    $self->class->handle_error("Package '$caller' cannot call " . ref($self)
-                               . "->build")
-      unless UNIVERSAL::isa($caller, 'Class::Meta')
+    $self->class->handle_error(
+        "Package '$caller' cannot call " . ref($self) . "->build"
+    ) unless UNIVERSAL::isa($caller, 'Class::Meta')
         || UNIVERSAL::isa($caller, __PACKAGE__);
 
-    # No-op.
+    # Install the method if we've got it.
+    if (my $code = delete $self->{code}) {
+        my $pack = $self->package;
+        my $name = $self->{name};
+        no strict 'refs';
+        *{"$pack\::$name"} = $code;
+    }
+
     return $self;
 }
 
