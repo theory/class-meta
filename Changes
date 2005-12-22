@@ -3,8 +3,8 @@ Revision history for Perl extension Class::Meta.
 0.52
 
 0.51  2005-12-17T03:40:26
-      - Added "code" parameter to add_attribute(), so that a new method can be
-        defined right in the call to add_attribute(), and Class::Meta::Method
+      - Added "code" parameter to add_method(), so that a new method can be
+        defined right in the call to add_method(), and Class::Meta::Method
         will install it. Inspired by Ovid's Class::Meta::Declare.
 
 0.50  2005-12-14T04:33:46
