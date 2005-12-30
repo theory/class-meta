@@ -286,7 +286,7 @@ sub build {
                     $attr->set($new, delete $p{$key});
                 } else {
                     # Use the default value.
-                    $new->{$key} = $attr->default;
+                    $new->{$key} = $attr->default unless exists $new->{$key};
                 }
             }
         }
