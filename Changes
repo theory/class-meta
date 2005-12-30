@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.52
+0.52  2005-12-30T00:08:36
       - The constructor method created by Class::Meta::Constructor no longer
         assigns the default value to an attribute if that attribute has
         already been set by another attribute accessor. This is useful, for
