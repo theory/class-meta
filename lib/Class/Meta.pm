@@ -735,10 +735,8 @@ our $VERSION = "0.53";
         $error_handler->(@_);
     }
 
-    sub for_key { $keys{$_[1]} }
-
+    sub for_key { $keys{ $_[1] } }
     sub keys    { wantarray ? keys %keys : [keys %keys] }
-
     sub clear   { shift; @_ ? delete $keys{+shift} : undef %keys }
 
     sub new {
@@ -762,9 +760,9 @@ our $VERSION = "0.53";
         }
 
         # Check to make sure we haven't created this class already.
-        $p{error_handler}->("Class object for class '$p{package}' "
-                            . "already exists")
-          if $classes{$p{package}};
+        $p{error_handler}->(
+            "Class object for class '$p{package}' already exists"
+        ) if $classes{$p{package}};
 
         $p{class_class}       ||= 'Class::Meta::Class';
         $p{constructor_class} ||= 'Class::Meta::Constructor';
@@ -778,9 +776,8 @@ our $VERSION = "0.53";
         $classes{$p{package}}->_inherit( \%classes, 'attr');
 
         # Return!
-        return bless { package => $p{package} }, ref $pkg || $pkg;
+        return bless { package => $p{package} } => ref $pkg || $pkg;
     }
-
 
 ##############################################################################
 # add_constructor()
@@ -809,6 +806,16 @@ interface. Optional.
 
 A description of the constructor. Possibly useful for displaying help text in
 a user interface. Optional.
+
+=item code
+
+You can implicitly define the constructor in your class by passing a code
+reference via the C<code> parameter. Once C<build()> is called,
+L<Kinetic::Meta::Constructor|Kinetic::Meta::Constructor> will install the
+constructor into the package for which the Class::Meta object was defined, and
+with the name specified via the C<name> parameter. Note that if the
+constructor view is PRIVATE or PROTECTED, the constructor will be wrapped in
+extra code to envocde the view.
 
 =item view
 
@@ -1046,11 +1053,10 @@ C<add_constructor> for a description of its value.
 =item code
 
 You can implicitly define the method in your class by passing a code reference
-via teh C<code> parameter. Once C<build()> is called,
+via the C<code> parameter. Once C<build()> is called,
 L<Kinetic::Meta::Method|Kinetic::Meta::Method> will install the method into
 the package for which the Class::Meta object was defined, and with the name
-specified via the C<name> parameter. This can make it easy to declare an
-entire class in a single Class::Meta declaration.
+specified via the C<name> parameter.
 
 =item context
 
@@ -1231,6 +1237,15 @@ Accessor automation and data validation for Tangram applications.
 An ambitious yet underdocumented module that also manages accessor and
 constructor generation, data validation, and provides a reflection API. It
 also supports serialization.
+
+=item L<Class::MOP|Class::MOP>
+
+Stevan Little's application of Perl 6 meta classes to Perl 5.
+
+=item L<Moose|Moose>
+
+"It's the new camel." Another extention of the Perl 5 object system, built on
+Class::MOP.
 
 =back
 

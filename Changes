@@ -1,6 +1,10 @@
 Revision history for Perl extension Class::Meta.
 
 0.53
+      - Added 'code' parameter to "new_constructor()" to install a constructor
+        written by the user. This essentially works just like the 'code'
+        method parameter.
+      - Fixed tests that fail with Data::Types 0.06 and later.
 
 0.52  2005-12-30T00:08:36
       - The constructor method created by Class::Meta::Constructor no longer

@@ -198,10 +198,13 @@ ok( my $alive = $class->attributes('alive'), "Get alive attribute object" );
 is( $alive->type, 'boolean', "Check that the alias was converted" );
 
 # Test whole number.
-eval { $t->whole(0) };
-ok( $err = $@, 'whole to 0 croaks' );
-like( $err, qr/^Value '0' is not a valid whole number/,
-     'correct whole number exception' );
+SKIP: {
+    skip 'Whole numbers can now be 0', 2 if Data::Types->VERSION > 0.05;
+    eval { $t->whole(0) };
+    ok( $err = $@, 'whole to 0 croaks' );
+    like( $err, qr/^Value '0' is not a valid whole number/,
+          'correct whole number exception' );
+}
 ok( $t->whole(1), 'whole to 1.');
 
 # Test integer.

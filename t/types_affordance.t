@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: types_affordance.t,v 1.4 2004/01/08 18:37:52 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
@@ -196,10 +196,13 @@ ok( $t->set_alive_on, 'set_alive_on' );
 ok( $t->is_alive, 'is_alive true again');
 
 # Test whole number.
-eval { $t->set_whole(0) };
-ok( $err = $@, 'set_whole to 0 croaks' );
-like( $err, qr/^Value '0' is not a valid whole number/,
-     'correct whole number exception' );
+SKIP: {
+    skip 'Whole numbers can now be 0', 2 if Data::Types->VERSION > 0.05;
+    eval { $t->set_whole(0) };
+    ok( $err = $@, 'set_whole to 0 croaks' );
+    like( $err, qr/^Value '0' is not a valid whole number/,
+          'correct whole number exception' );
+}
 ok( $t->set_whole(1), 'set_whole to 1.');
 
 # Test integer.

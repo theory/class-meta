@@ -125,7 +125,7 @@ sub new {
         my $ref = ref $p{code};
         $class->handle_error(
             'Parameter code must be a code reference'
-        ) unless $ref && $ref eq 'CODE'
+        ) unless $ref && $ref eq 'CODE';
     }
 
     # Create and cache the method object.
@@ -273,7 +273,7 @@ This is a protected method, designed to be called only by the Class::Meta
 class or a subclass of Class::Meta. It takes a single argument, the
 Class::Meta::Class object for the class in which the method was defined. Once
 it checks to make sure that it is only called by Class::Meta or a subclass of
-Class::Meta or of Class::Meta::Method, C<Cbuild()> installs the method if it
+Class::Meta or of Class::Meta::Method, C<build()> installs the method if it
 was specified via the C<code> parameter to C<new()>.
 
 Although you should never call this method directly, subclasses of
