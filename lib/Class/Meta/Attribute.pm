@@ -205,9 +205,11 @@ complete list.
 
 =head3 is
 
-  my $type = $attr->is;
+  if ($attr->is('string')) {
+      # ...
+  }
 
-An alias for C<type()>.
+A convenience methed for C<< $attr->type eq $type >>.
 
 =head3 desc
 
@@ -306,7 +308,6 @@ attribute is defined, and I<not> any of its subclasses.
 
 sub name     { $_[0]->{name}     }
 sub type     { $_[0]->{type}     }
-sub is       { $_[0]->{type}     }
 sub desc     { $_[0]->{desc}     }
 sub label    { $_[0]->{label}    }
 sub required { $_[0]->{required} }
@@ -316,6 +317,7 @@ sub view     { $_[0]->{view}     }
 sub context  { $_[0]->{context}  }
 sub authz    { $_[0]->{authz}    }
 sub class    { $_[0]->{class}    }
+sub is       { $_[0]->{type} eq $_[1] }
 
 ##############################################################################
 

@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 59;
+use Test::More tests => 60;
 
 ##############################################################################
 # Create a simple class.
@@ -197,7 +197,8 @@ ok( $t->alive(1), 'alive on' );
 ok( $t->alive, 'alive true again');
 ok( my $alive = $class->attributes('alive'), "Get alive attribute object" );
 is( $alive->type, 'boolean', "Check that the alias was converted" );
-is( $alive->is,   'boolean', "Check that is() works" );
+ok( $alive->is('boolean'), "Check that is('boolean') returns true" );
+ok( !$alive->is('string'), "Check that is('string') returns false" );
 
 # Test whole number.
 SKIP: {
