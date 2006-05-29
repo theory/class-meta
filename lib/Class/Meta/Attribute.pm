@@ -203,6 +203,12 @@ Returns the name of the attribute's data type. Typical values are "scalar",
 "string", and "boolean". See L<Class::Meta|Class::Meta/"Data Types"> for a
 complete list.
 
+=head3 is
+
+  my $type = $attr->is;
+
+An alias for C<type()>.
+
 =head3 desc
 
   my $desc = $attr->desc;
@@ -300,6 +306,7 @@ attribute is defined, and I<not> any of its subclasses.
 
 sub name     { $_[0]->{name}     }
 sub type     { $_[0]->{type}     }
+sub is       { $_[0]->{type}     }
 sub desc     { $_[0]->{desc}     }
 sub label    { $_[0]->{label}    }
 sub required { $_[0]->{required} }
@@ -405,6 +412,7 @@ sub build {
 
     # Get the data type object, replace any alias, and assemble the
     # validation checks.
+    $self->{type} = delete $self->{is} if exists $self->{is};
     my $type = Class::Meta::Type->new($self->{type});
     $self->{type} = $type->key;
     my $create = delete $self->{create};

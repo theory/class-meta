@@ -31,11 +31,11 @@ Generate a class:
                           required => 1,
                           default  => sub { Data::UUID->new->create_str } );
       $cm->add_attribute( name     => 'name',
-                          type     => 'string',
+                          is       => 'string',
                           required => 1,
                           default  => undef );
       $cm->add_attribute( name     => 'age',
-                          type     => 'integer',
+                          is       => 'integer',
                           default  => undef );
 
       # Add a custom method.
@@ -877,8 +877,11 @@ attribute of the class. The supported parameters are:
 
 =item type
 
+=item is
+
 The data type of the attribute. See L</"Data Types"> for some possible values
-for this parameter. Required.
+for this parameter. Required. If both C<type> and C<is> are passed, C<is> will
+be used.
 
 =item name
 
