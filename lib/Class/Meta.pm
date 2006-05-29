@@ -29,9 +29,9 @@ Generate a class:
 
       # Add a couple of attributes with generated methods.
       $cm->add_attribute(
-          name     => 'id',
+          name     => 'uuid',
           authz    => Class::Meta::READ,
-          type     => 'integer',
+          type     => 'string',
           required => 1,
           default  => sub { Data::UUID->new->create_str },
       );
@@ -814,6 +814,14 @@ constructor for the class. The supported parameters are:
 
 The name of the constructor. The name must consist of only alphanumeric
 characters or "_". Required.
+
+=item create
+
+When true, Class::Meta::Constructor will automatically create and install a
+constructor named for the C<name> parameter. Defaults to true unless C<code>
+is passed. In general you won't need to specify this parameter unless you've
+written your own constructor in the package, in which case you'll want to
+specify C<< create => 0 >>.
 
 =item label
 

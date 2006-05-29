@@ -103,7 +103,7 @@ sub new {
         $p{view} = Class::Meta::PUBLIC;
     }
 
-    # Check the creation constant.
+    # Use passed code or create the constructor?
     if ($p{code}) {
         my $ref = ref $p{code};
         $class->handle_error(
@@ -111,7 +111,7 @@ sub new {
         ) unless $ref && $ref eq 'CODE';
         $p{create} = 0;
     } else {
-        $p{create} = 1 unless defined $p{create};
+        $p{create} = 1 unless exists $p{create};
     }
 
     # Validate or create the method caller if necessary.

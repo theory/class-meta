@@ -10,6 +10,7 @@ Revision history for Perl extension Class::Meta.
         constructor, 'is' will be used.
       - Added the boolean method is() to the attribute class to compare a
         type.
+      - Documented the 'create' parameter to "new_constructor()".
 
 0.52  2005-12-30T00:08:36
       - The constructor method created by Class::Meta::Constructor no longer
