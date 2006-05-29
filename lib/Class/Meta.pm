@@ -17,30 +17,41 @@ Generate a class:
   use Class::Meta::Types::Numeric;
 
   BEGIN {
+
       # Create a Class::Meta object for this class.
       my $cm = Class::Meta->new( key => 'thingy' );
 
       # Add a constructor.
-      $cm->add_constructor( name   => 'new',
-                            create => 1 );
+      $cm->add_constructor(
+          name   => 'new',
+          create => 1,
+      );
 
       # Add a couple of attributes with generated methods.
-      $cm->add_attribute( name     => 'id',
-                          authz    => Class::Meta::READ,
-                          type     => 'integer',
-                          required => 1,
-                          default  => sub { Data::UUID->new->create_str } );
-      $cm->add_attribute( name     => 'name',
-                          is       => 'string',
-                          required => 1,
-                          default  => undef );
-      $cm->add_attribute( name     => 'age',
-                          is       => 'integer',
-                          default  => undef );
+      $cm->add_attribute(
+          name     => 'id',
+          authz    => Class::Meta::READ,
+          type     => 'integer',
+          required => 1,
+          default  => sub { Data::UUID->new->create_str },
+      );
+      $cm->add_attribute(
+          name     => 'name',
+          is       => 'string',
+          required => 1,
+          default  => undef,
+      );
+      $cm->add_attribute(
+          name    => 'age',
+          is      => 'integer',
+          default => undef,
+      );
 
-      # Add a custom method.
-      $cm->add_method( name => 'chk_pass',
-                       view => Class::Meta::PUBLIC );
+     # Add a custom method.
+      $cm->add_method(
+          name => 'chk_pass',
+          view => Class::Meta::PUBLIC,
+      );
       $cm->build;
   }
 
@@ -135,16 +146,21 @@ class:
   use Class::Meta::Types::Perl;
 
   BEGIN {
+
       # Create a Class::Meta object for this class.
       my $cm = Class::Meta->new( key => 'dog' );
 
       # Add a constructor.
-      $cm->add_constructor( name   => 'new',
-                            create => 1 );
+      $cm->add_constructor(
+          name   => 'new',
+          create => 1,
+      );
 
       # Add an attribute.
-      $cm->add_attribute( name   => 'tail',
-                          type   => 'scalar' );
+      $cm->add_attribute(
+          name => 'tail',
+          type => 'scalar',
+      );
 
       # Add a custom method.
       $cm->add_method( name => 'wag' );
@@ -784,8 +800,10 @@ our $VERSION = "0.53";
 
 =head3 add_constructor
 
-  $cm->add_constructor( name   => 'new',
-                        create => 1 );
+  $cm->add_constructor(
+      name   => 'construct',
+      create => 1,
+  );
 
 Creates and returns a Class::Meta::Constructor object that describes a
 constructor for the class. The supported parameters are:
@@ -795,7 +813,7 @@ constructor for the class. The supported parameters are:
 =item name
 
 The name of the constructor. The name must consist of only alphanumeric
-characters or "_".
+characters or "_". Required.
 
 =item label
 
@@ -815,7 +833,7 @@ L<Kinetic::Meta::Constructor|Kinetic::Meta::Constructor> will install the
 constructor into the package for which the Class::Meta object was defined, and
 with the name specified via the C<name> parameter. Note that if the
 constructor view is PRIVATE or PROTECTED, the constructor will be wrapped in
-extra code to envocde the view.
+extra code to envocde the view. Optional.
 
 =item view
 
@@ -867,13 +885,20 @@ being defined.
 
 =head3 add_attribute
 
-  $cm->add_attribute( name => 'tail',
-                      type => 'scalar' );
+  $cm->add_attribute(
+      name => 'tail',
+      type => 'scalar',
+  );
 
 Creates and returns a Class::Meta::Attribute object that describes an
 attribute of the class. The supported parameters are:
 
 =over 4
+
+=item name
+
+The name of the attribute. The name must consist of only alphanumeric
+characters or "_". Required.
 
 =item type
 
@@ -882,11 +907,6 @@ attribute of the class. The supported parameters are:
 The data type of the attribute. See L</"Data Types"> for some possible values
 for this parameter. Required. If both C<type> and C<is> are passed, C<is> will
 be used.
-
-=item name
-
-The name of the attribute. The name must consist of only alphanumeric
-characters or "_". Required.
 
 =item required
 
