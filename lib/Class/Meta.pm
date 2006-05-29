@@ -236,8 +236,9 @@ attribute without creating or loading the appropriate data type, you will
 get an error.
 
 But I didn't want to leave you out in the cold, so I created a whole bunch of
-data types to get you started. They can be loaded simply by creating the
-appropriate module. The modules are:
+data types to get you started. Any of these will automatically be loaded by
+Class::Meta if it is used to create an attribute. They can also be loaded
+simply by C<use>ing the appropriate module. The modules are:
 
 =over 4
 
@@ -913,8 +914,10 @@ characters or "_". Required.
 =item is
 
 The data type of the attribute. See L</"Data Types"> for some possible values
-for this parameter. Required. If both C<type> and C<is> are passed, C<is> will
-be used.
+for this parameter. If the type name corresponds to a data type in a package
+in the Class::Meta::Types namespae, that package will automatically be loaded
+and configured with Perl-style accessors, so that the data type can simply be
+used. Required. If both C<type> and C<is> are passed, C<is> will be used.
 
 =item required
 

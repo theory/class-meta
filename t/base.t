@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 134;
+use Test::More tests => 132;
 
 ##############################################################################
 # Create a simple class.
@@ -18,8 +18,6 @@ use strict;
 
 BEGIN {
     main::use_ok('Class::Meta');
-    main::use_ok('Class::Meta::Types::Numeric');
-    main::use_ok('Class::Meta::Types::String');
 }
 
 BEGIN {

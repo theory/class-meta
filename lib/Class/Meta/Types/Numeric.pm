@@ -93,7 +93,7 @@ my $mk_chk = sub {
 sub import {
     my ($pkg, $builder) = @_;
     $builder ||= 'default';
-    return if eval "Class::Meta::Type->new('whole')";
+    return if eval { Class::Meta::Type->new('whole') };
 
     Class::Meta::Type->add(
         key     => "whole",

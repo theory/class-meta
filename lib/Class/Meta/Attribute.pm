@@ -48,6 +48,19 @@ use strict;
 our $VERSION = "0.53";
 
 ##############################################################################
+# Private Package Globals                                                    #
+##############################################################################
+my %type_pkg_for = (
+    map( { $_ => 'Boolean' } qw(bool boolean) ),
+    map( { $_ => 'Numeric' } qw(whole integer int decimal dec real float) ),
+    map(
+        { $_ => 'Perl' }
+        qw(scalar scalarref array arrayref hash hashref code coderef closure)
+    ),
+    string => 'String',
+);
+
+##############################################################################
 # Constructors                                                               #
 ##############################################################################
 
@@ -415,7 +428,15 @@ sub build {
     # Get the data type object, replace any alias, and assemble the
     # validation checks.
     $self->{type} = delete $self->{is} if exists $self->{is};
-    my $type = Class::Meta::Type->new($self->{type});
+    my $type = eval { Class::Meta::Type->new($self->{type}) };
+    unless ($type) {
+        my $pkg = $type_pkg_for{ $self->{type} } or die $@;
+        eval "require Class::Meta::Types::$pkg";
+        die $@ if $@;
+        "Class::Meta::Types::$pkg"->import;
+        $type = Class::Meta::Type->new($self->{type});
+    }
+
     $self->{type} = $type->key;
     my $create = delete $self->{create};
     $type->build($class->{package}, $self, $create)
