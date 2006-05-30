@@ -606,6 +606,13 @@ that calls C<new()>.
 A key name that uniquely identifies a class within an application. Defaults to
 the value of the C<package> parameter if not specified.
 
+=item name
+
+The human name to use for the class. Defaults to the value of C<key> with
+underscores replaced with spaces and each word capitalized by the C<ucfirst>
+operator. So "foo" will become "Foo" and "contact_type" will become "Contact
+Type".
+
 =item abstract
 
 A boolean indicating whether the class being defined is an abstract class. An

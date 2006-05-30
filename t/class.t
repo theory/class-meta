@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: class.t,v 1.12 2004/08/27 01:53:22 david Exp $
+# $Id$
 
 use strict;
 use Test::More tests => 13;
@@ -31,7 +31,7 @@ ok( $class = Class::Meta::Class->new($spec),
           'Subclass can create class objects' );
 
 # Test the simple accessors.
-is( $class->name, $spec->{key}, 'name' );
+is( $class->name, ucfirst $spec->{key}, 'name' );
 is( $class->desc, $spec->{desc}, 'desc' );
 is( $class->key, $spec->{key}, 'key' );
 

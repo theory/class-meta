@@ -89,7 +89,7 @@ sub new {
       || UNIVERSAL::isa($caller, __PACKAGE__);
 
     # Set the name to be the same as the key by default.
-    $spec->{name} = $spec->{key} unless defined $spec->{name};
+    $spec->{name} ||= join ' ', map { ucfirst } split '_', $spec->{key};
 
     # Set the abstract attribute.
     $spec->{abstract} = $spec->{abstract} ? 1 : 0;
