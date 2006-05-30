@@ -39,7 +39,7 @@ creating data types.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = "0.53";
+our $VERSION = "0.54";
 
 sub import {
     my ($pkg, $builder) = @_;

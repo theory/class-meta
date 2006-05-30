@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
+0.54
+
 0.53  2006-05-30T00:54:52
       - Added 'code' parameter to "new_constructor()" to install a constructor
         written by the user. This essentially works just like the 'code'
