@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 134;
+use Test::More tests => 132;
 
 ##############################################################################
 # Create a simple class.
@@ -18,7 +18,6 @@ use strict;
 
 BEGIN {
     main::use_ok('Class::Meta');
-    use Test::More;
 }
 
 BEGIN {
@@ -34,6 +33,16 @@ BEGIN {
                          create  => 1 );
 
     # Add a couple of attributes with created methods.
+    $c->add_attribute( name     => 'id',
+                       view     => Class::Meta::PUBLIC,
+                       authz    => Class::Meta::READ,
+                       create   => Class::Meta::GET,
+                       type     => 'integer',
+                       label    => 'ID',
+                       desc     => "The person object's ID.",
+                       required => 1,
+                       default  => 12,
+                   );
     $c->add_attribute( name     => 'name',
                        view     => Class::Meta::PUBLIC,
                        authz    => Class::Meta::RDWR,
@@ -54,26 +63,6 @@ BEGIN {
                        required => 0,
                        default  => undef,
                    );
-
-    # Insert an id attribute at the beginning.
-    $c->insert_attribute(
-        0,
-        name     => 'id',
-        view     => Class::Meta::PUBLIC,
-        authz    => Class::Meta::READ,
-        create   => Class::Meta::GET,
-        type     => 'integer',
-        label    => 'ID',
-        desc     => "The person object's ID.",
-        required => 1,
-        default  => 12,
-    );
-
-    # Make sure that an invalid index throws an exception.
-    eval { $c->insert_attribute(20) };
-    ok my $err = $@, 'Catch insert_attribute exception';
-    like $err, qr/Index 20 is greater than the number of existing attributes/,
-        'It should be the correct exception';
 
     # Our custom accessor for goop.
     sub goop { shift->{goop} }

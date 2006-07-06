@@ -1060,51 +1060,6 @@ override the attribute and avoid the exception.
     }
 
 ##############################################################################
-
-=head3 insert_attribute
-
-=head3 add_attribute
-
-  $cm->add_attribute(
-      $order_index,
-      name => 'tail',
-      type => 'scalar',
-  );
-
-C<add_attribute()> adds a new attribute to a class, appending it to the list
-of other attributes. All of the attributes returned by the C<attributes()>
-method of L<Class::Meta::Class|Class::Meta::Class> are returned in the order
-they're created by calls to C<add_attribute()>. But sometimes you might want
-to insert an attribute into the order elsewhere than at the end of the list.
-Perhaps you want a new attribute to be the first or second attribute in the
-list, even before attributes defined by parent classes.
-
-This method gives you that control. It is identical to C<add_method()> except
-that it requires a single first argument, $order_index, that specifies an
-array index to use for the ordering of the new attribute. For example, if you
-wanted an attribute to be the first attribute in the order, you'd pass an
-order index of 0; if you wanted it to be the second, you'd pass 1, and so on.
-
-If the order index is greater than the number of existing attributes, an
-exception will be thrown.
-
-=cut
-
-    sub insert_attribute {
-        my ($self, $index) = (shift, shift);
-        my $class = $classes{ $self->{package} };
-        my $attrs = $class->{build_attr_ord};
-
-        $class->handle_error(
-            "Index $index is greater than the number of existing attributes"
-        ) if $index >= $#$attrs;
-
-        my $attr  = $self->add_attribute(@_);
-        splice @{ $attrs }, $index, 0, pop @{ $attrs };
-        return $attr;
-    }
-
-##############################################################################
 # add_method()
 
 =head3 add_method
