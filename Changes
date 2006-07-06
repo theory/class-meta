@@ -6,6 +6,7 @@ Revision history for Perl extension Class::Meta.
         underscores replaced with spaces and each word capitalized by the
         ucfirst operator. So "foo" will become "Foo" and "contact_type" will
         become "Contact Type".
+      - Added insert_attribute() to add attributes out of order.
 
 0.53  2006-05-30T00:54:52
       - Added 'code' parameter to "new_constructor()" to install a constructor
