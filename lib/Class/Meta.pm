@@ -13,8 +13,6 @@ Generate a class:
   package MyApp::Thingy;
   use strict;
   use Class::Meta;
-  use Class::Meta::Types::String;
-  use Class::Meta::Types::Numeric;
 
   BEGIN {
 
@@ -51,11 +49,33 @@ Generate a class:
       $cm->add_method(
           name => 'chk_pass',
           view => Class::Meta::PUBLIC,
+          code => sub { ... },
       );
-      $cm->build;
   }
 
-Then use the class:
+  sub chck_pass { ... }
+
+Or use Class::Meta::Express for a more pleasant declarative syntax (highly
+recommended!):
+
+  package MyApp::Thingy;
+  use strict;
+  use Class::Meta::Express;
+
+  class {
+      meta thingy => ( default_type => 'string' );
+      ctor 'new';
+      has  uuid => (
+        authz    => Class::Meta::READ,
+        required => 1,
+        deafult  => sub { Data::UUID->new->create_str },
+      );
+      has name => ( rquired => 1         );
+      has age  => ( is      => 'integer' );
+      method chk_pass => sub { ... }
+  };
+
+Now isn't that nicer? Then use the class:
 
   use MyApp::Thingy;
 
@@ -133,9 +153,16 @@ you from any dependencies on the interfaces that such a base class might
 compel. For example, you can create whatever constructors you like, and name
 them whatever you like.
 
-I recommend that you create your Class::Meta classes in a C<BEGIN>
-block. Although this is not strictly necessary, it helps to ensure that the
-classes you're building are completely constructed and ready to go by the time
+I recommend that you use L<Class::Meta::Express|Class::Meta::Express> to
+declare your Class::Meta classes. It provides a much more pleasant class
+declaration experience than Class::Meta itself does. But since its functions
+support many of the same arguments as the declaration methods described here,
+it's worth it to skim the notes here, as well. Or if you're just a masochist
+and want to use the Class::Meta interface itself, well, read on!
+
+I recommend that you create your Class::Meta classes in a C<BEGIN> block.
+Although this is not strictly necessary, it helps to ensure that the classes
+you're building are completely constructed and ready to go by the time
 compilation has completed. Creating classes with Class::Meta is easy, using
 the Class::Meta object oriented interface. Here is an example of a very simple
 class:
@@ -1205,6 +1232,11 @@ __END__
 
 =item *
 
+Add support for an C<accessor> parameter to C<add_attribute()> that will be
+used for the accessor instead of generating one.
+
+=item *
+
 Make class attribute accessors behave as they do in Class::Data::Inheritable.
 
 =item *
@@ -1228,6 +1260,10 @@ CPAN Request Tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
 David Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
+
+First of all, use L<Class::Meta::Express|Class::Meta::Express> instead of
+Class::Meta to declare your classes. I hope I've made that clear enough by
+now.
 
 Other classes of interest within the Class::Meta distribution include:
 

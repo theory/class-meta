@@ -1,11 +1,13 @@
 Revision history for Perl extension Class::Meta.
 
-0.54
+0.54  2006-11-13T17:05:05
       - Documented the 'name' parameter to new().
       - The 'name' attribute of classes now defaults to the key name with
         underscores replaced with spaces and each word capitalized by the
         ucfirst operator. So "foo" will become "Foo" and "contact_type" will
         become "Contact Type".
+      - Added an example and brief discussion of Class::Meta::Express to the
+        docs. Suggested by Jonathan Swartz.
 
 0.53  2006-05-30T00:54:52
       - Added 'code' parameter to "new_constructor()" to install a constructor
