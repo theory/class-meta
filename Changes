@@ -3,6 +3,7 @@ Revision history for Perl extension Class::Meta.
 0.55
       - Added the "configure_requires", and "recommends" parameters to
         Build.PL.
+      - Updated the copyright.
 
 0.54  2006-11-13T17:05:05
       - Documented the 'name' parameter to new().
