@@ -79,7 +79,7 @@ Now isn't that nicer? Then use the class:
 
   use MyApp::Thingy;
 
-  my $thingy = MyApp::Thingy->new;
+  my $thingy = MyApp::Thingy->new( id => 19 );
   print "ID: ", $thingy->id, $/;
   $thingy->name('Larry');
   print "Name: ", $thingy->name, $/;
@@ -221,8 +221,8 @@ provided, the class name will be used, instead.
 =item *
 
 Next, we create a Class::Meta::Constructor object to describe a constructor
-method for the class. The C<create> parameter to the C<add_constructor()> method
-tells Class::Meta to create the constructor named "C<new()>".
+method for the class. The C<create> parameter to the C<add_constructor()>
+method tells Class::Meta to create the constructor named "C<new()>".
 
 =item *
 
@@ -913,6 +913,37 @@ calls a method with the name provided by the C<name> attribute on the class
 being defined.
 
 =back
+
+If Class::Meta creates the constructor, it will be a simple parameter-list
+constructor, wherein attribute values can be passed as a list of
+attribute-name/value pairs, e.g.:
+
+  my $thingy = MyApp::Thingy->new(
+      name => 'Larry',
+      age  => 32,
+  );
+
+Required attributes must have a value passed to the constructor, with one
+exception: You can pass an optional subroutine reference as the last argument
+to the constructor. After all parameter values and default values have been
+set on the object, but before any exceptions are thrown for undefined required
+attributes, the constructor will execute this subroutine reference, passing in
+the object being constructed as the sole argument. So, for example, if C<name>
+is required but, for some reason, could not be set before constructing the
+object, you could set it like so:
+
+  my $thingy = MyApp::Thingy->new(
+      age  => 32,
+      sub {
+          my $thingy = shift;
+          # age and attributes with default values are already set.
+          my $name = calculate_name( $thingy );
+          $thingy->name($name);
+      },
+  );
+
+This allows developers to have a scope-limited context in which to work before
+required constraints are enforced.
 
 =cut
 
