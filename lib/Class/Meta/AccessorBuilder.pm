@@ -191,7 +191,7 @@ be used in the set acccessor (mutator) to validate new attribute values.
 
 use strict;
 use Class::Meta;
-our $VERSION = '0.55';
+our $VERSION = '0.60';
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, $_[0]->name);
@@ -200,14 +200,14 @@ sub build_attr_get {
 sub build_attr_set { &build_attr_get }
 
 my $req_chk = sub {
-    $_[2]->class->handle_error("Attribute ", $_[2]->name, " must be defined")
+    $_[2]->class->handle_error('Attribute ', $_[2]->name, ' must be defined')
       unless defined $_[0];
 };
 
 my $once_chk = sub {
-    $_[2]->class->handle_error("Attribute ", $_[2]->name,
-                               " can only be set once")
-      if defined $_[1]->{$_[2]->name};
+    $_[2]->class->handle_error(
+        'Attribute ', $_[2]->name, ' can only be set once'
+    ) if defined $_[1]->{$_[2]->name};
 };
 
 sub build {
@@ -377,10 +377,14 @@ sub build {
 1;
 __END__
 
-=head1 BUGS
+=head1 SUPPORT
 
-Please send bug reports to <bug-class-meta@rt.cpan.org> or report them via the
-CPAN Request Tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+This module is stored in an open repository at the following address:
+
+L<https://svn.kineticode.com/Class-Meta/trunk/>
+
+Patches against Class::Meta are welcome. Please send bug reports to
+<bug-class-meta@rt.cpan.org>.
 
 =head1 AUTHOR
 

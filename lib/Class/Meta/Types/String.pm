@@ -39,7 +39,7 @@ creating data types.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = '0.55';
+our $VERSION = '0.60';
 
 sub import {
     my ($pkg, $builder) = @_;
@@ -61,10 +61,14 @@ sub import {
 1;
 __END__
 
-=head1 BUGS
+=head1 SUPPORT
 
-Please send bug reports to <bug-class-meta@rt.cpan.org> or report them via the
-CPAN Request Tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+This module is stored in an open repository at the following address:
+
+L<https://svn.kineticode.com/Class-Meta/trunk/>
+
+Patches against Class::Meta are welcome. Please send bug reports to
+<bug-class-meta@rt.cpan.org>.
 
 =head1 AUTHOR
 

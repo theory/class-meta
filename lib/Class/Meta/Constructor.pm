@@ -39,7 +39,7 @@ use strict;
 ##############################################################################
 # Package Globals                                                            #
 ##############################################################################
-our $VERSION = '0.55';
+our $VERSION = '0.60';
 
 ##############################################################################
 # Constructors                                                               #
@@ -280,12 +280,16 @@ sub build {
             "Cannot construct objects of astract class $package"
         ) if $class->abstract;
 
+        # Is there a sub passed as the last argument?
+        my $sub = @_ % 2 && ref $_[-1] eq 'CODE' ? pop @_ : undef;
+
         # Just grab the parameters and let an error be thrown by Perl
         # if there aren't the right number of them.
         my %p = @_;
         my $new = bless {} => $package;
 
         # Assign all of the attribute values.
+        my @req;
         if (my $attrs = $class->{attrs}) {
             foreach my $attr (@{ $attrs }{ @{ $class->{all_attr_ord} } }) {
                 # Skip class attributes.
@@ -294,9 +298,10 @@ sub build {
                 if (exists $p{$key} && $attr->authz >= Class::Meta::SET) {
                     # Let them set the value.
                     $attr->set($new, delete $p{$key});
-                } else {
+                } elsif (!exists $new->{$key}) {
                     # Use the default value.
-                    $new->{$key} = $attr->default unless exists $new->{$key};
+                    $new->{$key} = $attr->default;
+                    push @req, $attr if $attr->required;
                 }
             }
         }
@@ -305,11 +310,24 @@ sub build {
         if (my @attributes = keys %p) {
             # Attempts to assign to non-existent attributes fail.
             my $c = $#attributes > 0 ? 'attributes' : 'attribute';
-            local $" = "', '";
+            local $" = q{', '};
             $class->handle_error(
                 "No such $c '@attributes' in $self->{package} objects"
             );
         }
+
+        # Run the block passed, if there is one.
+        $sub->($new) if $sub;
+
+        # Enforce required attributes.
+        if (@req and my @miss = grep { !defined $new->{ $_->name } } @req ) {
+            my $c = $#miss > 0 ? 'Attributes' : 'Attribute';
+            my $a = join q{', '}, map { $_->name } @miss;
+            $class->handle_error(
+                "$c '$a' must be defined in $self->{package} objects"
+            );
+        }
+
         return $new;
     };
 
@@ -347,6 +365,15 @@ __END__
 
 Please send bug reports to <bug-class-meta@rt.cpan.org> or report them via the
 CPAN Request Tracker at L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Class-Meta>.
+
+=head1 SUPPORT
+
+This module is stored in an open repository at the following address:
+
+L<https://svn.kineticode.com/Class-Meta/trunk/>
+
+Patches against Class::Meta are welcome. Please send bug reports to
+<bug-class-meta@rt.cpan.org>.
 
 =head1 AUTHOR
 

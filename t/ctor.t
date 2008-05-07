@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 55;
+use Test::More tests => 70;
 
 ##############################################################################
 # Create a simple class.
@@ -19,25 +19,28 @@ use strict;
 # Make sure we can load Class::Meta.
 BEGIN { main::use_ok( 'Class::Meta' ) }
 
-BEGIN {
-    # Import Test::More functions into this package.
-    Test::More->import;
+# Import the test functions.
+BEGIN { Test::More->import }
 
+BEGIN {
     # Create a new Class::Meta object.
-    ok( my $c = Class::Meta->new(package => __PACKAGE__,
-                                 key     => 'person'),
-        "Create CM object" );
-    isa_ok($c, 'Class::Meta');
+    ok my $c = Class::Meta->new(
+        package => __PACKAGE__,
+        key     => 'person'
+    ), "Create CM object";
+    isa_ok $c, 'Class::Meta';
 
     # Create a constructor.
     sub inst { bless {} }
-    ok( my $ctor = $c->add_constructor( name   => 'inst',
-                                        desc   => 'The inst constructor',
-                                        label  => 'inst Constructor',
-                                        create => 0,
-                                        view   => Class::Meta::PUBLIC ),
-        "Create 'inst' ctor");
-    isa_ok($ctor, 'Class::Meta::Constructor');
+    ok my $ctor = $c->add_constructor(
+        name   => 'inst',
+        desc   => 'The inst constructor',
+        label  => 'inst Constructor',
+        create => 0,
+        view   => Class::Meta::PUBLIC,
+    ), "Create 'inst' ctor";
+
+    isa_ok $ctor, 'Class::Meta::Constructor';
 
     # Test its accessors.
     is( $ctor->name, "inst", "Check inst name" );
@@ -169,7 +172,7 @@ ok $cm->add_constructor(name => 'new'), 'Add a constructor';
 ok(
     $ctor = $cm->add_constructor(
         name => 'implicit',
-        code => sub { ok 'Implicit constructor called' },
+        code => sub { ok 1, 'Implicit constructor called' },
     ), 'Implicitly write constructor'
 );
 
@@ -200,3 +203,50 @@ is $try->foo, 'hey', '"foo" should be "hey"';
 
 # Call implicit constructor and its test.
 Try::Mixed::Constructor->implicit;
+
+##############################################################################
+# Now try passing a sub to the constructor.
+package Try::Passing::Sub;
+use Class::Meta::Types::Perl;
+BEGIN { Test::More->import }
+
+ok $cm = Class::Meta->new, 'Create new Class::Meta object';
+ok $cm->add_constructor(name => 'new'), 'Add a constructor';
+
+# Add some attributes.
+ok $cm->add_attribute(
+    name     => 'foo',
+    type     => 'scalar',
+    required => 1,
+), 'Add "foo" attribute';
+
+ok $cm->add_attribute(
+    name    => 'bar',
+    type    => 'scalar',
+    default => 1,
+), 'Add "bar" attribute';
+
+ok $cm->build, 'Build the new class';
+
+ok $try = Try::Passing::Sub->new(
+    foo => 'hey',
+    sub {
+        my $thing = shift;
+        is $thing->foo, 'hey', 'Make sure "foo" was set';
+        is $thing->bar, 1, 'Make sure "bar" is set to its default';
+        ok $thing->bar(2), 'Set "bar" to a new value';
+    }
+), 'Construct an instance of the new class';
+is $try->foo, 'hey', '"foo" should be "hey"';
+is $try->bar, 2, '"bar" should be 2';
+
+# Now try passing no value for the required "foo" attribute.
+eval { Try::Passing::Sub->new };
+ok my $err = $@, 'Caught an exception';
+like $err, qr/Attribute 'foo' must be defined in Try::Passing::Sub objects/,
+    'Caught proper exception';
+
+# Now still don't pass it, but set it in the sub.
+ok $try = Try::Passing::Sub->new( sub { shift->foo('howdy') } ),
+    'Set the required value in the passed sub';
+is $try->foo, 'howdy', 'And that value should be properly set';
