@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: attr.t,v 1.4 2004/08/26 23:50:15 david Exp $
+# $Id$
 
 ##############################################################################
 # Set up the tests.
@@ -18,14 +18,13 @@ use strict;
 
 # Make sure we can load Class::Meta.
 BEGIN {
-    main::use_ok( 'Class::Meta' );
-    main::use_ok( 'Class::Meta::Types::String' );
+    Test::More->import;
+    use_ok( 'Class::Meta' );
+    use_ok( 'Class::Meta::Types::String' );
+
 }
 
 BEGIN {
-    # Import Test::More functions into this package.
-    Test::More->import;
-
     # Create a new Class::Meta object.
     ok( my $c = Class::Meta->new(key => 'person'),
         "Create CM object" );
@@ -33,12 +32,13 @@ BEGIN {
 
     # Create an attribute.
     sub inst { bless {} }
-    ok( my $attr = $c->add_attribute( name => 'inst',
-                                      type => 'string',
-                                      desc    => 'The inst attribute',
-                                      label   => 'inst Attribute',
-                                      view     => Class::Meta::PUBLIC ),
-        "Create 'inst' attr");
+    ok my $attr = $c->add_attribute(
+        name  => 'inst',
+        type  => 'string',
+        desc  => 'The inst attribute',
+        label => 'inst Attribute',
+        view  => Class::Meta::PUBLIC,
+    ), 'Create "inst" attr';
     isa_ok($attr, 'Class::Meta::Attribute');
 
     # Test its accessors.

@@ -2,8 +2,10 @@ Revision history for Perl extension Class::Meta.
 
 0.60
       - Required constraints are now enforced by the constructor, as well as
-        the individual attributes themselves. This is a backwards
-        compatibility change, but see the next point.
+        the individual attributes themselves. Frankly, it was a bug that this
+        isn't the way it worked before, although at the time I thought it was
+        a feature. This is a backwards compatibility change, but see the next
+        point. Reported by Jon Swartz.
       - Added support for an optional subroutine reference to be passed as the
         final argument to constructors created by Class::Meta. The object
         being constructed will be passed to the anonymous sub after all of the
@@ -11,6 +13,8 @@ Revision history for Perl extension Class::Meta.
         constraints are enforced. This allows developers to have a scope
         within which to work before required attributes throw an exception.
       - Added a link to the Subversion repository.
+      - Moved the "Justification" section of the documentation nearer to
+        the bottom. Suggested by Jon Swartz.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to

@@ -124,26 +124,6 @@ that it includes an introspection API that can be used as a unified interface
 for all Class::Meta-generated classes. In this sense, it is an implementation
 of the "Facade" design pattern.
 
-=head1 JUSTIFICATION
-
-One might argue that there are already too many class automation and parameter
-validation modules on CPAN. And one would be right. They range from simple
-accessor generators, such as L<Class::Accessor|Class::Accessor>, to simple
-parameter validators, such as L<Params::Validate|Params::Validate>, to more
-comprehensive systems, such as L<Class::Contract|Class::Contract> and
-L<Class::Tangram|Class::Tangram>. But, naturally, none of them could do
-exactly what I needed.
-
-What I needed was an implementation of the "Facade" design pattern. Okay, this
-isn't a facade like the GOF meant it, but it is in the respect that it
-creates classes with a common API so that objects of these classes can all be
-used identically, calling the same methods on each. This is done via the
-implementation of an introspection API. So the process of creating classes
-with Class::Meta not only creates attributes and accessors, but also creates
-objects that describe those classes. Using these descriptive objects, client
-applications can determine what to do with objects of Class::Meta-generated
-classes. This is particularly useful for user interface code.
-
 =head1 USAGE
 
 Before we get to the introspection API, let's take a look at how to create
@@ -153,12 +133,13 @@ you from any dependencies on the interfaces that such a base class might
 compel. For example, you can create whatever constructors you like, and name
 them whatever you like.
 
-I recommend that you use L<Class::Meta::Express|Class::Meta::Express> to
-declare your Class::Meta classes. It provides a much more pleasant class
-declaration experience than Class::Meta itself does. But since its functions
-support many of the same arguments as the declaration methods described here,
-it's worth it to skim the notes here, as well. Or if you're just a masochist
-and want to use the Class::Meta interface itself, well, read on!
+First of all, you really want to be using
+L<Class::Meta::Express|Class::Meta::Express> to declare your Class::Meta
+classes. It provides a much more pleasant class declaration experience than
+Class::Meta itself does. But since its functions support many of the same
+arguments as the declaration methods described here, it's worth it to skim the
+notes here, as well. Or if you're just a masochist and want to use the
+Class::Meta interface itself, well, read on!
 
 I recommend that you create your Class::Meta classes in a C<BEGIN> block.
 Although this is not strictly necessary, it helps to ensure that the classes
@@ -756,14 +737,16 @@ our $VERSION = '0.60';
     my (%classes, %keys);
     my $error_handler = sub {
         require Carp;
-        our @CARP_NOT = qw(Class::Meta
-                           Class::Meta::Attribute
-                           Class::Meta::Constructor
-                           Class::Meta::Method
-                           Class::Meta::Type
-                           Class::Meta::Types::Numeric
-                           Class::Meta::Types::String
-                           Class::Meta::AccessorBuilder);
+        our @CARP_NOT = qw(
+            Class::Meta
+            Class::Meta::Attribute
+            Class::Meta::Constructor
+            Class::Meta::Method
+            Class::Meta::Type
+            Class::Meta::Types::Numeric
+            Class::Meta::Types::String
+            Class::Meta::AccessorBuilder
+        );
         # XXX Make sure Carp doesn't point to Class/Meta/Constructor.pm when
         # an exception is thrown by Class::Meta::AccessorBuilder. I have no
         # idea why this is necessary for AccessorBuilder but nowhere else!
@@ -794,8 +777,10 @@ our $VERSION = '0.60';
         my $pkg = shift;
 
         # Make sure we can get all the arguments.
-        $error_handler->("Odd number of parameters in call to new() when named "
-                         . "parameters were expected" ) if @_ % 2;
+        $error_handler->(
+            "Odd number of parameters in call to new() when named "
+            . "parameters were expected"
+        ) if @_ % 2;
         my %p = @_;
 
         # Class defaults to caller. Key defaults to class.
@@ -823,7 +808,7 @@ our $VERSION = '0.60';
         # Instantiate and cache Class object.
         $keys{$p{key}} = $classes{$p{package}} = $p{class_class}->new(\%p);
 
-        # Copy its parents' attributes and return.
+        # Copy its parents' attributes.
         $classes{$p{package}}->_inherit( \%classes, 'attr');
 
         # Return!
@@ -1256,6 +1241,26 @@ C<my_class()> class method, and all requisite constructors and accessors.
 
 1;
 __END__
+
+=head1 JUSTIFICATION
+
+One might argue that there are already too many class automation and parameter
+validation modules on CPAN. And one would be right. They range from simple
+accessor generators, such as L<Class::Accessor|Class::Accessor>, to simple
+parameter validators, such as L<Params::Validate|Params::Validate>, to more
+comprehensive systems, such as L<Class::Contract|Class::Contract> and
+L<Class::Tangram|Class::Tangram>. But, naturally, none of them could do
+exactly what I needed.
+
+What I needed was an implementation of the "Facade" design pattern. Okay, this
+isn't a facade like the GOF meant it, but it is in the respect that it
+creates classes with a common API so that objects of these classes can all be
+used identically, calling the same methods on each. This is done via the
+implementation of an introspection API. So the process of creating classes
+with Class::Meta not only creates attributes and accessors, but also creates
+objects that describe those classes. Using these descriptive objects, client
+applications can determine what to do with objects of Class::Meta-generated
+classes. This is particularly useful for user interface code.
 
 =head1 TO DO
 

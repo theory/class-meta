@@ -119,9 +119,9 @@ sub new {
 
     # Check the view.
     if (exists $p{view}) {
-        $class->handle_error("Not a valid view parameter: "
-                                     . "'$p{view}'")
-          unless $p{view} == Class::Meta::PUBLIC
+        $class->handle_error(
+            "Not a valid view parameter: '$p{view}'"
+        ) unless $p{view} == Class::Meta::PUBLIC
           or     $p{view} == Class::Meta::PROTECTED
           or     $p{view} == Class::Meta::TRUSTED
           or     $p{view} == Class::Meta::PRIVATE;
@@ -132,9 +132,9 @@ sub new {
 
     # Check the authorization level.
     if (exists $p{authz}) {
-        $class->handle_error("Not a valid authz parameter: "
-                                     . "'$p{authz}'")
-          unless $p{authz} == Class::Meta::NONE
+        $class->handle_error(
+            "Not a valid authz parameter: '$p{authz}'"
+        ) unless $p{authz} == Class::Meta::NONE
           or     $p{authz} == Class::Meta::READ
           or     $p{authz} == Class::Meta::WRITE
           or     $p{authz} == Class::Meta::RDWR;
@@ -145,9 +145,9 @@ sub new {
 
     # Check the creation constant.
     if (exists $p{create}) {
-        $class->handle_error("Not a valid create parameter: "
-                                     . "'$p{create}'")
-          unless $p{create} == Class::Meta::NONE
+        $class->handle_error(
+            "Not a valid create parameter: '$p{create}'"
+        ) unless $p{create} == Class::Meta::NONE
           or     $p{create} == Class::Meta::GET
           or     $p{create} == Class::Meta::SET
           or     $p{create} == Class::Meta::GETSET;
@@ -158,9 +158,9 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
-        $class->handle_error("Not a valid context parameter: "
-                                     . "'$p{context}'")
-          unless $p{context} == Class::Meta::OBJECT
+        $class->handle_error(
+            "Not a valid context parameter: '$p{context}'"
+        ) unless $p{context} == Class::Meta::OBJECT
           or     $p{context} == Class::Meta::CLASS;
     } else {
         # Put it in object context by default.
