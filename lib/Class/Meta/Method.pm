@@ -314,8 +314,7 @@ sub build {
                     goto &$real_meth;
                 };
             } elsif ($self->{view} == Class::Meta::TRUSTED) {
-                # XXX Should we have an accessor for this?
-                my $trusted = $self->class->{trusted};
+                my $trusted = $self->class->trusted;
                 $code = sub {
                     my $caller = caller;
                     goto &$real_meth if $caller eq $pack;

@@ -1132,7 +1132,9 @@ user interface. Optional.
 =item view
 
 The visibility of the method. See the description of the C<view> parameter to
-C<add_constructor> for a description of its value.
+C<add_constructor> for a description of its value. Class::Meta only enforces
+the C<view> if the C<code> parameter is used to define the method body.
+Otherwise, it's up to the class implementation itself to do the job.
 
 =item code
 
@@ -1140,7 +1142,8 @@ You can implicitly define the method in your class by passing a code reference
 via the C<code> parameter. Once C<build()> is called,
 L<Kinetic::Meta::Method|Kinetic::Meta::Method> will install the method into
 the package for which the Class::Meta object was defined, and with the name
-specified via the C<name> parameter.
+specified via the C<name> parameter. If the C<view> is anything other than
+PUBLIC, it will be enforced.
 
 =item context
 

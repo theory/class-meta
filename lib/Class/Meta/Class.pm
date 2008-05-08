@@ -141,6 +141,14 @@ Returns a description of the class.
 
 Returns true if the class is an abstract class, and false if it is not.
 
+=head3 trusted
+
+  my @trusted = $class->trusted;
+  my $trusted = $class->trusted;
+
+In an array context, returns a list of class namees that this class trusts.
+Returns the same list in an array reference in a scalar context.
+
 =cut
 
 sub package  { $_[0]->{package}  }
@@ -148,6 +156,7 @@ sub key      { $_[0]->{key}      }
 sub name     { $_[0]->{name}     }
 sub desc     { $_[0]->{desc}     }
 sub abstract { $_[0]->{abstract} }
+sub trusted  { wantarray ? @{ $_[0]->{trusted} } : [ @{ $_[0]->{trusted} } ] }
 
 ##############################################################################
 

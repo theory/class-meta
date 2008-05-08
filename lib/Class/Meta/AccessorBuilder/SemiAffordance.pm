@@ -14,10 +14,12 @@ Class::Meta::AccessorBuilder::SemiAffordance - Semi-Affordance style accessor ge
   use Class::Meta::Type;
   use IO::Socket;
 
-  my $type = Class::Meta::Type->add( key     => 'io_socket',
-                                     builder => 'semi-affordance',
-                                     desc    => 'IO::Socket object',
-                                     name    => 'IO::Socket Object' );
+  my $type = Class::Meta::Type->add(
+      key     => 'io_socket',
+      builder => 'semi-affordance',
+      desc    => 'IO::Socket object',
+      name    => 'IO::Socket Object'
+  );
 
 =head1 DESCRIPTION
 

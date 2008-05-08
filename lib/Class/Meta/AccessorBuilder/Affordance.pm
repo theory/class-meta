@@ -14,10 +14,12 @@ Class::Meta::AccessorBuilder::Affordance - Affordance style accessor generation
   use Class::Meta::Type;
   use IO::Socket;
 
-  my $type = Class::Meta::Type->add( key     => 'io_socket',
-                                     builder => 'affordance',
-                                     desc    => 'IO::Socket object',
-                                     name    => 'IO::Socket Object' );
+  my $type = Class::Meta::Type->add(
+      key     => 'io_socket',
+      builder => 'affordance',
+      desc    => 'IO::Socket object',
+      name    => 'IO::Socket Object'
+  );
 
 =head1 DESCRIPTION
 
@@ -160,7 +162,7 @@ object passed to the code reference.
 =head3 build
 
   Class::Meta::AccessorBuilder::Affordance::build(
-    $pkg, $attribute, $create, @checks
+      $pkg, $attribute, $create, @checks
   );
 
 This method is called by the C<build()> method of Class::Meta::Type, and does
@@ -319,8 +321,7 @@ sub _build {
             };
         }
     } elsif ($attr->view == Class::Meta::TRUSTED) {
-        # XXX Should we have an accessor for this?
-        my $trusted = $attr->class->{trusted};
+        my $trusted = $attr->class->trusted;
         for ($get, $set) {
             my $real_sub = $_ or next;
             $_ = sub {

@@ -3,7 +3,7 @@
 # $Id$
 
 use strict;
-use Test::More tests => 13;
+use Test::More tests => 15;
 BEGIN { use_ok( 'Class::Meta') }
 
 # Make sure we can't instantiate a class object from here.
@@ -20,11 +20,14 @@ use base 'Class::Meta';
 Test::More->import;
 
 # Set up simple settings.
-my $spec = { desc  => 'Foo Class description',
-             package => 'FooClass',
-             class => Class::Meta->new->class,
-             error_handler => Class::Meta->default_error_handler,
-             key   => 'foo' };
+my $spec = {
+    desc          => 'Foo Class description',
+    package       => 'FooClass',
+    class         => Class::Meta->new->class,
+    error_handler => Class::Meta->default_error_handler,
+    key           => 'foo',
+    trust         => 'Bar',
+};
 
 # This should be okay.
 ok( $class = Class::Meta::Class->new($spec),
@@ -34,6 +37,8 @@ ok( $class = Class::Meta::Class->new($spec),
 is( $class->name, ucfirst $spec->{key}, 'name' );
 is( $class->desc, $spec->{desc}, 'desc' );
 is( $class->key, $spec->{key}, 'key' );
+is_deeply( scalar $class->trusted, ['Bar'], 'trusted in scalar context' );
+is_deeply( [ $class->trusted ], ['Bar'], 'trusted in list context' );
 
 # Now try inheritance for Class.
 package Class::Meta::Class::Sub;

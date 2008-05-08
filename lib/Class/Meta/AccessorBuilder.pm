@@ -14,10 +14,12 @@ Class::Meta::AccessorBuilder - Perl style accessor generation
   use Class::Meta::Type;
   use IO::Socket;
 
-  my $type = Class::Meta::Type->add( key     => 'io_socket',
-                                     builder => 'default',
-                                     desc    => 'IO::Socket object',
-                                     name    => 'IO::Socket Object' );
+  my $type = Class::Meta::Type->add(
+      key     => 'io_socket',
+      builder => 'default',
+      desc    => 'IO::Socket object',
+      name    => 'IO::Socket Object'
+  );
 
 =head1 DESCRIPTION
 
@@ -352,8 +354,7 @@ sub build {
          };
     } elsif ($attr->view == Class::Meta::TRUSTED) {
         my $real_sub = $sub;
-        # XXX Should we have an accessor for this?
-        my $trusted = $attr->class->{trusted};
+        my $trusted = $attr->class->trusted;
         $sub = sub {
              my $caller = caller;
              # Circumvent generated constructors.

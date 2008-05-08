@@ -17,6 +17,7 @@ Revision history for Perl extension Class::Meta.
         the bottom. Suggested by Jon Swartz.
       - The "view" parameter is now enforced for methods when the method body
         is passed via the "code" parameter. Reported by Jon Swartz.
+      - Added the `trusted` method to Class::Meta::Class.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to

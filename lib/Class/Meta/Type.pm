@@ -14,13 +14,16 @@ Class::Meta::Type - Data type validation and accessor building.
   use Class::Meta::Type;
   use IO::Socket;
 
-  my $type = Class::Meta::Type->add( key  => 'io_socket',
-                                     desc => 'IO::Socket object',
-                                     name => 'IO::Socket Object' );
+  my $type = Class::Meta::Type->add(
+      key  => 'io_socket',
+      desc => 'IO::Socket object',
+      name => 'IO::Socket Object'
+  );
 
 =head1 DESCRIPTION
 
-This class stores the various data types used by C<Class::Meta>. It manages
+This class stores the various data types us
+ed by C<Class::Meta>. It manages
 all aspects of data type validation and method creation. New data types can be
 added to Class::Meta::Type by means of the C<add()> constructor. This is
 useful for creating custom types for your Class::Meta-built classes.
@@ -171,9 +174,11 @@ types.
 
 =head2 add
 
-  my $type = Class::Meta::Type->add( key  => 'io_socket',
-                                     name => 'IO::Socket Object',
-                                     desc => 'IO::Socket object' );
+  my $type = Class::Meta::Type->add(
+      key  => 'io_socket',
+      name => 'IO::Socket Object',
+      desc => 'IO::Socket object'
+  );
 
 Creates a new data type definition and stores it for future use. Use this
 constructor to add new data types to meet the needs of your class. The named
@@ -183,9 +188,9 @@ parameter arguments are:
 
 =item key
 
-Required. The key with which the data type can be looked up in the future via a
-call to C<new()>. Note that the key will be used case-insensitively, so "foo",
-"Foo", and "FOO" are equivalent, and the key must be unique.
+Required. The key with which the data type can be looked up in the future via
+a call to C<new()>. Note that the key will be used case-insensitively, so
+"foo", "Foo", and "FOO" are equivalent, and the key must be unique.
 
 =item name
 
@@ -203,9 +208,9 @@ The check parameter can be specified in any of the following ways:
 
 As a code reference. When Class::Meta executes this code reference, it will
 pass in the value to check, the object for which the attribute will be set,
-and the Class::Meta::Attribute object describing the attribute. If the attribute
-is a class attribute, then the second argument will not be an object, but a
-hash reference with two keys:
+and the Class::Meta::Attribute object describing the attribute. If the
+attribute is a class attribute, then the second argument will not be an
+object, but a hash reference with two keys:
 
 =over 8
 
@@ -285,9 +290,9 @@ course.
 =item "affordance"
 
 The string 'default' uses Class::Meta::Type's affordance accessor building
-code, provided by Class::Meta::AccessorBuilder::Affordance. Affordance accessors
-provide two accessors for an attribute, a C<get_*> accessor and a C<set_*>
-mutator. See
+code, provided by Class::Meta::AccessorBuilder::Affordance. Affordance
+accessors provide two accessors for an attribute, a C<get_*> accessor and a
+C<set_*> mutator. See
 L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 for more information.
 
@@ -306,8 +311,8 @@ for more information.
 Pass in the name of a package that contains the functions C<build()>,
 C<build_attr_get()>, and C<build_attr_set()>. These functions will be used to
 create the necessary accessors for an attribute. See L<Custom Accessor
-Building|"Custom Accessor Building"> for details on creating your own
-accessor builders.
+Building|"Custom Accessor Building"> for details on creating your own accessor
+builders.
 
 =back
 
@@ -318,10 +323,10 @@ accessor builders.
     sub add {
         my $pkg = shift;
         # Make sure we can process the parameters.
-        Class::Meta->handle_error("Odd number of parameters in "
-                                            . "call to new() when named "
-                                            . "parameters were expected")
-            if @_ % 2;
+        Class::Meta->handle_error(
+            'Odd number of parameters in call to new() when named '
+                . 'parameters were expected'
+            ) if @_ % 2;
 
         my %params = @_;
 
@@ -601,20 +606,24 @@ and you're happy with the accessors that Class::Meta will create for you. For
 example, if you needed a data type for a DateTime object, you can set it
 up--complete with validation of the data type, like this:
 
-  my $type = Class::Meta::Type->add( key   => 'datetime',
-                                     check => 'DateTime',
-                                     desc  => 'DateTime object',
-                                     name  => 'DateTime Object' );
+  my $type = Class::Meta::Type->add(
+      key   => 'datetime',
+      check => 'DateTime',
+      desc  => 'DateTime object',
+      name  => 'DateTime Object'
+  );
 
 From then on, you can create attributes of the type "datetime" without any
 further work. If you wanted to use affordance accessors, you'd simply
 add the requisite C<builder> attribute:
 
-  my $type = Class::Meta::Type->add( key     => 'datetime',
-                                     check   => 'DateTime',
-                                     builder => 'affordance',
-                                     desc    => 'DateTime object',
-                                     name    => 'DateTime Object' );
+  my $type = Class::Meta::Type->add(
+      key     => 'datetime',
+      check   => 'DateTime',
+      builder => 'affordance',
+      desc    => 'DateTime object',
+      name    => 'DateTime Object'
+  );
 
 The same goes for using semi-affordance accessors.
 
@@ -630,10 +639,12 @@ like this:
       die "Value is not a number" unless $value =~ /^[1..5]$/;
   };
 
-  my $type = Class::Meta::Type->add( key   => 'range',
-                                     check => $range_chk,
-                                     desc  => 'Pick a number between 1 and 5',
-                                     name  => 'Range (1-5)' );
+  my $type = Class::Meta::Type->add(
+      key   => 'range',
+      check => $range_chk,
+      desc  => 'Pick a number between 1 and 5',
+      name  => 'Range (1-5)'
+  );
 
 Of course, the above value validator will throw an exception with the
 line number from which C<die> is called. Even better is to use L<Carp|Carp>
