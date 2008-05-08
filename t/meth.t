@@ -7,7 +7,9 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 54;
+use Test::More tests => 102;
+use File::Spec;
+my $fn = File::Spec->catfile('t', 'meth.t');
 
 ##############################################################################
 # Create a simple class.
@@ -177,3 +179,96 @@ isa_ok($meth, 'Class::Meta::Method');
 is( $meth->name, 'foo', "Check an attibute");
 is( $meth->foo, 'bar', "Check added attibute");
 
+##############################################################################
+# Now try enforcing method views.
+VIEW: {
+    package My::View;
+    use Test::More;
+
+    BEGIN {
+        ok my $cm = Class::Meta->new(
+            key     => 'view',
+            package => __PACKAGE__,
+            trust   => 'My::Trust',
+        ), 'Create CM object';
+
+        ok $cm->add_constructor( name => 'new' ), 'Add a constructor';
+        ok $cm->add_method(
+            name => 'public',
+            view => Class::Meta::PUBLIC,
+            code => sub { },
+        ), 'Add a public method';
+        ok $cm->add_method(
+            name => 'private',
+            view => Class::Meta::PRIVATE,
+            code => sub { },
+        ), 'Add a private method';
+        ok $cm->add_method(
+            name => 'trusted',
+            view => Class::Meta::TRUSTED,
+            code => sub { },
+        ), 'Add a trusted method';
+        ok $cm->add_method(
+            name => 'protected',
+            view => Class::Meta::PROTECTED,
+            code => sub { },
+        ), 'Add a protected method';
+
+        ok $cm->build, 'Build the class';
+    };
+
+    ok my $view = My::View->new, 'Create new private view object';
+    is undef, $view->public,     'Should be able to access public';
+    is undef, $view->private,    'Should be able to access private';
+    is undef, $view->trusted,    'Should be able to access trusted';
+    is undef, $view->protected,  'Should be able to access protected';
+}
+
+# Make sure that visibility is enforced.
+ok my $view = My::View->new, 'Create new public view object';
+is undef, $view->public,     'Should be able to access public';
+eval { $view->private };
+chk( 'private exception', qr/private is a private method of My::View/);
+eval { $view->trusted };
+chk( 'trusted exception', qr/trusted is a trusted method of My::View/);
+eval { $view->protected };
+chk( 'protected exception', qr/protected is a protected method of My::View/);
+
+# Check visibility in an inherited class.
+INHERIT: {
+    package My::Viewer;
+    use base 'My::View';
+    use Test::More;
+    ok my $view = My::View->new, 'Create new inherited view object';
+    is undef, $view->public,     'Should be able to access public';
+    eval { $view->private };
+    main::chk( 'private exception', qr/private is a private method of My::View/);
+    eval { $view->trusted };
+    main::chk( 'trusted exception', qr/trusted is a trusted method of My::View/);
+    is undef, $view->protected,  'Should be able to access protected';
+}
+
+# Check visibility in a trusted class.
+TRUST: {
+    package My::Trust;
+    use Test::More;
+    ok my $view = My::View->new, 'Create new trusted view object';
+    is undef, $view->public,     'Should be able to access public';
+    eval { $view->private };
+    main::chk( 'private exception', qr/private is a private method of My::View/);
+    is undef, $view->trusted,    'Should be able to access trusted';
+    eval { $view->protected };
+    main::chk( 'protected exception', qr/protected is a protected method of My::View/);
+}
+
+sub chk {
+    my ($name, $qr) = @_;
+    # Catch the exception.
+    ok( my $err = $@, "Caught $name error" );
+    # Check its message.
+    like( $err, $qr, "Correct error" );
+    # Make sure it refers to this file.
+    like( $err, qr/(?:at\s+\Q$fn\E|\Q$fn\E\s+at)\s+line/, 'Correct context' );
+    # Make sure it doesn't refer to other Class::Meta files.
+    unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
+}

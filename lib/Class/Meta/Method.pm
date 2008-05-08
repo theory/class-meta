@@ -296,6 +296,39 @@ sub build {
     if (my $code = delete $self->{code}) {
         my $pack = $self->package;
         my $name = $self->{name};
+        if ($self->{view} < Class::Meta::PUBLIC ) {
+            # Add a constraint to the code ref.
+            my $real_meth = $code;
+            if ($self->{view} == Class::Meta::PROTECTED) {
+                $code = sub {
+                    $self->class->handle_error(
+                        "$name is a protected method of $pack"
+                    ) unless UNIVERSAL::isa(scalar caller, $pack);
+                    goto &$real_meth;
+                };
+            } elsif ($self->{view} == Class::Meta::PRIVATE) {
+                $code = sub {
+                    $self->class->handle_error(
+                        "$name is a private method of $pack"
+                    ) unless caller eq $pack;
+                    goto &$real_meth;
+                };
+            } elsif ($self->{view} == Class::Meta::TRUSTED) {
+                # XXX Should we have an accessor for this?
+                my $trusted = $self->class->{trusted};
+                $code = sub {
+                    my $caller = caller;
+                    goto &$real_meth if $caller eq $pack;
+                    for my $pkg ( @{ $trusted } ) {
+                        goto &$real_meth if UNIVERSAL::isa($caller, $pkg);
+                    }
+                    $self->class->handle_error(
+                        "$name is a trusted method of $pack"
+                    );
+                };
+            }
+        }
+
         no strict 'refs';
         *{"$pack\::$name"} = $code;
     }

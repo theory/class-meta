@@ -15,6 +15,8 @@ Revision history for Perl extension Class::Meta.
       - Added a link to the Subversion repository.
       - Moved the "Justification" section of the documentation nearer to
         the bottom. Suggested by Jon Swartz.
+      - The "view" parameter is now enforced for methods when the method body
+        is passed via the "code" parameter. Reported by Jon Swartz.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to
