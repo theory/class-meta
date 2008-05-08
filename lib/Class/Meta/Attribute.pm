@@ -171,6 +171,18 @@ sub new {
         $p{context} = Class::Meta::OBJECT;
     }
 
+    # Check the type.
+    $p{type} = delete $p{is} if exists $p{is};
+    $class->handle_error( "No type specified for the '$p{name}' attribute" )
+        unless $p{type};
+    unless ( eval { Class::Meta::Type->new($p{type}) } ) {
+        my $pkg = $type_pkg_for{ $p{type} }
+            or $class->handle_error( "Unknown type: '$p{type}'" );
+        eval "require Class::Meta::Types::$pkg";
+        $class->handle_error( "Unknown type: '$p{type}'" ) if $@;
+        "Class::Meta::Types::$pkg"->import;
+    }
+
     # Check the default.
     if (exists $p{default}) {
         # A code ref should be executed when the default is called.
@@ -424,27 +436,17 @@ sub build {
     # Check to make sure that only Class::Meta or a subclass is building
     # attribute accessors.
     my $caller = caller;
-    $self->class->handle_error("Package '$caller' cannot call " . ref($self)
-                               . "->build")
-      unless UNIVERSAL::isa($caller, 'Class::Meta')
-        || UNIVERSAL::isa($caller, __PACKAGE__);
+    $self->class->handle_error(
+        "Package '$caller' cannot call " . ref($self) . "->build"
+    ) unless UNIVERSAL::isa($caller, 'Class::Meta')
+          || UNIVERSAL::isa($caller, __PACKAGE__);
 
-    # Get the data type object, replace any alias, and assemble the
-    # validation checks.
-    $self->{type} = delete $self->{is} if exists $self->{is};
-    my $type = eval { Class::Meta::Type->new($self->{type}) };
-    unless ($type) {
-        my $pkg = $type_pkg_for{ $self->{type} } or die $@;
-        eval "require Class::Meta::Types::$pkg";
-        die $@ if $@;
-        "Class::Meta::Types::$pkg"->import;
-        $type = Class::Meta::Type->new($self->{type});
-    }
-
+    # Get the data type object and build any accessors.
+    my $type = Class::Meta::Type->new($self->{type});
     $self->{type} = $type->key;
     my $create = delete $self->{create};
     $type->build($class->{package}, $self, $create)
-      if $create != Class::Meta::NONE;
+        if $create != Class::Meta::NONE;
 
     # Create the attribute object get code reference.
     if ($self->{authz} >= Class::Meta::READ) {

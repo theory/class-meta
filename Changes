@@ -23,6 +23,8 @@ Revision history for Perl extension Class::Meta.
         equivalent constant names, such as "PUBLIC", "PRIVATE", "GET", "SET",
         "OBJECT", "CLASS", and so on. The corresponding constant value
         will, however, be stored in the resulting Class::Meta object.
+      - A more useful exception is now thrown when an attribute is assed
+        with a missing or unknown type.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to

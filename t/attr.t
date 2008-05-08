@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # $Id$
 
@@ -7,7 +7,8 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 52;
+use Test::More tests => 57;
+use Carp;
 
 ##############################################################################
 # Create a simple class.
@@ -15,13 +16,12 @@ use Test::More tests => 52;
 
 package Class::Meta::TestPerson;
 use strict;
+use Test::More;
 
 # Make sure we can load Class::Meta.
 BEGIN {
-    Test::More->import;
     use_ok( 'Class::Meta' );
     use_ok( 'Class::Meta::Types::String' );
-
 }
 
 BEGIN {
@@ -37,6 +37,7 @@ BEGIN {
         type  => 'string',
         desc  => 'The inst attribute',
         label => 'inst Attribute',
+        create => 'NONE',
         view  => Class::Meta::PUBLIC,
     ), 'Create "inst" attr';
     isa_ok($attr, 'Class::Meta::Attribute');
@@ -86,9 +87,28 @@ BEGIN {
     like( $err, qr/Parameter caller must be a code reference/,
         "Caught proper bogus caller exception");
 
+    # Try a bogus type.
+    eval { $c->add_attribute(
+        name => 'bogus',
+        type => 'bogus',
+    ) };
+    ok( $err = $@, "Caught bogus type exception");
+    like( $err, qr/Unknown type: 'bogus'/,
+        "Caught proper bogus type exception");
+
+    # Add an attribute with no type.
+    eval { $c->add_attribute( name => 'no_type' ) };
+    ok( $err = $@, "Caught missing type exception");
+    like( $err, qr/No type specified for the 'no_type' attribute/,
+        "Caught missing type exception");
+
     # Now test all of the defaults.
     sub new_attr { 22 }
-    ok( $attr = $c->add_attribute( name => 'new_attr' ), "Create 'new_attr'" );
+    ok( $attr = $c->add_attribute(
+        name => 'new_attr',
+        type => 'scalar',
+        create => 'NONE',
+    ), "Create 'new_attr'" );
     isa_ok($attr, 'Class::Meta::Attribute');
 
     # Test its accessors.
@@ -96,6 +116,8 @@ BEGIN {
     ok( ! defined $attr->desc, "Check new_attr desc" );
     ok( ! defined $attr->label, "Check new_attr label" );
     ok( $attr->view == Class::Meta::PUBLIC, "Check new_attr view" );
+
+    ok $c->build, 'Build the class';
 }
 
 # Now try subclassing Class::Meta.
@@ -120,7 +142,7 @@ BEGIN {
     isa_ok($c, 'Class::Meta::SubClass');
 
     sub foo_attr { bless {} }
-    ok( my $attr = $c->add_attribute( name => 'foo_attr'),
+    ok( my $attr = $c->add_attribute( name => 'foo_attr', type => 'scalar'),
         'Create subclassed foo_attr' );
 
     isa_ok($attr, 'Class::Meta::Attribute');
@@ -147,7 +169,7 @@ package main;
 ok( my $cm = Class::Meta->new(
     attribute_class => 'Class::Meta::Attribute::Sub',
 ), "Create Class" );
-ok( my $attr = $cm->add_attribute(name => 'foo', foo => 'bar'),
+ok( my $attr = $cm->add_attribute(name => 'foo', foo => 'bar', type => 'scalar'),
     "Add foo attribute" );
 isa_ok($attr, 'Class::Meta::Attribute::Sub');
 isa_ok($attr, 'Class::Meta::Attribute');
@@ -173,7 +195,7 @@ STRINGS: {
 }
 
 ok my $class = My::Strings->my_class, 'Get the class object';
-ok my $attr = $class->attributes( 'foo' ), 'Get the "foo" attribute';
+ok $attr = $class->attributes( 'foo' ), 'Get the "foo" attribute';
 is $attr->view, Class::Meta::PUBLIC, 'The view should be PUBLIC';
 is $attr->authz, Class::Meta::RDWR, 'The authz should be RDWR';
 is $attr->context, Class::Meta::OBJECT, 'The context should be OBJECT';

@@ -62,8 +62,9 @@ my $class_validation_generator = sub {
         sub {
             return unless defined $_[0];
             UNIVERSAL::isa($_[0], $pkg)
-              or $_[2]->class->handle_error("Value '$_[0]' is not a valid "
-                                           . "$type");
+              or $_[2]->class->handle_error(
+                  "Value '$_[0]' is not a valid $type"
+              );
             }
     ];
 };
