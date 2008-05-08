@@ -3,7 +3,7 @@
 # $Id$
 
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 16;
 BEGIN { use_ok( 'Class::Meta') }
 
 # Make sure we can't instantiate a class object from here.
@@ -27,6 +27,7 @@ my $spec = {
     error_handler => Class::Meta->default_error_handler,
     key           => 'foo',
     trust         => 'Bar',
+    default_type  => 'string',
 };
 
 # This should be okay.
@@ -39,6 +40,7 @@ is( $class->desc, $spec->{desc}, 'desc' );
 is( $class->key, $spec->{key}, 'key' );
 is_deeply( scalar $class->trusted, ['Bar'], 'trusted in scalar context' );
 is_deeply( [ $class->trusted ], ['Bar'], 'trusted in list context' );
+is( $class->default_type, 'string', 'default_type' );
 
 # Now try inheritance for Class.
 package Class::Meta::Class::Sub;

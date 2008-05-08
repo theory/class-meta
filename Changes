@@ -25,6 +25,10 @@ Revision history for Perl extension Class::Meta.
         will, however, be stored in the resulting Class::Meta object.
       - A more useful exception is now thrown when an attribute is assed
         with a missing or unknown type.
+      - Added the `default_type` parameter to `new()`, and the corresponding
+        attribute to Class::Meta::Class. This value will be used for the
+        data type of attributes created without a data type. Borrowed from
+        Class::Meta::Express.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to

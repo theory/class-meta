@@ -141,6 +141,13 @@ Returns a description of the class.
 
 Returns true if the class is an abstract class, and false if it is not.
 
+=head3 default_type
+
+  my $default_type = $class->default_type;
+
+The data type used for attributes of the class that were added with no
+explicit types.
+
 =head3 trusted
 
   my @trusted = $class->trusted;
@@ -156,6 +163,7 @@ sub key      { $_[0]->{key}      }
 sub name     { $_[0]->{name}     }
 sub desc     { $_[0]->{desc}     }
 sub abstract { $_[0]->{abstract} }
+sub default_type { $_[0]->{default_type} }
 sub trusted  { wantarray ? @{ $_[0]->{trusted} } : [ @{ $_[0]->{trusted} } ] }
 
 ##############################################################################

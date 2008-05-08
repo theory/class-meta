@@ -173,6 +173,7 @@ sub new {
 
     # Check the type.
     $p{type} = delete $p{is} if exists $p{is};
+    $p{type} ||= $class->default_type;
     $class->handle_error( "No type specified for the '$p{name}' attribute" )
         unless $p{type};
     unless ( eval { Class::Meta::Type->new($p{type}) } ) {

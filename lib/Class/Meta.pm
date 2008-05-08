@@ -17,7 +17,10 @@ Generate a class:
   BEGIN {
 
       # Create a Class::Meta object for this class.
-      my $cm = Class::Meta->new( key => 'thingy' );
+      my $cm = Class::Meta->new(
+          key          => 'thingy',
+          default_type => 'string',
+      );
 
       # Add a constructor.
       $cm->add_constructor(
@@ -29,14 +32,12 @@ Generate a class:
       $cm->add_attribute(
           name     => 'uuid',
           authz    => 'READ',
-          type     => 'string',
           required => 1,
           default  => sub { Data::UUID->new->create_str },
       );
       $cm->add_attribute(
           name     => 'name',
           is       => 'string',
-          required => 1,
           default  => undef,
       );
       $cm->add_attribute(
@@ -628,6 +629,11 @@ abstract class, also known as a "virtual" class, is not intended to be used
 directly. No objects of an abstract class should every be created. Instead,
 classes that inherit from an abstract class must be implemented.
 
+=item default_type
+
+A data type to use for attributes added to the class with no explicit data
+type. See L</"Data Types"> for some possible values for this parameter.
+
 =item trust
 
 An array reference of key names or packages that are trusted by the class.
@@ -969,9 +975,10 @@ characters or "_". Required.
 
 The data type of the attribute. See L</"Data Types"> for some possible values
 for this parameter. If the type name corresponds to a data type in a package
-in the Class::Meta::Types namespae, that package will automatically be loaded
+in the Class::Meta::Types namespace, that package will automatically be loaded
 and configured with Perl-style accessors, so that the data type can simply be
-used. Required. If both C<type> and C<is> are passed, C<is> will be used.
+used. If both C<type> and C<is> are passed, C<is> will be used. Required
+unless the class was declared with a C<default_type>.
 
 =item required
 

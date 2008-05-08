@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 57;
+use Test::More tests => 63;
 use Carp;
 
 ##############################################################################
@@ -200,3 +200,21 @@ is $attr->view, Class::Meta::PUBLIC, 'The view should be PUBLIC';
 is $attr->authz, Class::Meta::RDWR, 'The authz should be RDWR';
 is $attr->context, Class::Meta::OBJECT, 'The context should be OBJECT';
 
+##############################################################################
+# Now create a class with a default type.
+STRINGS: {
+    package My::DefType;
+    use Test::More;
+    ok my $cm = Class::Meta->new(
+        key          => 'def_type',
+        default_type => 'integer',
+    ), 'Create def_type meta object';
+    ok $cm->add_attribute(
+        name    => 'foo',
+    ), 'Add an attribute with no type';
+    ok $cm->build, 'Build the class';
+}
+
+ok $class = My::DefType->my_class, 'Get the class object';
+ok $attr = $class->attributes( 'foo' ), 'Get the "foo" attribute';
+is $attr->type, 'integer', 'Its type should be "integer"';
