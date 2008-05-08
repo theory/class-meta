@@ -362,7 +362,7 @@ sub build {
              }
 
              goto &$real_sub if $caller eq $pkg;
-             for my $pack ( @{$trusted}) {
+             for my $pack (@{$trusted}) {
                  goto &$real_sub if UNIVERSAL::isa($caller, $pack);
              }
              $attr->class->handle_error("$name is a trusted attribute of $pkg");
