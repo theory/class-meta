@@ -28,7 +28,7 @@ Generate a class:
       # Add a couple of attributes with generated methods.
       $cm->add_attribute(
           name     => 'uuid',
-          authz    => Class::Meta::READ,
+          authz    => 'READ',
           type     => 'string',
           required => 1,
           default  => sub { Data::UUID->new->create_str },
@@ -48,7 +48,7 @@ Generate a class:
      # Add a custom method.
       $cm->add_method(
           name => 'chk_pass',
-          view => Class::Meta::PUBLIC,
+          view => 'PUBLIC',
           code => sub { ... },
       );
   }
@@ -66,7 +66,7 @@ recommended!):
       meta thingy => ( default_type => 'string' );
       ctor 'new';
       has  uuid => (
-        authz    => Class::Meta::READ,
+        authz    => 'READ',
         required => 1,
         deafult  => sub { Data::UUID->new->create_str },
       );
@@ -733,7 +733,7 @@ our $VERSION = '0.60';
 ##############################################################################
 # Private Package Globals
 ##############################################################################
-{
+CLASS: {
     my (%classes, %keys);
     my $error_handler = sub {
         require Carp;
@@ -889,7 +889,11 @@ Can only be used by the declaring class or by classes that inherit from it.
 
 =back
 
-Defaults to Class::Meta::PUBLIC if not defined.
+Defaults to Class::Meta::PUBLIC if not defined. You can also use strings
+aliases to the above constants, although the contstans values will actually be
+stored in the L<Class::Meta::Constructor|Class::Meta::Constructor> object,
+rather than the string. The supported strings are "PUBLIC", "PRIVATE",
+"TRUSTED", and "PROTECTED".
 
 =item caller
 
@@ -1012,7 +1016,10 @@ defined by the following constants:
 
 =back
 
-Defaults to Class::Meta::RDWR if not defined.
+Defaults to Class::Meta::RDWR if not defined. You can also use strings aliases
+to the above constants, although the contstans values will actually be stored
+in the L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than
+the string. The supported strings are "READ", "WRITE", "RDWR", and "NONE".
 
 =item create
 
@@ -1039,6 +1046,11 @@ Create no accessors.
 
 =back
 
+You can also use strings aliases to the above constants, although the
+contstans values will actually be stored in the
+L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than the
+string. The supported strings are "GET", "SET", "GETSET", and "NONE".
+
 If not unspecified, the value of the C<create> parameter will correspond to
 the value of the C<authz> parameter like so:
 
@@ -1055,10 +1067,12 @@ Class::Meta to do so. For example, if you were using standard Perl-style
 accessors, and needed to do something a little different by coding your own
 accessor, you'd specify it like this:
 
-  $cm->add_attribute( name   => $name,
-                      type   => $type,
-                      authz  => Class::Meta::RDWR,
-                      create => Class::Meta::NONE );
+  $cm->add_attribute(
+      name   => $name,
+      type   => $type,
+      authz  => Class::Meta::RDWR,
+      create => Class::Meta::NONE
+  );
 
 Just be sure that your custom accessor compiles before you call
 C<< $cm->build >> so that Class::Meta::Attribute can get a handle on it for
@@ -1077,6 +1091,11 @@ constants:
 =item Class::Meta::OBJECT
 
 =back
+
+You can also use strings aliases to the above constants, although the
+contstans values will actually be stored in the
+L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than the
+string. The supported strings are "CLASS", and "OBJECT".
 
 =item default
 
@@ -1240,6 +1259,14 @@ C<my_class()> class method, and all requisite constructors and accessors.
 
         return $self;
     }
+}
+
+# Trusted function to convert strings to their contstant values.
+sub _str_to_const {
+    my $val = shift;
+    return $val if !$val || $val !~ /\w/;
+    my $view = eval "Class::Meta::\U$val" or return $val;
+    return $view;
 }
 
 1;

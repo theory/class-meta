@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 102;
+use Test::More tests => 109;
 use File::Spec;
 my $fn = File::Spec->catfile('t', 'meth.t');
 
@@ -260,6 +260,26 @@ TRUST: {
     eval { $view->protected };
     main::chk( 'protected exception', qr/protected is a protected method of My::View/);
 }
+
+##############################################################################
+# Now create a class using strings instead of contants.
+STRINGS: {
+    package My::Strings;
+    use Test::More;
+    ok my $cm = Class::Meta->new( key => 'strings' ),
+        'Create strings meta object';
+    ok $cm->add_method(
+        name    => 'foo',
+        view    => 'PUBLIC',
+        context => 'Object',
+    ), 'Add a method using strings for constant values';
+    ok $cm->build, 'Build the class';
+}
+
+ok my $class = My::Strings->my_class, 'Get the class object';
+ok my $attr = $class->methods( 'foo' ), 'Get the "foo" method';
+is $attr->view, Class::Meta::PUBLIC, 'The view should be PUBLIC';
+is $attr->context, Class::Meta::OBJECT, 'The context should be OBJECT';
 
 sub chk {
     my ($name, $qr) = @_;

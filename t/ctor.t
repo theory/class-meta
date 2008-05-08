@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 70;
+use Test::More tests => 76;
 
 ##############################################################################
 # Create a simple class.
@@ -250,3 +250,22 @@ like $err, qr/Attribute 'foo' must be defined in Try::Passing::Sub objects/,
 ok $try = Try::Passing::Sub->new( sub { shift->foo('howdy') } ),
     'Set the required value in the passed sub';
 is $try->foo, 'howdy', 'And that value should be properly set';
+
+##############################################################################
+# Now create a class using strings instead of contants.
+STRINGS: {
+    package My::Strings;
+    use Test::More;
+    ok my $cm = Class::Meta->new( key => 'strings' ),
+        'Create strings meta object';
+    ok $cm->add_constructor(
+        name    => 'new',
+        view    => 'PUBLIC',
+    ), 'Add a method using strings for constant values';
+    ok $cm->build, 'Build the class';
+}
+
+ok my $class = My::Strings->my_class, 'Get the class object';
+ok my $attr = $class->constructors( 'new' ), 'Get the "new" constructor';
+is $attr->view, Class::Meta::PUBLIC, 'The view should be PUBLIC';
+

@@ -119,6 +119,7 @@ sub new {
 
     # Check the view.
     if (exists $p{view}) {
+        $p{view} = Class::Meta::_str_to_const($p{view});
         $class->handle_error(
             "Not a valid view parameter: '$p{view}'"
         ) unless $p{view} == Class::Meta::PUBLIC
@@ -132,6 +133,7 @@ sub new {
 
     # Check the authorization level.
     if (exists $p{authz}) {
+        $p{authz} = Class::Meta::_str_to_const($p{authz});
         $class->handle_error(
             "Not a valid authz parameter: '$p{authz}'"
         ) unless $p{authz} == Class::Meta::NONE
@@ -145,6 +147,7 @@ sub new {
 
     # Check the creation constant.
     if (exists $p{create}) {
+        $p{create} = Class::Meta::_str_to_const($p{create});
         $class->handle_error(
             "Not a valid create parameter: '$p{create}'"
         ) unless $p{create} == Class::Meta::NONE
@@ -158,6 +161,7 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
+        $p{context} = Class::Meta::_str_to_const($p{context});
         $class->handle_error(
             "Not a valid context parameter: '$p{context}'"
         ) unless $p{context} == Class::Meta::OBJECT

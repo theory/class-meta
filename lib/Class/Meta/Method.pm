@@ -89,6 +89,7 @@ sub new {
 
     # Check the visibility.
     if (exists $p{view}) {
+        $p{view} = Class::Meta::_str_to_const($p{view});
         $class->handle_error("Not a valid view parameter: '$p{view}'")
           unless $p{view} == Class::Meta::PUBLIC
           ||     $p{view} == Class::Meta::PROTECTED
@@ -101,6 +102,7 @@ sub new {
 
     # Check the context.
     if (exists $p{context}) {
+        $p{context} = Class::Meta::_str_to_const($p{context});
         $class->handle_error("Not a valid context parameter: "
                                      . "'$p{context}'")
           unless $p{context} == Class::Meta::OBJECT

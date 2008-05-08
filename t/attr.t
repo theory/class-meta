@@ -7,7 +7,7 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 44;
+use Test::More tests => 52;
 
 ##############################################################################
 # Create a simple class.
@@ -153,4 +153,28 @@ isa_ok($attr, 'Class::Meta::Attribute::Sub');
 isa_ok($attr, 'Class::Meta::Attribute');
 is( $attr->name, 'foo', "Check an attibute");
 is( $attr->foo, 'bar', "Check added attribute" );
+
+##############################################################################
+# Now create a class using strings instead of contants.
+STRINGS: {
+    package My::Strings;
+    use Test::More;
+    ok my $cm = Class::Meta->new( key => 'strings' ),
+        'Create strings meta object';
+    ok $cm->add_attribute(
+        name    => 'foo',
+        type    => 'string',
+        view    => 'PUBLIC',
+        authz   => 'RDWR',
+        create  => 'GETSET',
+        context => 'Object',
+    ), 'Add an attribute using strings for constant values';
+    ok $cm->build, 'Build the class';
+}
+
+ok my $class = My::Strings->my_class, 'Get the class object';
+ok my $attr = $class->attributes( 'foo' ), 'Get the "foo" attribute';
+is $attr->view, Class::Meta::PUBLIC, 'The view should be PUBLIC';
+is $attr->authz, Class::Meta::RDWR, 'The authz should be RDWR';
+is $attr->context, Class::Meta::OBJECT, 'The context should be OBJECT';
 
