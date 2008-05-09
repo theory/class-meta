@@ -7,11 +7,20 @@
 ##############################################################################
 
 use strict;
-use Test::More tests => 129;
+use Test::More tests => 140;
 
 ##############################################################################
 # Create a simple class.
 ##############################################################################
+
+package My::Meta::Class;
+use base 'Class::Meta::Class';
+package My::Meta::Method;
+use base 'Class::Meta::Method';
+package My::Meta::Attribute;
+use base 'Class::Meta::Attribute';
+package My::Meta::Constructor;
+use base 'Class::Meta::Constructor';
 
 package Test::One;
 
@@ -23,53 +32,60 @@ BEGIN {
 }
 
 BEGIN {
-    ok( my $c = Class::Meta->new( key     => 'one',
-                                  package => __PACKAGE__,
-                                  name    => 'One Class',
-                                  desc    => 'Test One Class.'),
-        "Create One's Class::Meta" );
+    ok( my $c = Class::Meta->new(
+        key               => 'one',
+        package           => __PACKAGE__,
+        name              => 'One Class',
+        desc              => 'Test One Class.',
+        default_type      => 'string',
+        class_class       => 'My::Meta::Class',
+        method_class      => 'My::Meta::Method',
+        attribute_class   => 'My::Meta::Attribute',
+        constructor_class => 'My::Meta::Constructor',
+    ), "Create One's Class::Meta" );
 
     # Add a constructor.
-    ok( $c->add_constructor( name => 'new',
-                             create  => 1 ),
-        "Create One's construtor" );
+    ok( $c->add_constructor(
+        name => 'new',
+        create  => 1,
+    ), "Create One's construtor" );
 
     # Add a couple of attributes with created methods.
-    ok( $c->add_attribute( name     => 'id',
-                           view     => Class::Meta::PUBLIC,
-                           authz    => Class::Meta::READ,
-                           create   => Class::Meta::GET,
-                           type     => 'integer',
-                           label    => 'ID',
-                           desc     => "The object's ID.",
-                           required => 1,
-                           default  => 12,
-                       ),
-        "Create One's ID attribute" );
+    ok( $c->add_attribute(
+        name     => 'id',
+        view     => Class::Meta::PUBLIC,
+        authz    => Class::Meta::READ,
+        create   => Class::Meta::GET,
+        type     => 'integer',
+        label    => 'ID',
+        desc     => "The object's ID.",
+        required => 1,
+        default  => 12,
+    ), "Create One's ID attribute" );
 
-    ok( $c->add_attribute( name     => 'name',
-                           view     => Class::Meta::PUBLIC,
-                           authz    => Class::Meta::RDWR,
-                           create   => Class::Meta::GETSET,
-                           type     => 'string',
-                           label    => 'Name',
-                           desc     => "The object's name.",
-                           required => 1,
-                           default  => 'foo',
-                       ),
-        "Create One's name attribute" );
+    ok( $c->add_attribute(
+        name     => 'name',
+        view     => Class::Meta::PUBLIC,
+        authz    => Class::Meta::RDWR,
+        create   => Class::Meta::GETSET,
+        type     => 'string',
+        label    => 'Name',
+        desc     => "The object's name.",
+        required => 1,
+        default  => 'foo',
+    ),  "Create One's name attribute" );
 
-    ok( $c->add_attribute( name     => 'count',
-                           view     => Class::Meta::PUBLIC,
-                           authz    => Class::Meta::RDWR,
-                           create   => Class::Meta::GETSET,
-                           context  => Class::Meta::CLASS,
-                           type     => 'integer',
-                           label    => 'Count',
-                           desc     => "The object count.",
-                           default  => 0,
-                       ),
-        "Create One's count attribute" );
+    ok( $c->add_attribute(
+        name     => 'count',
+        view     => Class::Meta::PUBLIC,
+        authz    => Class::Meta::RDWR,
+        create   => Class::Meta::GETSET,
+        context  => Class::Meta::CLASS,
+        type     => 'integer',
+        label    => 'Count',
+        desc     => "The object count.",
+        default  => 0,
+    ), "Create One's count attribute" );
 
     ok( $c->add_method(name => 'foo'), "Add foo method to One" );
     ok( $c->add_method(name => 'bar'), "Add bar method to One" );
@@ -87,41 +103,43 @@ BEGIN {
 }
 
 BEGIN {
-    ok( my $c = Class::Meta->new( key     => 'two',
-                                  package => __PACKAGE__,
-                                  name    => 'Two Class',
-                                  desc    => 'Test Two Class.'),
-        "Create Two's Class::Meta" );
+    ok( my $c = Class::Meta->new(
+        key     => 'two',
+        package => __PACKAGE__,
+        name    => 'Two Class',
+        desc    => 'Test Two Class.'
+    ), "Create Two's Class::Meta" );
 
     # Add another constructor.
     ok( $c->add_constructor(name => 'two_new'), "Create Two's ctor" );
 
     # Add an attribute.
-    ok( $c->add_attribute( name     => 'description',
-                           view     => Class::Meta::PUBLIC,
-                           authz    => Class::Meta::RDWR,
-                           create   => Class::Meta::GETSET,
-                           type     => 'string',
-                           label    => 'Description',
-                           desc     => "The object's description.",
-                           required => 1,
-                           default  => '',
-                       ),
-        "Create Two's description attribute" );
+    ok( $c->add_attribute(
+        name     => 'description',
+        view     => Class::Meta::PUBLIC,
+        authz    => Class::Meta::RDWR,
+        create   => Class::Meta::GETSET,
+        type     => 'string',
+        label    => 'Description',
+        desc     => "The object's description.",
+        required => 1,
+        default  => '',
+    ), "Create Two's description attribute" );
 
     # Make sure that adding an attribute with the same name as in a parent class
     # causes an exception.
     eval {
-        $c->add_attribute( name     => 'name',
-                           view     => Class::Meta::PUBLIC,
-                           authz    => Class::Meta::RDWR,
-                           create   => Class::Meta::GETSET,
-                           type     => 'string',
-                           label    => 'Name',
-                           desc     => "The object's name.",
-                           required => 1,
-                           default  => '',
-                       )
+        $c->add_attribute(
+            name     => 'name',
+            view     => Class::Meta::PUBLIC,
+            authz    => Class::Meta::RDWR,
+            create   => Class::Meta::GETSET,
+            type     => 'string',
+            label    => 'Name',
+            desc     => "The object's name.",
+            required => 1,
+            default  => '',
+        )
     };
 
     ok( my $err = $@, "Catch duplicate attribute exception" );
@@ -130,17 +148,18 @@ BEGIN {
 
     # But allow an attribute with the same name to be added using the override
     # parameter.
-    $c->add_attribute( name     => 'name',
-                       view     => Class::Meta::PUBLIC,
-                       authz    => Class::Meta::RDWR,
-                       create   => Class::Meta::GETSET,
-                       type     => 'string',
-                       label    => 'Overridden Name',
-                       desc     => "The object's name.",
-                       required => 1,
-                       default  => '',
-                       override => 1,
-                   );
+    ok( $c->add_attribute(
+        name     => 'name',
+        view     => Class::Meta::PUBLIC,
+        authz    => Class::Meta::RDWR,
+        create   => Class::Meta::GETSET,
+        type     => 'string',
+        label    => 'Overridden Name',
+        desc     => "The object's name.",
+        required => 1,
+        default  => '',
+        override => 1,
+    ), 'Add attribute with same name using override => 1');
 
     # Add a method.
     ok( $c->add_method(name => 'woah'), "Add woah method to One" );
@@ -158,9 +177,12 @@ package main;
 # Check out Test::One's class object.
 ok( my $one_class = Test::One->my_class, "Get One's Class object" );
 isa_ok( $one_class, 'Class::Meta::Class' );
+isa_ok( $one_class, 'My::Meta::Class' );
 ok( $one_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( ! $one_class->is_a('Test::Two'), "Check it's not for Test::Two" );
 ok( ! $one_class->parents, "Check that One has no parents" );
+is $one_class->default_type, $one_class->default_type,
+    'Check that One inherits default_type';
 
 # Check One's attributes.
 ok( my @one_attributes = $one_class->attributes, "Get attributes" );
@@ -169,14 +191,22 @@ is( $one_attributes[0]->name, 'id', "Check for id attribute" );
 is( $one_attributes[1]->name, 'name', "Check for name attribute" );
 is( $one_attributes[2]->name, 'count', "Check for count attribute" );
 
+# Check One's class names.
+is( ref $one_attributes[0], 'My::Meta::Attribute', "Check for class class" );
+is( ref $one_class->constructors('new'), 'My::Meta::Constructor');
+is( ref $one_class->methods('foo'), 'My::Meta::Method');
+
 # Check out Test::Two's class object.
 ok( my $two_class = Test::Two->my_class, "Get Two's Class object" );
 isa_ok( $two_class, 'Class::Meta::Class' );
+isa_ok( $two_class, 'My::Meta::Class' );
 ok( $two_class->is_a('Test::One'), "Check it's for Test::One" );
 ok( $two_class->is_a('Test::Two'), "Check it's for Test::Two" );
+is $two_class->default_type, $one_class->default_type,
+    'Check that Two inherits default_type';
 is( ($two_class->parents)[0], $one_class, "Check that Two has One for a parent" );
 
-# Check Two's attributes.
+# Check Two's attribute objects.
 ok( my @two_attributes = $two_class->attributes, "Get attributes" );
 is( scalar @two_attributes, 4, "Check for four attributes" );
 is( $two_attributes[0]->name, 'id', "Check for id attribute" );
@@ -187,6 +217,11 @@ is( $two_attributes[1]->label, 'Overridden Name', 'Check for overridden name' );
 is( $two_attributes[2]->name, 'count', "Check for count attribute" );
 is( $one_attributes[2], $two_attributes[2], "Check for same count as One" );
 is( $two_attributes[3]->name, 'description', "Check for description attribute" );
+
+# Check Two's class names.
+is( ref $two_attributes[0], 'My::Meta::Attribute', "Check for class class" );
+is( ref $two_class->constructors('new'), 'My::Meta::Constructor');
+is( ref $two_class->methods('foo'), 'My::Meta::Method');
 
 # Make sure that One's new() constructor works.
 ok( my $one = Test::One->new( name => 'foo'), "Construct One object" );

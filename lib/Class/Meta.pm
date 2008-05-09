@@ -600,8 +600,9 @@ tests, when you might need to do funky things with your classes.
   my $cm = Class::Meta->new( key => $key );
 
 Constructs and returns a new Class::Meta object that can then be used to
-define and build the complete interface of a class. The supported parameters
-are:
+define and build the complete interface of a class. Many of the supported
+parameters values will default to values specified for the most immediate
+Class::Meta-built parent class, if any. The supported parameters are:
 
 =over 4
 
@@ -633,6 +634,7 @@ classes that inherit from an abstract class must be implemented.
 
 A data type to use for attributes added to the class with no explicit data
 type. See L</"Data Types"> for some possible values for this parameter.
+Inheritable from parent class.
 
 =item trust
 
@@ -657,30 +659,31 @@ of that class rather than an array reference:
 
 The name of a class that inherits from Class::Meta::Class to be used to create
 all of the class objects for the class. Defaults to Class::Meta::Class.
+Inheritable from parent class.
 
 =item constructor_class
 
 The name of a class that inherits from Class::Meta::Constructor to be used to
 create all of the constructor objects for the class. Defaults to
-Class::Meta::Constructor.
+Class::Meta::Constructor. Inheritable from parent class.
 
 =item attribute_class
 
 The name of a class that inherits from Class::Meta::Attribute to be used to
 create all of the attribute objects for the class. Defaults to
-Class::Meta::Attribute.
+Class::Meta::Attribute. Inheritable from parent class.
 
 =item method_class
 
 The name of a class that inherits from Class::Meta::Method to be used to
 create all of the method objects for the class. Defaults to
-Class::Meta::Method.
+Class::Meta::Method. Inheritable from parent class.
 
 =item error_handler
 
 A code reference that will be used to handle errors thrown by the methods
-created for the new class. Defaults to the value returned by
-C<< Class::Meta->default_error_handler >>.
+created for the new class. Defaults to the value returned by C<<
+Class::Meta->default_error_handler >>. Inheritable from parent class.
 
 =back
 
@@ -691,6 +694,7 @@ C<< Class::Meta->default_error_handler >>.
 ##############################################################################
 use 5.006001;
 use strict;
+use Class::ISA ();
 
 ##############################################################################
 # Constants                                                                  #
@@ -721,6 +725,16 @@ use constant GETSET    => RDWR;
 # Method and attribute context.
 use constant CLASS     => 0x01;
 use constant OBJECT    => 0x02;
+
+# Parameters passed on to subclasses.
+use constant INHERITABLE => qw(
+    class_class
+    error_handler
+    attribute_class
+    method_class
+    constructor_class
+    default_type
+);
 
 ##############################################################################
 # Dependencies that rely on the above constants                              #
@@ -792,6 +806,17 @@ CLASS: {
         # Class defaults to caller. Key defaults to class.
         $p{package} ||= caller;
         $p{key} ||= $p{package};
+
+        # Find any parent C::M class.
+        for my $super ( Class::ISA::super_path( $p{package} ) ) {
+            next unless $super->can('my_class');
+            # Copy attributes.
+            my $parent = $super->my_class;
+            for my $param (INHERITABLE) {
+                $p{$param} = $parent->{$param} unless exists $p{$param};
+            }
+            last;
+        }
 
         # Configure the error handler.
         if (exists $p{error_handler}) {
