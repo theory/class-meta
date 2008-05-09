@@ -697,11 +697,12 @@ The name of the class into which the accessors are to be installed.
 A Class::Meta::Attribute object representing the attribute for which accessors
 are to be created. Use it to determine what types of accessors to create
 (read-only, write-only, or read/write, class or object), and to add checks for
-requiredness and accessibility (if the attribute is private or protected).
+required constraints and accessibility (if the attribute is private, trusted,
+or protected).
 
 =item C<$create>
 
-The value of the C<create> paramter passed to Class::Meta::Attribute when the
+The value of the C<create> parameter passed to Class::Meta::Attribute when the
 attribute object was created. Use this argument to determine what type of
 accessor(s) to create. See L<Class::Meta::Attribute|Class::Meta::Attribute>
 for the possible values for this argument.
@@ -787,7 +788,7 @@ Affordance accessors--that is, explicit and independent get and set accessors.
 
 =item L<Class::Meta::AccessorBuilder::SemiAffordance|Class::Meta::AccessorBuilder::SemiAffordance>
 
-Semi-ffordance accessors--that is, independent get and set accessors with an
+Semi-affordance accessors--that is, independent get and set accessors with an
 explicit set accessor.
 
 =back

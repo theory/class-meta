@@ -24,7 +24,7 @@ Class::Meta::Attribute - Class::Meta class attribute introspection
 =head1 DESCRIPTION
 
 An object of this class describes an attribute of a class created by
-Class::Meta. It includes metadata such as the name of the attribute, its data
+Class::Meta. It includes meta data such as the name of the attribute, its data
 type, its accessibility, and whether or not a value is required. It also
 provides methods to easily get and set the value of the attribute for a given
 instance of the class.
@@ -239,7 +239,7 @@ complete list.
       # ...
   }
 
-A convenience methed for C<< $attr->type eq $type >>.
+A convenience method for C<< $attr->type eq $type >>.
 
 =head3 desc
 

@@ -33,7 +33,7 @@ Class::Meta::Class - Class::Meta class introspection
 
 Object of this class describe classes created by Class::Meta. They contain
 everything you need to know about a class to be able to put objects of that
-class to good use. In addition to retrieving metadata about the class itself,
+class to good use. In addition to retrieving meta data about the class itself,
 you can retrieve objects that describe the constructors, attributes, and
 methods of the class. See C<Class::Meta|Class::Meta> for a fuller description
 of the utility of the Class::Meta suite of modules.
@@ -72,7 +72,7 @@ our @CARP_NOT = qw(Class::Meta);
 A protected method for constructing a Class::Meta::Class object. Do not call
 this method directly; Call the L<C<new()>|Class::Meta/new"> constructor on a
 Class::Meta object, instead. A Class::Meta::Class object will be constructed
-by default, and can always be retreived via the C<my_class()> method of the
+by default, and can always be retrieved via the C<my_class()> method of the
 class for which it was constructed.
 
 =cut
@@ -153,7 +153,7 @@ explicit types.
   my @trusted = $class->trusted;
   my $trusted = $class->trusted;
 
-In an array context, returns a list of class namees that this class trusts.
+In an array context, returns a list of class names that this class trusts.
 Returns the same list in an array reference in a scalar context.
 
 =cut

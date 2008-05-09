@@ -892,7 +892,7 @@ L<Kinetic::Meta::Constructor|Kinetic::Meta::Constructor> will install the
 constructor into the package for which the Class::Meta object was defined, and
 with the name specified via the C<name> parameter. Note that if the
 constructor view is PRIVATE or PROTECTED, the constructor will be wrapped in
-extra code to envocde the view. Optional.
+extra code to constrain the view. Optional.
 
 =item view
 
@@ -921,7 +921,7 @@ Can only be used by the declaring class or by classes that inherit from it.
 =back
 
 Defaults to Class::Meta::PUBLIC if not defined. You can also use strings
-aliases to the above constants, although the contstans values will actually be
+aliases to the above constants, although the constant values will actually be
 stored in the L<Class::Meta::Constructor|Class::Meta::Constructor> object,
 rather than the string. The supported strings are "PUBLIC", "PRIVATE",
 "TRUSTED", and "PROTECTED".
@@ -1000,10 +1000,10 @@ characters or "_". Required.
 
 The data type of the attribute. See L</"Data Types"> for some possible values
 for this parameter. If the type name corresponds to a data type in a package
-in the Class::Meta::Types namespace, that package will automatically be loaded
-and configured with Perl-style accessors, so that the data type can simply be
-used. If both C<type> and C<is> are passed, C<is> will be used. Required
-unless the class was declared with a C<default_type>.
+in the Class::Meta::Types name space, that package will automatically be
+loaded and configured with Perl-style accessors, so that the data type can
+simply be used. If both C<type> and C<is> are passed, C<is> will be used.
+Required unless the class was declared with a C<default_type>.
 
 =item required
 
@@ -1049,7 +1049,7 @@ defined by the following constants:
 =back
 
 Defaults to Class::Meta::RDWR if not defined. You can also use strings aliases
-to the above constants, although the contstans values will actually be stored
+to the above constants, although the constant values will actually be stored
 in the L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than
 the string. The supported strings are "READ", "WRITE", "RDWR", and "NONE".
 
@@ -1078,8 +1078,8 @@ Create no accessors.
 
 =back
 
-You can also use strings aliases to the above constants, although the
-contstans values will actually be stored in the
+You can also use strings aliases to the above constants, although the constant
+values will actually be stored in the
 L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than the
 string. The supported strings are "GET", "SET", "GETSET", and "NONE".
 
@@ -1124,8 +1124,8 @@ constants:
 
 =back
 
-You can also use strings aliases to the above constants, although the
-contstans values will actually be stored in the
+You can also use strings aliases to the above constants, although the constant
+values will actually be stored in the
 L<Class::Meta::Attribute|Class::Meta::Attribute> object, rather than the
 string. The supported strings are "CLASS", and "OBJECT".
 
@@ -1293,7 +1293,7 @@ C<my_class()> class method, and all requisite constructors and accessors.
     }
 }
 
-# Trusted function to convert strings to their contstant values.
+# Trusted function to convert strings to their constant values.
 sub _str_to_const {
     my $val = shift;
     return $val if !$val || $val !~ /\w/;
@@ -1315,9 +1315,9 @@ L<Class::Tangram|Class::Tangram>. But, naturally, none of them could do
 exactly what I needed.
 
 What I needed was an implementation of the "Facade" design pattern. Okay, this
-isn't a facade like the GOF meant it, but it is in the respect that it
-creates classes with a common API so that objects of these classes can all be
-used identically, calling the same methods on each. This is done via the
+isn't a facade like the "Gang of Four" meant it, but it is in the respect that
+it creates classes with a common API so that objects of these classes can all
+be used identically, calling the same methods on each. This is done via the
 implementation of an introspection API. So the process of creating classes
 with Class::Meta not only creates attributes and accessors, but also creates
 objects that describe those classes. Using these descriptive objects, client
@@ -1413,7 +1413,7 @@ Accessor automation and data validation for Tangram applications.
 
 =item L<Class::Maker|Class::Maker>
 
-An ambitious yet underdocumented module that also manages accessor and
+An ambitious yet under-documented module that also manages accessor and
 constructor generation, data validation, and provides a reflection API. It
 also supports serialization.
 
@@ -1423,7 +1423,7 @@ Stevan Little's application of Perl 6 meta classes to Perl 5.
 
 =item L<Moose|Moose>
 
-"It's the new camel." Another extention of the Perl 5 object system, built on
+"It's the new camel." Another extension of the Perl 5 object system, built on
 Class::MOP.
 
 =back

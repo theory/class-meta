@@ -185,7 +185,7 @@ which determines what accessors, if any, are to be created.
 =item @checks
 
 A list of code references that validate the value of an attribute. These will
-be used in the set acccessor (mutator) to validate new attribute values.
+be used in the set accessor (mutator) to validate new attribute values.
 
 =back
 

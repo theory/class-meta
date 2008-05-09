@@ -33,6 +33,7 @@ t/implicit_class_types.t
 t/inherit.t
 t/meth.t
 t/pod-coverage.t
+t/pod-spelling.t
 t/pod.t
 t/types.t
 t/types_affordance.t
