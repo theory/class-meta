@@ -34,6 +34,8 @@ Revision history for Perl extension Class::Meta.
         This makes it easier to get the same settings (e.g., for Class::Meta
         subclasses or for the default type) without typing the same things
         over and over in subclasses.
+      - Added a spelling test. This has the benefit of reducing the number of
+        annoying spelling errors in the documentation.
 
 0.55  2008-05-05T18:02:27
       - Added the "configure_requires", and "recommends" parameters to
