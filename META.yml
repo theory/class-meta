@@ -1,6 +1,6 @@
 ---
 name: Class-Meta
-version: 0.55
+version: 0.60
 author:
   - 'David Wheeler <david@kineticode.com>'
 abstract: 'Class automation, introspection, and data validation'
@@ -20,43 +20,43 @@ recommends:
 provides:
   Class::Meta:
     file: lib/Class/Meta.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::AccessorBuilder:
     file: lib/Class/Meta/AccessorBuilder.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::AccessorBuilder::Affordance:
     file: lib/Class/Meta/AccessorBuilder/Affordance.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::AccessorBuilder::SemiAffordance:
     file: lib/Class/Meta/AccessorBuilder/SemiAffordance.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Attribute:
     file: lib/Class/Meta/Attribute.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Class:
     file: lib/Class/Meta/Class.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Constructor:
     file: lib/Class/Meta/Constructor.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Method:
     file: lib/Class/Meta/Method.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Type:
     file: lib/Class/Meta/Type.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Types::Boolean:
     file: lib/Class/Meta/Types/Boolean.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Types::Numeric:
     file: lib/Class/Meta/Types/Numeric.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Types::Perl:
     file: lib/Class/Meta/Types/Perl.pm
-    version: 0.55
+    version: 0.60
   Class::Meta::Types::String:
     file: lib/Class/Meta/Types/String.pm
-    version: 0.55
+    version: 0.60
 generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
