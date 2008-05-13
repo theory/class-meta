@@ -8,24 +8,26 @@ Revision history for Perl extension Class::Meta.
         isn't the way it worked before, although at the time I thought it was
         a feature. This is a backwards compatibility change, but see the next
         point. Reported by Jon Swartz.
-      - Added support for an optional subroutine reference to be passed as the
-        final argument to constructors created by Class::Meta. The object
-        being constructed will be passed to the anonymous sub after all of the
-        specified and default values have been set, but before required
-        constraints are enforced. This allows developers to have a scope
-        within which to work before required attributes throw an exception.
+      - Added support for an optional subroutine reference to be passed
+        as the final argument to constructors created by Class::Meta.
+        The object being constructed will be passed to the anonymous sub
+        after all of the specified and default values have been set, but
+        before required constraints are enforced. This allows developers
+        to have a scope within which to work before required attributes
+        throw an exception. Yes, I did borrow this idea from Ruby.
       - Added a link to the Subversion repository.
       - Moved the "Justification" section of the documentation nearer to
         the bottom. Suggested by Jon Swartz.
-      - The "view" parameter is now enforced for methods when the method body
-        is passed via the "code" parameter. Reported by Jon Swartz.
+      - The "view" parameter (PUBLIC, PRIVATE, PROTECTED, TRUSTED) is
+        now enforced for methods when the method body is passed via the
+        "code" parameter. Reported by Jon Swartz.
       - Added the `trusted` method to Class::Meta::Class.
       - You can now use strings to specify constant values when declaring
         class attributes, methods, etc. The strings correspond to their
         equivalent constant names, such as "PUBLIC", "PRIVATE", "GET", "SET",
         "OBJECT", "CLASS", and so on. The corresponding constant value
         will, however, be stored in the resulting Class::Meta object.
-      - A more useful exception is now thrown when an attribute is assed
+      - A more useful exception is now thrown when an attribute is added
         with a missing or unknown type.
       - Added the `default_type` parameter to `new()`, and the corresponding
         attribute to Class::Meta::Class. This value will be used for the
