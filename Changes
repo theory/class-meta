@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.61
+0.61  2008-05-15T03:15:03
       - Fixed test failures on Perl 5.6. Reported by Slaven Rezic and many
         others via cpan-testers.
 
