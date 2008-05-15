@@ -74,7 +74,7 @@ A floating point number.
 use strict;
 use Class::Meta::Type;
 use Data::Types ();
-our $VERSION = '0.61';
+our $VERSION = '0.62';
 
 # This code ref builds value checkers.
 my $mk_chk = sub {
