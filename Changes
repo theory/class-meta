@@ -1,6 +1,8 @@
 Revision history for Perl extension Class::Meta.
 
 0.61
+      - Fixed test failures on Perl 5.6. Reported by Slaven Rezic and many
+        others via cpan-testers.
 
 0.60  2008-05-13T03:42:13
       - Required constraints are now enforced by the constructor, as well as
