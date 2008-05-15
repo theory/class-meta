@@ -1,6 +1,10 @@
 Revision history for Perl extension Class::Meta.
 
 0.62
+      - Fixed a warning from Perl 5.11 (I think).
+      - Removed the spelling test from the distribution, since it can
+        fail on systems without a spell program or using a different locale.
+        Reported by Andreas Koenig.
 
 0.61  2008-05-15T03:15:03
       - Fixed test failures on Perl 5.6. Reported by Slaven Rezic and many

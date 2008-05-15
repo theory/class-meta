@@ -154,8 +154,8 @@ types.
 
     sub new {
         my $class = shift;
-        my $key = lc shift
-          || Class::Meta->handle_error("Type argument required");
+        Class::Meta->handle_error('Type argument required') unless $_[0];
+        my $key = lc shift;
         unless (exists $types{$key}) {
             # See if there's a Class::Meta class defined for this key.
             my $cmc = Class::Meta->for_key($key)
