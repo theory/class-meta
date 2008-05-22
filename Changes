@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
+0.63
+
 0.62  2008-05-22T03:08:06
       - Fixed a warning from Perl 5.11 (I think).
       - Removed the spelling test from the distribution, since it can

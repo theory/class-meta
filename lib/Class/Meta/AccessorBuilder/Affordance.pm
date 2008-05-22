@@ -196,7 +196,7 @@ be used in the set accessor (mutator) to validate new attribute values.
 
 use strict;
 use Class::Meta;
-our $VERSION = '0.62';
+our $VERSION = '0.63';
 
 sub build_attr_get {
     UNIVERSAL::can($_[0]->package, 'get_' . $_[0]->name);
