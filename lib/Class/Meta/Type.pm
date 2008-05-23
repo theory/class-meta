@@ -669,7 +669,7 @@ Class::Meta also allows you to craft your own accessors. Perhaps you'd prefer
 to use a StudlyCaps affordance accessor standard. In that case, you'll need to
 create your own module that builds accessors. I recommend that you study
 L<Class::Meta::AccessorBuilder|Class::Meta::AccessorBuilder> and
-LClass::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
+L<Class::Meta::AccessorBuilder::Affordance|Class::Meta::AccessorBuilder::Affordance>
 before taking on creating your own.
 
 Custom accessor building modules must have three functions.
