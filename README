@@ -1,4 +1,4 @@
-Class/Meta version 0.63
+Class/Meta version 0.64
 =======================
 
 Class::Meta provides an interface for automating the creation of Perl classes
@@ -55,7 +55,7 @@ The test suite requires:
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2002-2008, David Wheeler. Some Rights Reserved.
+Copyright (c) 2002-2009, David Wheeler. Some Rights Reserved.
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
