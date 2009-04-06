@@ -2,7 +2,7 @@ Revision history for Perl extension Class::Meta.
 
 0.63
       - Fixed POD formatting typo in Class::Meta::Type with thanks to Gregor
-        Herrmann.
+        Herrmann (RT #36143).
 
 0.62  2008-05-22T03:08:06
       - Fixed a warning from Perl 5.11 (I think).
