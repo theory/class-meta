@@ -1,6 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
 0.65
+      - Require Test::Pod 1.41 to run the Pod tests.
 
 0.64  2011-06-20T00:30:45
       - Moved repostitory to [GitHub](https://github.com/theory/class-meta/).
