@@ -1,4 +1,4 @@
-#!perl -w
+#!/usr/bin/perl -w
 
 use strict;
 use Test::More;
@@ -32,3 +32,4 @@ GETSET
 RDWR
 Stevan
 Tangram
+cpan
