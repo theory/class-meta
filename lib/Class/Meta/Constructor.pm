@@ -1,7 +1,5 @@
 package Class::Meta::Constructor;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Constructor - Class::Meta class constructor introspection

@@ -1,7 +1,5 @@
 #!perl -w
 
-# $Id: pod-coverage.t,v 1.1 2004/06/28 23:15:31 david Exp $
-
 use strict;
 use Test::More;
 use File::Spec;

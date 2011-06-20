@@ -1,7 +1,5 @@
 package Class::Meta::Type;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Type - Data type validation and accessor building.

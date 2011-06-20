@@ -1,7 +1,5 @@
 package Class::Meta::Types::String;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Types::String - String data types

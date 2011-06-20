@@ -1,7 +1,5 @@
 package Class::Meta::Attribute;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Attribute - Class::Meta class attribute introspection

@@ -1,7 +1,5 @@
 package Class::Meta::Types::Numeric;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Types::Numeric - Numeric data types

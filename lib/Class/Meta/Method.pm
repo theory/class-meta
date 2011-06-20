@@ -1,7 +1,5 @@
 package Class::Meta::Method;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Method - Class::Meta class method introspection

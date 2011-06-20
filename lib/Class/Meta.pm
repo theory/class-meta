@@ -1,7 +1,5 @@
 package Class::Meta;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta - Class automation, introspection, and data validation

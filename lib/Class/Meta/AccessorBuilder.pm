@@ -1,7 +1,5 @@
 package Class::Meta::AccessorBuilder;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::AccessorBuilder - Perl style accessor generation

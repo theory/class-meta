@@ -1,7 +1,5 @@
 package Class::Meta::Types::Boolean;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Types::Boolean - Boolean data types

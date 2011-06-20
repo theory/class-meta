@@ -1,7 +1,5 @@
 package Class::Meta::Types::Perl;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::Types::Perl - Perl data types

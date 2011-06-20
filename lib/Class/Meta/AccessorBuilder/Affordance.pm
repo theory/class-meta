@@ -1,7 +1,5 @@
 package Class::Meta::AccessorBuilder::Affordance;
 
-# $Id$
-
 =head1 NAME
 
 Class::Meta::AccessorBuilder::Affordance - Affordance style accessor generation
