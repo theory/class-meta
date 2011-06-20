@@ -7,3 +7,5 @@
 ^Class::Meta
 \.git
 pod-spelling.t$
+^MYMETA\.yml$
+^MYMETA\.json$
