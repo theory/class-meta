@@ -131,9 +131,13 @@ __END__
 
 =head1 SUPPORT
 
-This module is stored in an open repository at the following address:
+This module is stored in an open L<GitHub
+repository|http://github.com/theory/class-meta/>. Feel free to fork and
+contribute!
 
-L<https://svn.kineticode.com/Class-Meta/trunk/>
+Please file bug reports via L<GitHub
+Issues|http://github.com/theory/class-meta/issues/> or by sending mail to
+L<bug-Class-Meta.cpan.org|mailto:bug-Class-Meta.cpan.org>.
 
 Patches against Class::Meta are welcome. Please send bug reports to
 <bug-class-meta@rt.cpan.org>.

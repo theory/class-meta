@@ -14,5 +14,12 @@ my $build = Module::Build->new(
         'Data::Types' => '0.05',
         'Class::ISA'  => '0.31',
     },
+    meta_merge => {
+        resources => {
+            homepage   => 'http://search.cpan.org/dist/Class-Meta/',
+            bugtracker => 'http://github.com/theory/class-meta/issues/',
+            repository => 'http://github.com/theory/class-meta/',
+        }
+    },
 );
 $build->create_build_script;
