@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.64
+0.64  2011-06-20T00:30:45
       - Moved repostitory to [GitHub](https://github.com/theory/class-meta/).
       - Switched to a "traditional" `Makefile.PL`.
 
