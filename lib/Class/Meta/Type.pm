@@ -738,7 +738,7 @@ Patches against Class::Meta are welcome. Please send bug reports to
 
 =head1 AUTHOR
 
-David E. Wheeler <david@kineticode.com>
+David E. Wheeler <david@justatheory.com>
 
 =head1 SEE ALSO
 
