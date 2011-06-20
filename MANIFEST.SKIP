@@ -5,5 +5,5 @@
 \.bak$
 ^MANIFEST\.SKIP$
 ^Class::Meta
-\.svn
+\.git
 pod-spelling.t$
