@@ -1,6 +1,8 @@
 Revision history for Perl extension Class::Meta.
 
 0.64
+      - Moved repostitory to [GitHub](https://github.com/theory/class-meta/).
+      - Switched to a "traditional" `Makefile.PL`.
 
 0.63  2009-04-06T18:37:03
       - Fixed POD formatting typo in Class::Meta::Type with thanks to Gregor
