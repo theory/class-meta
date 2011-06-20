@@ -150,7 +150,7 @@ Patches against Class::Meta are welcome. Please send bug reports to
 
 =head1 AUTHOR
 
-David Wheeler <david@kineticode.com>
+David E. Wheeler <david@kineticode.com>
 
 =head1 SEE ALSO
 
@@ -188,7 +188,7 @@ Other data type modules:
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2002-2009, David Wheeler. Some Rights Reserved.
+Copyright (c) 2002-2011, David E. Wheeler. Some Rights Reserved.
 
 This module is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
