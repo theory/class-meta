@@ -76,7 +76,7 @@ A code reference. Also known as a closure. C<UNIVERSAL::isa()> must return
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = '0.64';
+our $VERSION = '0.65';
 
 sub import {
     my ($pkg, $builder) = @_;
