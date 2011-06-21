@@ -9,7 +9,6 @@ use Test::More $] < 5.008
   ? (skip_all => 'Older Carp lacks @CARP_NOT support')
   : (tests => 394);
 use File::Spec;
-my $fn = File::Spec->catfile('t', 'view.t');
 
 ##############################################################################
 # Create a simple class.
@@ -696,7 +695,7 @@ sub chk {
     # Check its message.
     like( $err, $qr, "Correct error" );
     # Make sure it refers to this file.
-    like( $err, qr/(?:at\s+\Q$fn\E|\Q$fn\E\s+at)\s+line/, 'Correct context' );
+    like( $err, qr/(?:at\s+\Q$0\E|\Q$0\E\s+at)\s+line/, 'Correct context' );
     # Make sure it doesn't refer to other Class::Meta files.
     unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
 }

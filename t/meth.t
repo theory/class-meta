@@ -7,7 +7,6 @@
 use strict;
 use Test::More tests => 109;
 use File::Spec;
-my $fn = File::Spec->catfile('t', 'meth.t');
 
 ##############################################################################
 # Create a simple class.
@@ -288,7 +287,7 @@ sub chk {
     # Make sure it refers to this file.
     SKIP: {
         skip 'Older Carp lacks @CARP_NOT support', 2 unless $] >= 5.008;
-        like( $err, qr/(?:at\s+\Q$fn\E|\Q$fn\E\s+at)\s+line/, 'Correct context' );
+        like( $err, qr/(?:at\s+\Q$0\E|\Q$0\E\s+at)\s+line/, 'Correct context' );
         # Make sure it doesn't refer to other Class::Meta files.
         unlike( $err, qr|lib/Class/Meta|, 'Not incorrect context')
     }
