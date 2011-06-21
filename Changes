@@ -1,6 +1,6 @@
 Revision history for Perl extension Class::Meta.
 
-0.65
+0.65  2011-06-21T18:33:57
       - Require Test::Pod 1.41 to run the Pod tests.
       - Removed redundant bug reporting email address from the documentation.
       - Fixed tests failures on Windows (hopefully). Thanks to Eric Brine for
