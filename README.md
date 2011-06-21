@@ -1,4 +1,4 @@
-Class/Meta version 0.65
+Class/Meta version 0.66
 =======================
 
 Class::Meta provides an interface for automating the creation of Perl classes
