@@ -147,7 +147,7 @@ contribute!
 
 Please file bug reports via L<GitHub
 Issues|http://github.com/theory/class-meta/issues/> or by sending mail to
-L<bug-Class-Meta.cpan.org|mailto:bug-Class-Meta.cpan.org>.
+L<bug-Class-Meta@rt.cpan.org|mailto:bug-Class-Meta@rt.cpan.org>.
 
 =head1 AUTHOR
 
