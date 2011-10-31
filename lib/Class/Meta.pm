@@ -44,12 +44,14 @@ Generate a class:
           default => undef,
       );
 
-     # Add a custom method.
+      # Add a custom method.
       $cm->add_method(
           name => 'chk_pass',
           view => 'PUBLIC',
           code => sub { ... },
       );
+
+      $cm->build;
   }
 
   sub chck_pass { ... }
