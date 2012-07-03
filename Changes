@@ -1,5 +1,7 @@
 Revision history for Perl extension Class::Meta.
 
+0.67
+
 0.66  2012-07-03T13:46:47Z
       - Fixed broken rt.cpan.org email address.
       - Added missing call to `build()` in the synopsis. Thanks to Laurnet

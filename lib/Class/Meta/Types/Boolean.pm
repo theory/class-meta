@@ -68,7 +68,7 @@ without the overhead of validation checks.
 
 use strict;
 use Class::Meta::Type;
-our $VERSION = '0.66';
+our $VERSION = '0.67';
 
 sub import {
     my ($pkg, $builder) = @_;
