@@ -69,10 +69,10 @@ recommended!):
       has  uuid => (
         authz    => 'READ',
         required => 1,
-        deafult  => sub { Data::UUID->new->create_str },
+        deafault => sub { Data::UUID->new->create_str },
       );
-      has name => ( rquired => 1         );
-      has age  => ( is      => 'integer' );
+      has name => ( required => 1         );
+      has age  => ( is       => 'integer' );
       method chk_pass => sub { ... }
   };
 
@@ -143,7 +143,7 @@ notes here, as well. Or if you're just a masochist and want to use the
 Class::Meta interface itself, well, read on!
 
 I recommend that you create your Class::Meta classes in a C<BEGIN> block.
-Although this is not strictly necessary, it helps to ensure that the classes
+Although this is not strictly necessary, it helps ensure that the classes
 you're building are completely constructed and ready to go by the time
 compilation has completed. Creating classes with Class::Meta is easy, using
 the Class::Meta object oriented interface. Here is an example of a very simple

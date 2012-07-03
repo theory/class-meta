@@ -4,6 +4,8 @@ Revision history for Perl extension Class::Meta.
       - Fixed broken rt.cpan.org email address.
       - Added missing call to `build()` in the synopsis. Thanks to Laurnet
         Dami for the report (RT #72058).
+      - Fixed a couple of typos in the Pod, with thanks to Gregor Herrmann and
+        the Debian project (RT #78163).
 
 0.65  2011-06-21T18:33:57
       - Require Test::Pod 1.41 to run the Pod tests.
