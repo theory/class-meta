@@ -69,7 +69,7 @@ recommended!):
       has  uuid => (
         authz    => 'READ',
         required => 1,
-        deafault => sub { Data::UUID->new->create_str },
+        default  => sub { Data::UUID->new->create_str },
       );
       has name => ( required => 1         );
       has age  => ( is       => 'integer' );
