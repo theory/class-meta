@@ -888,7 +888,7 @@ a user interface. Optional.
 
 You can implicitly define the constructor in your class by passing a code
 reference via the C<code> parameter. Once C<build()> is called,
-L<Kinetic::Meta::Constructor|Kinetic::Meta::Constructor> will install the
+L<Class::Meta::Constructor|Class::Meta::Constructor> will install the
 constructor into the package for which the Class::Meta object was defined, and
 with the name specified via the C<name> parameter. Note that if the
 constructor view is PRIVATE or PROTECTED, the constructor will be wrapped in
@@ -1191,7 +1191,7 @@ Otherwise, it's up to the class implementation itself to do the job.
 
 You can implicitly define the method in your class by passing a code reference
 via the C<code> parameter. Once C<build()> is called,
-L<Kinetic::Meta::Method|Kinetic::Meta::Method> will install the method into
+L<Class::Meta::Method|Class::Meta::Method> will install the method into
 the package for which the Class::Meta object was defined, and with the name
 specified via the C<name> parameter. If the C<view> is anything other than
 PUBLIC, it will be enforced.
