@@ -11,6 +11,7 @@ Generate a class:
   package MyApp::Thingy;
   use strict;
   use Class::Meta;
+  use Data::UUID;
 
   BEGIN {
 
@@ -54,14 +55,13 @@ Generate a class:
       $cm->build;
   }
 
-  sub chck_pass { ... }
-
 Or use Class::Meta::Express for a more pleasant declarative syntax (highly
 recommended!):
 
   package MyApp::Thingy;
   use strict;
   use Class::Meta::Express;
+  use Data::UUID;
 
   class {
       meta thingy => ( default_type => 'string' );
@@ -80,8 +80,8 @@ Now isn't that nicer? Then use the class:
 
   use MyApp::Thingy;
 
-  my $thingy = MyApp::Thingy->new( id => 19 );
-  print "ID: ", $thingy->id, $/;
+  my $thingy = MyApp::Thingy->new;
+  print "UUID: ", $thingy->uuid, $/;
   $thingy->name('Larry');
   print "Name: ", $thingy->name, $/;
   $thingy->age(42);
